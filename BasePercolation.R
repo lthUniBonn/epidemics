@@ -3,6 +3,7 @@ set.seed(3)
 L <- 10 #Lattice side length
 p <- 0.5
 
+#initialize lattice
 lattice <- array(rbinom(n = L*L,1,p), dim = c(L,L))
 plot(lattice)
 belongsToThisCluster <-array(0,dim = c(L,L))
@@ -106,11 +107,11 @@ hasNeighbour <- function(i,j){
 #     return(0)
 #   }
 # }
-n<-0
+n0<-0
 for(i in c(1:L)){
   for(j in c(1:L)){
     hasNeighbour(i,j)
-    n <- n+1
+    n0 <- n0+1
   }
 }
 
@@ -123,11 +124,11 @@ move <-function(i,j){
     print("percolates")
     return(1)
   }
-  if(sum(neighbours[i,j,]== 0)){
+  if(sum(neighbours[i,j,])== 0){
     print("dead end")
     return(0)
   }
-  if(sum(neighbours[i,j,]==1)){  #if only one neighbour its a dangling end and should be removed before moving on
+  else if(sum(neighbours[i,j,])==1){  #if only one neighbour its a dangling end and should be removed before moving on
   
     if(neighbours[i,j,1]==1){
       neighbours[i-1,j,3] <<- 0 # remove dead end
@@ -147,7 +148,7 @@ move <-function(i,j){
     }
   }
   
-  if(sum(neighbours[i,j,]<1)){  #if more than one neighbour it can move anywhere
+  else if(sum(neighbours[i,j,])<1){  #if more than one neighbour it can move anywhere
     
     if(neighbours[i,j,1]==1){
       move(i-1,j)
@@ -165,6 +166,6 @@ move <-function(i,j){
 }
 
 #test with a certain start position
-n <- 2
+n <- 1
 m <- 1
 move(n,m)
