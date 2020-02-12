@@ -1,207 +1,112 @@
 library('plot.matrix')
-set.seed(2)
-L <- 4 #Lattice side length
-p <- 0.5
+set.seed(5)
+
+p <- 0.7
 
 #initialise and plot lattice
+M <- 10 #size of usable array
+L <- M+2 #expand array by 1 in each direction to make it uneccesary to inculde special cases for edges
+
+
 lattice <- array(rbinom(n = L*L,1,p), dim = c(L,L))
+lattice[1,] <-0
+lattice[L,] <-0
+lattice[,1] <-0
+lattice[,L] <-0
 plot(lattice)
 
-# what are <<-???
-belongsToThisCluster <-array(0,dim = c(L,L))
-neighbours <- array(0, dim=c(L,L,4))
-# isItSpanning()
-
-# isItSpanning <- function(){
-#    for(i in c(1:L)){
-#      if(lattice[i,1]== 1){
-#        print("got here")
-#       belongsToCluster[i,1] <<- 1
-#     }
-#   }
-#   for(j in c(1:L)){
-#       if(lattice[1,j]== 1){
-#         belongsToCluster[1,j] <<- 1
-#       }
-#   }
-# }
 
 
-hasNeighbour <- function(i,j){
-  isAtLeftEdge <<- FALSE
-  isAtTopEdge <<- FALSE
-  isAtBottomEdge <<- FALSE
-  isAtRightEdge <<- FALSE
-  
-  if(i == L){# have to check this, otherwise produces out of bounds
-    isAtBottomEdge <<- TRUE
-    
-  }
-  if(j == L){
-    isAtRightEdge <<- TRUE
-    
-  }
-  if(i == 1){
-    isAtTopEdge <<- TRUE
-    
-  }
-  if(j == 1){
-    isAtLeftEdge <<- TRUE
-    
-  }
-  if(!isAtTopEdge){
-  if(lattice[i-1,j]==1 ){
-    neighbours[i,j,1] <<- 1 #has neighbour at top
-    
-  } 
-  }
-  if(!isAtRightEdge){
-  if(lattice[i,j+1]==1){
-    neighbours[i,j,2] <<- 1 #has neighbour at right
-  } 
-  }
-  if(!isAtBottomEdge){
-  if(lattice[i+1,j]==1){
-    neighbours[i,j,3] <<- 1 #has neighbour at bottom
-  } 
-  }
-  if(!isAtLeftEdge){
-  if(lattice[i,j-1]==1){
-    neighbours[i,j,4] <<- 1 #has neighbour at left
-  } 
-  }
-}
 
 
-# checkSurrounding <- function(i,j){
-#   isAtLeftEdge <- FALSE
-#   isAtTopEdge <- FALSE
-#   isAtBottomEdge <- FALSE
-#   isAtRightEdge <- FALSE
-#   if(i == L || j == L){
-#     print("percolates")
-#     return(1)
-#   }
-#   if(i == 1){# have to check this, otherwise produces out of bounds
-#     isAtTopEdge <<- TRUE
-#   }
-#   if(j == 1){
-#     isAtLeftEdge <<- TRUE
-#   }
-#   if((lattice[i-1,j]==1) && (isAtTopEdge)){
-#     belongsToThisCluster[i,j] <<- 1 #has neighbour at top
-#   } 
-#   if(lattice[i,j+1]==1){
-#     belongsToThisCluster[i,j] <<- 1 #has neighbour at right
-#   } 
-#   if(lattice[i+1,j]==1){
-#     belongsToThisCluster[i,j] <<- 1 #has neighbour at bottom
-#   } 
-#   if(lattice[i+1,j-1]==1 && isAtLeftEdge){
-#     belongsToThisCluster[i,j] <<- 1 #has neighbour at left
-#   } 
-#   if(belongsToThisCluster[i,j] == 0){
-#     return(0)
-#   }
-# }
+# strat parameters
+i <- 2
+j <-6
 
-x<-0
-move <-function(i,j, neighb, left, top){
-  lattice[i,j] <- 2 # mark this node as visited
-  neiNew <- neighb
-  print("-") 
+move <- function(i,j,left,top){
   print(i)
   print(j)
-  print(sum(neighb))
-  print(sum(neighb[i,j,]))
-  
-
-  if(i == L && top==TRUE){
-    print("percolates") # this will also print "percolates" id the connection is from top to right, or left to bottom etc.
-    return(1)
+  if(i== L-1 && top==TRUE){
+    print("percolates from top to bottom")
+    stop()
   }
-  if(j == L && left == TRUE){
-    print("percolates")
-    return(1)
+  if(j== L-1 && left==TRUE){
+    print("percolates from left to right")
+    stop()
   }
-  if(sum(neighb[i,j,])== 0){
-    print("dead end")
-    return(0)
+  lattice[i,j] <<- lattice[i,j] +1 #increment this site so that it shows we were here bofore
+  moveThatWay<-dirDecision(i,j)
+  if(moveThatWay == 1){
+    print("Top")
+    move(i-1,j,left,top)
   }
-  else if(sum(neighb[i,j,])==1){  #if only one neighbour its a dangling end and should be removed before moving on
-    print("one neigbour")
-    if(neighb[i,j,1]==1){
-      neiNew[i-1,j,3] <- 0 # remove dead end
-      move(i-1,j, neiNew, left, top)
-    }
-    if(neighb[i,j,2]==1){
-      neiNew[i,j+1,4] <- 0 # remove dead end
-      move(i,j+1, neiNew, left, top)
-    }
-    if(neighb[i,j,3]==1){
-      print("hier?")
-      neiNew[i+1,j,1] <- 0 # remove dead end
-      move(i+1,j, neiNew, left, top)
-    }
-    if(neighb[i,j,4]==1){
-      neiNew[i,j-1,2] <- 0 # remove dead end
-      move(i,j-1, neiNew, left, top)
-    }
+  if(moveThatWay == 2){
+    print("Left")
+    move(i,j-1,left,top)
+  }
+  if(moveThatWay == 3){
+    print("Right")
+    move(i,j+1,left,top)
+  }
+  if(moveThatWay == 4){
+    print("Bottom")
+    move(i+1,j,left,top)
   }
   
-  else if(sum(neighb[i,j,])>1){  #if more than one neighbour it can move anywhere
-    print("multiple neigbour")
-    
-    if(neighb[i,j,2]==1){
-      print("right")
-      move(i,j+1, neighb, left, top)
-    }
-    else if(neighb[i,j,3]==1){
-      print("bottom")
-      move(i+1,j, neighb, left, top)
-    }
-    else if(neighb[i,j,4]==1){ #order changed, caught in top-bottom spiral --> check! have checked this, don't know how to prevent either from looping
-      print("left")
-      move(i,j-1, neighb, left, top)
-    }
-    else if(neighb[i,j,1]==1){
-      print("top")
-      move(i-1,j, neighb, left, top)
-    }
-  }
 }
 
-isAtLeftEdge <- FALSE
-isAtTopEdge <- FALSE
-isAtBottomEdge <- FALSE
-isAtRightEdge <- FALSE
-n0<-0
-for(i in c(1:L)){
-  for(j in c(1:L)){
-    hasNeighbour(i,j)
-    n0 <- n0+1
+dirDecision <- function(i,j){ # this evaluates where the next step should ge if multiple are possible
+  visitedTop <- lattice[i-1,j]
+  visitedLeft <- lattice[i,j-1]
+  visitedRight <- lattice[i,j+1]
+  visitedBot <- lattice[i+1,j]
+  neigbs <- 4
+  if(visitedTop == 0){
+    visitedTop <- 100000000 # make sure that this is not visited if 0
+    neigbs <- neigbs -1
   }
+  if(visitedLeft == 0){
+    visitedLeft <- 100000000 # make sure that this is not visited if 0
+    neigbs <- neigbs -1
+  }
+  if(visitedRight == 0){
+    visitedRight <- 100000000 # make sure that this is not visited if 0
+    neigbs <- neigbs -1
+  }
+  if(visitedBot == 0){
+    visitedBot <- 100000000 # make sure that this is not visited if 0
+    neigbs <- neigbs -1
+  }
+  if(neigbs == 0){
+    print("no further connections")
+    stop()
+  }
+  visitList <- c(1/visitedTop,1/visitedLeft,1/visitedRight,1/visitedBot)
+  if(neigbs==1){
+    lattice[i,j]<<- 0
+  }
+  return(which.max(x = visitList))
 }
 
-#test with a certain start position
-n <- 2
-m <- 1
+
+
 left <- FALSE
 top <- FALSE
-if( n == 1){
-  assign("top", TRUE, envir=.GlobalEnv)
-} else if(n!=1){
-  assign("top", FALSE, envir=.GlobalEnv)
+if( i == 2){
+  top <<- TRUE
+} else if(i!=1){
+  top <<- FALSE
 }
-if( m == 1){
-  assign("left", TRUE, envir=.GlobalEnv)
-} else if(m!=1){
-  assign("left", FALSE, envir=.GlobalEnv)
+if( j == 2){
+  left <<- TRUE
+} else if(j!=1){
+  left <<- FALSE
 }
-if(lattice[n,m]==1){
-  move(n,m, neighbours, left, top) # column i, row j left, top are bool when start is at left,top
+if(lattice[i,j]==1){
+  move(i,j, left, top) # column i, row j left, top are bool when start is at left,top
 } else {print("This node is not infected")}
 
-# need to stop the code from going back if no dangling end 
-#need to remeber last step
-# 
+
+
+
+
