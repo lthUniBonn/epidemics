@@ -1,10 +1,10 @@
 library('plot.matrix')
 set.seed(5)
 
-p <- 0.7
+p <- 0.5
 
 #initialise and plot lattice
-M <- 10 #size of usable array
+M <- 20 #size of usable array
 L <- M+2 #expand array by 1 in each direction to make it uneccesary to inculde special cases for edges
 
 
@@ -15,42 +15,49 @@ lattice[,1] <-0
 lattice[,L] <-0
 plot(lattice)
 
+#make list of possible starting nodes
 
+startTop <- which(lattice[2,]==1)
+startLeft <- which(lattice[,2]==1)+1 # +1 necessary to avoid starting at [2,2] twice
 
 
 
 # strat parameters
 i <- 2
-j <-6
-
+j <- 3
+recursionDepth <- 0
 move <- function(i,j,left,top){
+  recursionDepth <<- recursionDepth +1
   print(i)
   print(j)
   if(i== L-1 && top==TRUE){
     print("percolates from top to bottom")
-    stop()
+    return(1)
   }
   if(j== L-1 && left==TRUE){
     print("percolates from left to right")
-    stop()
+    return(1)
   }
   lattice[i,j] <<- lattice[i,j] +1 #increment this site so that it shows we were here bofore
   moveThatWay<-dirDecision(i,j)
+  if(moveThatWay==0){
+    return(0)
+  }
   if(moveThatWay == 1){
     print("Top")
-    move(i-1,j,left,top)
+    return(move(i-1,j,left,top))
   }
   if(moveThatWay == 2){
     print("Left")
-    move(i,j-1,left,top)
+    return(move(i,j-1,left,top))
   }
   if(moveThatWay == 3){
     print("Right")
-    move(i,j+1,left,top)
+    return(move(i,j+1,left,top))
   }
   if(moveThatWay == 4){
     print("Bottom")
-    move(i+1,j,left,top)
+    return(move(i+1,j,left,top))
   }
   
 }
@@ -60,7 +67,7 @@ dirDecision <- function(i,j){ # this evaluates where the next step should ge if 
   visitedLeft <- lattice[i,j-1]
   visitedRight <- lattice[i,j+1]
   visitedBot <- lattice[i+1,j]
-  neigbs <- 4
+  neigbs <- 4 # counts how many neibghours the node has 
   if(visitedTop == 0){
     visitedTop <- 100000000 # make sure that this is not visited if 0
     neigbs <- neigbs -1
@@ -77,35 +84,41 @@ dirDecision <- function(i,j){ # this evaluates where the next step should ge if 
     visitedBot <- 100000000 # make sure that this is not visited if 0
     neigbs <- neigbs -1
   }
-  if(neigbs == 0){
-    print("no further connections")
-    stop()
-  }
   visitList <- c(1/visitedTop,1/visitedLeft,1/visitedRight,1/visitedBot)
   if(neigbs==1){
-    lattice[i,j]<<- 0
+    lattice[i,j]<<- 0 # burn dangling end
   }
-  return(which.max(x = visitList))
+  if(neigbs == 0){
+    print("no further connections")
+    return(0)
+  } else { return(which.max(x = visitList)) }
+  
+  
 }
 
 
 
 left <- FALSE
 top <- FALSE
-if( i == 2){
-  top <<- TRUE
-} else if(i!=1){
-  top <<- FALSE
-}
-if( j == 2){
-  left <<- TRUE
-} else if(j!=1){
-  left <<- FALSE
-}
-if(lattice[i,j]==1){
-  move(i,j, left, top) # column i, row j left, top are bool when start is at left,top
-} else {print("This node is not infected")}
-
+#while(percolation found or excluded){
+#  for(i in startTop){
+  
+    if( i == 2){
+      top <<- TRUE
+    } else if(i!=1){
+      top <<- FALSE
+    }
+    if( j == 2){
+      left <<- TRUE
+    } else if(j!=1){
+      left <<- FALSE
+    }
+    if(lattice[i,j]==1){
+      move(i,j, left, top) # column i, row j left, top are bool when start is at left,top
+    } else {print("This node is not infected")}
+  #}
+  #for()
+#}
 
 
 
