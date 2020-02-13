@@ -13,7 +13,7 @@ lattice[1,] <-0
 lattice[L,] <-0
 lattice[,1] <-0
 lattice[,L] <-0
-#plot(lattice)
+plot(lattice)
 plot(lattice[c(1:20), c(1:20)])
 
 #make list of possible starting nodes
@@ -25,7 +25,7 @@ startLeft <- which(lattice[,2]==1)+1 # +1 necessary to avoid starting at [2,2] t
 
 # start parameters
 i <- 2
-j <- 3
+j <- 11
 recursionDepth <- 0
 
 move <- function(i,j,left,top){
@@ -93,6 +93,7 @@ dirDecision <- function(i,j){ # this evaluates where the next step should ge if 
   }
   visitList <- c(visitedTop,visitedLeft,visitedRight,visitedBot)
   possibleList <- visitList[which(visitList != 100000000)]
+  possibleIndex <- which(visitList != 100000000)
 
   if(neigbs==1){
     print("burn danglnig end")
@@ -107,7 +108,7 @@ dirDecision <- function(i,j){ # this evaluates where the next step should ge if 
   else if (length(unique(possibleList)) == 1 && unique(possibleList) != 1){
     lattice[i,j] <<- 0 # burn loop end
     print("burn loop end")
-    if (backMove %in% possibleList){
+    if (backMove %in% possibleIndex){
       return(backMove)
     }
     else {
@@ -142,7 +143,7 @@ backMove <- 0
   #for()
 #}
 
-# rekursion auflösen?? 
+# rekursion auflösen?? while loop stattdessen?
 # moves speichern -> so weit zurück bis wieder 1? --> burn ausgang aus loop? 
 # zurück bis start: ganzes cluster, keine percolation --> alle 2en removen
 # 2 an beiden seiten: percolating
