@@ -1,14 +1,17 @@
 library('plot.matrix')
+startTime <- proc.time()
 #set.seed(1)
 
 p <- 0.5
 
 #initialise and plot lattice
-M <- 20 #size of usable array
+M <- 60 #size of usable array
+# runTime rises roughly as a sqaure of M
 L <- M+2 #expand array by 1 in each direction to make it uneccesary to inculde special cases for edges
-No <- 100 # number of lattices inspected per p
+No <- 30 # number of lattices inspected per p 
+# No is roughly proportional to runTime
 NoPoints <- 20 #number of data points that should appear in the plot
-#0: not infected ; >=1 infected, (-1) visited
+#0: not infected ; >=1 infected, (2) visited
  lattice <- array(rbinom(n = L*L,1,p), dim = c(L,L))
 # lattice[1,] <-0
 # lattice[L,] <-0
@@ -242,3 +245,5 @@ for(p in seq(0,1,by = 1/NoPoints)){
   percolations <- 0
 }
 plot(x = pResults, y=percResults/No,xlab = "Infection Probability", ylab = "Percolation Probability")
+endTime <- proc.time()
+runTime <- endTime-startTime
