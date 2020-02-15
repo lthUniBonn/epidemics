@@ -5,8 +5,8 @@ startTime <- proc.time()
 p <- 0.5
 
 #initialise and plot lattice
-M <- 60 #size of usable array
-# runTime rises roughly as a sqaure of M
+M <- 150 #size of usable array
+# runTime rises faster than the sqaure of M
 L <- M+2 #expand array by 1 in each direction to make it uneccesary to inculde special cases for edges
 No <- 30 # number of lattices inspected per p 
 # No is roughly proportional to runTime
