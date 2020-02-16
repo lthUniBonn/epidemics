@@ -28,6 +28,7 @@ NoPoints <- 20 #number of data points that should appear in the plot
 #0: not infected ; >=1 infected, (2) visited
 nodeTime <- 0
 lattice <- array(rbinom(n = L*L,1,p), dim = c(L,L))
+oldLattice <- lattice # use this to plot the initial lattice afterwards
 NoOccupied <- length(lattice[which(lattice==1)])
 #lattice <- array(c(0,0,0,0,0,1,1,0,0,0,1,0,0,1,1,1,0,0,0,0), dim=c(4,5))
  lattice[1,] <-0
@@ -148,6 +149,8 @@ runTime <- endTime-startTime
 #-------------------------------------------------------------------------------
 #------------------------------ Calculate Observables---------------------------
 #-------------------------------------------------------------------------------
+
+#------------------------largest Cluster and order Parameter--------------------
 counts <- numeric()
 for(s in (which(usedClusters !=0))){
   #print(s)
@@ -160,3 +163,12 @@ for(s in (which(usedClusters ==0))){
 }
 largestCluster <- max(counts)
 orderPara <- largestCluster/NoOccupied
+#debugging attempts
+largestIndex <- which.max(counts)
+plot(treeList[[largestIndex+1]])
+oldLattice[25,32] <-2
+oldLattice[18,40] <-2
+plot(oldLattice)
+#----------------------spanning Cluster------------------------------------------
+
+
