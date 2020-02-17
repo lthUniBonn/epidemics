@@ -86,6 +86,9 @@ checkNeighbours <- function(i,j){
   if(lattice[i,j]==0){
     return(0)
   }
+  if(lattice[i,j]==0){
+    print("fail")
+  }
   top <- lattice[i-1,j]
   left <- lattice[i,j-1]
   if (left == 0 && top == 0){
@@ -163,12 +166,18 @@ for(s in (which(usedClusters ==0))){
 }
 largestCluster <- max(counts)
 orderPara <- largestCluster/NoOccupied
-#debugging attempts
+
+
 largestIndex <- which.max(counts)
 plot(treeList[[largestIndex+1]])
-oldLattice[25,32] <-2
-oldLattice[18,40] <-2
-plot(oldLattice)
+#debugging attempts: for M=100 the plotted maximal tree yields a weird display of the following two points:
+#oldLattice[25,32] <-2
+#oldLattice[18,40] <-2
+#but these ponits are part of the large cluster, so it is only a problem in displaying the tree, not in the program
+#plot(oldLattice[c(1:30), c(1:40)]) 
+
+#plot(oldLattice)
+
 #----------------------spanning Cluster------------------------------------------
 
 

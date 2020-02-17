@@ -41,12 +41,10 @@ lattice[,L] <-0
 #plot(lattice) # plotten dauert EEEEEEEWIG
 NoOccupied <- length(lattice[which(lattice==1)]) # useful quantity for cross checking
 
-renamingVector <- data.frame() # rename second entry to first entry
-
 
 clusterCounter <- 1
 usedClusters <- numeric()
-searchTime<- 0
+searchTime <- 0
 renameTime <- 0
 
 
