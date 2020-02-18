@@ -1,8 +1,10 @@
 library('plot.matrix')
 library('data.tree')
 library('DiagrammeR')
+library('dplyr')
+#library('tidyverse')
 startTime <- proc.time()
-#set.seed()
+set.seed(1)
 
 p <- 0.5
 
@@ -46,7 +48,8 @@ clusterCounter <- 1
 usedClusters <- numeric()
 searchTime <- 0
 renameTime <- 0
-
+labelVector <- data.frame()
+newLabelVector <- data.frame()
 
 
 checkNeighbours <- function(i,j){
@@ -70,24 +73,41 @@ checkNeighbours <- function(i,j){
   else{ 
     if(left<top){
       lattice[i,j] <<- left
-      usedClusters[top]<<-0
       #-------this works fine, but scales quadratically with N------
-      tmp <- proc.time()
-      lattice[which(lattice == top)] <<- left # this takes about 90 % of the entire runTime
-      renameTime <<- renameTime + proc.time() - tmp
+      #tmp <- proc.time()
+      #lattice[which(lattice == top)] <<- left # this takes about 90 % of the entire runTime
+      #renameTime <<- renameTime + proc.time() - tmp
       #-------------------------------------------------------------
-      
+      labelVector <<- rbind(labelVector, c(left, top))
       
     } else {
       lattice[i,j] <<- top
       usedClusters[left]<<-0
       #-------this works fine, but scales quadratically with N------
-      tmp <- proc.time()
-      lattice[which(lattice == left)] <<- top# this takes about 90 % of the entire runTime
-      renameTime <<- renameTime + proc.time() - tmp
+      #tmp <- proc.time()
+      #lattice[which(lattice == left)] <<- top# this takes about 90 % of the entire runTime
+      #renameTime <<- renameTime + proc.time() - tmp
       #--------------------------------------------------------------
+      labelVector <<- rbind(labelVector, c(top, left))
     }
   }
+}
+
+
+findDuplicateInitials <- function(initial = 90){
+  duplicateInitials <- labelVector[which(labelVector[,2] == initial), ]
+  if (nrow(duplicateInitials) >1 ){
+    # sort by target
+    labelVector <<- labelVector[order(labelVector[,1], labelVector[,2]),]
+    #remove duplicate initials 
+    #labelVector <<- labelVector[-which(labelVector[,2] == initial), ]
+    target <- duplicateInitials[1,1]
+    for (i in c(2:length(duplicateInitials))){
+      duplicateInitials[i,2] <- duplicateInitials[i,1]
+      duplicateInitials[i,1] <- target
+      }
+  }
+  newLabelVector <<- rbind(newLabelVector, duplicateInitials)
 }
 
 rows <- c(2:(L-1))
@@ -96,6 +116,36 @@ outer(rows,rows,Vectorize(checkNeighbours)) # runs checkNeighbour
 endTime <- proc.time()
 runTime <- endTime-startTime
 
+# vector dupes raus
+
+labelVector <- labelVector[which(!duplicated(labelVector)),]
+# sort by target
+labelVector <- labelVector[order(labelVector[,1], labelVector[,2]),]
+
+#reduce chains of targeting
+
+for (i in c(1:nrow(labelVector))){
+  initial <- labelVector[i,2]
+  target <- labelVector[i,1]
+  labelVector[which(labelVector[,1] == initial),1] <- target
+}
+labelVector <- labelVector[which(!duplicated(labelVector)),]
+labelVector <- labelVector[order(labelVector[,1], labelVector[,2]),]
+labelVectorFull <- labelVector
+# >= dupes in startClusters: start 
+#for (i in c(clusterCounter:1)){findDuplicateInitials(i)}
+existingInitialsVec <- labelVector[,2]
+existingInitialsVec <- existingInitialsVec[which(!duplicated(existingInitialsVec))]
+existingInitialsVec <- sort(existingInitialsVec, decreasing = TRUE)
+lapply(existingInitialsVec,FUN=findDuplicateInitials)
+
+newLabelVector <- newLabelVector[order(newLabelVector[,2], newLabelVector[,1], decreasing = TRUE),]
+
+for(s in c(1:nrow(newLabelVector))){
+  print(s)
+  lattice[which(lattice == newLabelVector[s,2])] <- newLabelVector[s,1]
+}
+#findDuplicateInitials(90)
 # #-------------------------------------------------------------------------------
 # #------------------------------ Calculate Observables---------------------------
 # #-------------------------------------------------------------------------------
@@ -111,3 +161,4 @@ largestCluster <- max(sizes)
 #   
 # }
 #write(x = c(M**2, runTime[1]), file = "timesRenaming.txt", append = TRUE,sep = "\t")
+  
