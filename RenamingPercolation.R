@@ -9,39 +9,21 @@ set.seed(1)
 p <- 0.5
 
 
-M <- 100
+M <- 400
 # M   t
-# 10  0.04
-# 10  0.06
-# 10  0.08
-# 10  0.07
-# 20  0.04
-# 20  0.05
-# 20  0.07
-# 20  0.03
-# 30  0.09
-# 30  0.07
-# 30  0.07
-# 30  0.09
-# 40  0.16
-# 40  0.15
-# 40  0.15
-# 40  0.08
-# 50  0.19
-#
+# 
 L <- M+2 #expand array by 1 in each direction to make it uneccesary to inculde special cases for edges
 No <- 30 # number of lattices inspected per p 
 NoPoints <- 20 #number of data points that should appear in the plot
 
 
 lattice <- array(rbinom(n = L*L,1,p), dim = c(L,L))
-oldLattice <- lattice 
 lattice[1,] <-0
 lattice[L,] <-0
 lattice[,1] <-0
 lattice[,L] <-0
 #plot(lattice) # plotten dauert EEEEEEEWIG
-NoOccupied <- length(lattice[which(lattice==1)]) # useful quantity for cross checking
+#NoOccupied <- length(lattice[which(lattice==1)]) # useful quantity for cross checking
 
 
 clusterCounter <- 1
@@ -98,9 +80,7 @@ findDuplicateInitials <- function(initial = 90){
   duplicateInitials <- labelVector[which(labelVector[,2] == initial), ]
   if (nrow(duplicateInitials) >1 ){
     # sort by target
-    labelVector <<- labelVector[order(labelVector[,1], labelVector[,2]),]
-    #remove duplicate initials 
-    #labelVector <<- labelVector[-which(labelVector[,2] == initial), ]
+    #labelVector <<- labelVector[order(labelVector[,1], labelVector[,2]),]
     target <- duplicateInitials[1,1]
     for (i in c(2:length(duplicateInitials))){
       duplicateInitials[i,2] <- duplicateInitials[i,1]
@@ -113,17 +93,14 @@ findDuplicateInitials <- function(initial = 90){
 rows <- c(2:(L-1))
 outer(rows,rows,Vectorize(checkNeighbours)) # runs checkNeighbour
 
-endTime <- proc.time()
-runTime <- endTime-startTime
 
 # vector dupes raus
 
 labelVector <- labelVector[which(!duplicated(labelVector)),]
 # sort by target
 labelVector <- labelVector[order(labelVector[,1], labelVector[,2]),]
-
+print("C")
 #reduce chains of targeting
-
 for (i in c(1:nrow(labelVector))){
   initial <- labelVector[i,2]
   target <- labelVector[i,1]
@@ -137,15 +114,46 @@ labelVectorFull <- labelVector
 existingInitialsVec <- labelVector[,2]
 existingInitialsVec <- existingInitialsVec[which(!duplicated(existingInitialsVec))]
 existingInitialsVec <- sort(existingInitialsVec, decreasing = TRUE)
-lapply(existingInitialsVec,FUN=findDuplicateInitials)
-
+tmp <- proc.time()
+while (TRUE) {
+  lapply(existingInitialsVec,FUN=findDuplicateInitials)
+  existingInitialsVec <- newLabelVector[,2]
+  existingInitialsVec <- existingInitialsVec[which(!duplicated(existingInitialsVec))]
+  existingInitialsVec <- sort(existingInitialsVec, decreasing = TRUE)
+  print("loop")
+  #wenn links gleich rechts raus!! 
+  if (nrow(newLabelVector[which(duplicated(newLabelVector[,2])),]) == 0){
+    break
+  }
+  labelVector <- newLabelVector
+  newLabelVector <- data.frame()
+}
+for (i in c(1:nrow(newLabelVector))){# vielleicht gute idee das auch in die fors
+  initial <- newLabelVector[i,2]
+  target <- newLabelVector[i,1]
+  newLabelVector[which(newLabelVector[,1] == initial),1] <- target
+}
+timeDup <- proc.time() - tmp
 newLabelVector <- newLabelVector[order(newLabelVector[,2], newLabelVector[,1], decreasing = TRUE),]
 
 for(s in c(1:nrow(newLabelVector))){
-  print(s)
   lattice[which(lattice == newLabelVector[s,2])] <- newLabelVector[s,1]
 }
-#findDuplicateInitials(90)
+
+#for (i in c(1:(L**2))){
+# for (i in c(1:L)){
+#   for (j in c(1:L)){
+#     if (lattice[i] != 0){
+#       found <- newLabelVector[which(newLabelVector[,2] == lattice[i]),1]
+#       if (length(found) != 0){
+#         lattice[i] <- found
+#    }
+#   }
+#   }
+# }
+
+endTime <- proc.time()
+runTime <- endTime-startTime
 # #-------------------------------------------------------------------------------
 # #------------------------------ Calculate Observables---------------------------
 # #-------------------------------------------------------------------------------
@@ -154,11 +162,11 @@ for(s in c(1:nrow(newLabelVector))){
 
 sizes <- table(as.vector(lattice))
 sizes[names(sizes)==0] <- 0
-hist(sizes)
+#hist(sizes)
 largestCluster <- max(sizes)
 # usedClusters <- unique(as.vector(lattice))
 # for(x in usedClusters){
 #   
 # }
-#write(x = c(M**2, runTime[1]), file = "timesRenaming.txt", append = TRUE,sep = "\t")
+#write(x = c(M**2, runTime[1]), file = "timesRenamingAfter.txt", append = TRUE,sep = "\t")
   

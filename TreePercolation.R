@@ -2,12 +2,12 @@ library('plot.matrix')
 library('data.tree')
 library('DiagrammeR')
 startTime <- proc.time()
-set.seed(1)
+#set.seed(1)
 
 p <- 0.5
 
 #initialise and plot lattice
-M <- 100 #size of usable array
+M <- 200 #size of usable array
 # M   t
 # 10  0.1
 # 20  0.25
@@ -35,7 +35,7 @@ NoOccupied <- length(lattice[which(lattice==1)])
  lattice[L,] <-0
  lattice[,1] <-0
  lattice[,L] <-0
-plot(lattice)
+#plot(lattice)
 #plot(lattice[c(17:40), c(39:45)])
 
 # start parameters
@@ -180,4 +180,4 @@ plot(treeList[[largestIndex+1]])
 
 #----------------------spanning Cluster------------------------------------------
 
-
+write(x = c(M**2, runTime[1]), file = "timesTrees.txt", append = TRUE,sep = "\t")
