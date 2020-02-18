@@ -76,9 +76,13 @@ checkNeighbours <- function(i,j){
 }
 
 
-findDuplicateInitials <- function(initial = 90){
+findDuplicateInitials <- function(initial){
+  
   duplicateInitials <- labelVector[which(labelVector[,2] == initial), ]
+  
+  # print(duplicateInitials)
   if (nrow(duplicateInitials) >1 ){
+    
     # sort by target
     #labelVector <<- labelVector[order(labelVector[,1], labelVector[,2]),]
     target <- duplicateInitials[1,1]
@@ -116,12 +120,29 @@ existingInitialsVec <- existingInitialsVec[which(!duplicated(existingInitialsVec
 existingInitialsVec <- sort(existingInitialsVec, decreasing = TRUE)
 tmp <- proc.time()
 while (TRUE) {
+  
   lapply(existingInitialsVec,FUN=findDuplicateInitials)
+  
+  #print(which(newLabelVector[,1]==newLabelVector[,2]))
+  
+  y <- 1
+  while(y <= nrow(newLabelVector)){
+    print(y)
+    if(newLabelVector[y,1]==newLabelVector[y,2]){
+      newLabelVector <- newLabelVector[-y,]
+    }
+    y <- y +1
+  }
   existingInitialsVec <- newLabelVector[,2]
   existingInitialsVec <- existingInitialsVec[which(!duplicated(existingInitialsVec))]
   existingInitialsVec <- sort(existingInitialsVec, decreasing = TRUE)
   print("loop")
+  #print(newLabelVector[which(duplicated(newLabelVector[,2])),])
   #wenn links gleich rechts raus!! 
+  
+  
+  
+    
   if (nrow(newLabelVector[which(duplicated(newLabelVector[,2])),]) == 0){
     break
   }
