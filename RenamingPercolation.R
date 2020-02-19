@@ -3,13 +3,15 @@ library('data.tree')
 library('DiagrammeR')
 library('dplyr')
 #library('tidyverse')
-startTime <- proc.time()
+library('profvis')
+#startTime <- proc.time()
+profile <- profvis({
 set.seed(1)
 
 p <- 0.5
 
 
-M <- 400
+M <- 500
 # M   t
 # 
 L <- M+2 #expand array by 1 in each direction to make it uneccesary to inculde special cases for edges
@@ -103,7 +105,7 @@ outer(rows,rows,Vectorize(checkNeighbours)) # runs checkNeighbour
 labelVector <- labelVector[which(!duplicated(labelVector)),]
 # sort by target
 labelVector <- labelVector[order(labelVector[,1], labelVector[,2]),]
-print("C")
+#print("C")
 #reduce chains of targeting
 for (i in c(1:nrow(labelVector))){
   initial <- labelVector[i,2]
@@ -118,7 +120,7 @@ labelVectorFull <- labelVector
 existingInitialsVec <- labelVector[,2]
 existingInitialsVec <- existingInitialsVec[which(!duplicated(existingInitialsVec))]
 existingInitialsVec <- sort(existingInitialsVec, decreasing = TRUE)
-tmp <- proc.time()
+#tmp <- proc.time()
 while (TRUE) {
   
   lapply(existingInitialsVec,FUN=findDuplicateInitials)
@@ -127,7 +129,7 @@ while (TRUE) {
   
   y <- 1
   while(y <= nrow(newLabelVector)){
-    print(y)
+    #print(y)
     if(newLabelVector[y,1]==newLabelVector[y,2]){
       newLabelVector <- newLabelVector[-y,]
     }
@@ -136,7 +138,7 @@ while (TRUE) {
   existingInitialsVec <- newLabelVector[,2]
   existingInitialsVec <- existingInitialsVec[which(!duplicated(existingInitialsVec))]
   existingInitialsVec <- sort(existingInitialsVec, decreasing = TRUE)
-  print("loop")
+  #print("loop")
   #print(newLabelVector[which(duplicated(newLabelVector[,2])),])
   #wenn links gleich rechts raus!! 
   
@@ -154,7 +156,7 @@ for (i in c(1:nrow(newLabelVector))){# vielleicht gute idee das auch in die fors
   target <- newLabelVector[i,1]
   newLabelVector[which(newLabelVector[,1] == initial),1] <- target
 }
-timeDup <- proc.time() - tmp
+#timeReorganizing <- proc.time() - tmp
 newLabelVector <- newLabelVector[order(newLabelVector[,2], newLabelVector[,1], decreasing = TRUE),]
 
 for(s in c(1:nrow(newLabelVector))){
@@ -173,8 +175,8 @@ for(s in c(1:nrow(newLabelVector))){
 #   }
 # }
 
-endTime <- proc.time()
-runTime <- endTime-startTime
+#endTime <- proc.time()
+#runTime <- endTime-startTime
 # #-------------------------------------------------------------------------------
 # #------------------------------ Calculate Observables---------------------------
 # #-------------------------------------------------------------------------------
@@ -189,5 +191,6 @@ largestCluster <- max(sizes)
 # for(x in usedClusters){
 #   
 # }
+})
 #write(x = c(M**2, runTime[1]), file = "timesRenamingAfter.txt", append = TRUE,sep = "\t")
-  
+profile
