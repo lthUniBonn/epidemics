@@ -6,13 +6,13 @@ library('data.table')
 #library('tidyverse')
 library('profvis')
 #startTime <- proc.time()
-profile <- profvis({
+#profile <- profvis({
 set.seed(1)
 
 p <- 0.5
 
 
-M <- 400
+M <- 100
 # M   t
 # 
 L <- M+2 #expand array by 1 in each direction to make it uneccesary to inculde special cases for edges
@@ -38,8 +38,18 @@ newLabelVector <- data.table(x=rep(0,(M**2)),y=rep(0,M**2)) # is the maximum len
 
 
 usedLength <- function(dataTable){ # returns the index of the last row which is not 0
-  length <- min(which(dataTable == 0))-1
-  return(length)
+  
+  if(length(dataTable)==0){
+    return(0)
+    break
+    }
+  for(i in c(1:length(dataTable))){
+      if(dataTable[i,1]== 0){
+        return(i-1)
+        break
+      }
+  }
+  return(length(dataTable))
 }
 
 checkNeighbours <- function(i,j){
@@ -88,7 +98,6 @@ findDuplicateInitials <- function(initial){
   
   duplicateInitials <- labelVector[which(labelVector[,2] == initial), ]
   
-  # print(duplicateInitials)
   if (nrow(duplicateInitials) >1 ){
     
     # sort by target
@@ -100,11 +109,15 @@ findDuplicateInitials <- function(initial){
     }
     
   }
+  
   #newLabelVector <<- rbind(newLabelVector, duplicateInitials) # this is replace by next 4 lines 
+  
   end <- usedLength(newLabelVector) # last entry which is not 0
+  
   
   set(newLabelVector,i = c((end+1):(end+nrow(duplicateInitials))),1L,value = duplicateInitials[,1])#c(end:(end+nrow(duplicateInitials)) chooses the rows in which to append to
   set(newLabelVector,i = c((end+1):(end+nrow(duplicateInitials))),2L,value = duplicateInitials[,2])
+  
 }
 
 rows <- c(2:(L-1))
@@ -116,6 +129,7 @@ outer(rows,rows,Vectorize(checkNeighbours)) # runs checkNeighbour
 labelVector <- labelVector[which(!duplicated(labelVector)),]
 # sort by target
 labelVector <- labelVector[order(labelVector[,1], labelVector[,2]),]
+
 #print("C")
 #reduce chains of targeting
 for (i in c(1:nrow(labelVector))){
@@ -123,39 +137,42 @@ for (i in c(1:nrow(labelVector))){
   target <- labelVector[i,1]
   labelVector[which(labelVector[,1] == initial),1] <- target
 }
+stop()
 labelVector <- labelVector[which(!duplicated(labelVector)),]
 labelVector <- labelVector[order(labelVector[,1], labelVector[,2]),]
 labelVectorFull <- labelVector
 # >= dupes in startClusters: start 
-#for (i in c(clusterCounter:1)){findDuplicateInitials(i)}
+
 existingInitialsVec <- labelVector[,2]
 existingInitialsVec <- existingInitialsVec[which(!duplicated(existingInitialsVec))]
 existingInitialsVec <- sort(existingInitialsVec, decreasing = TRUE)
-#tmp <- proc.time()
+print("D")
+
 while (TRUE) {
   
   lapply(existingInitialsVec,FUN=findDuplicateInitials)
+  print("jsda")
   
-  #print(which(newLabelVector[,1]==newLabelVector[,2]))
+  
   
   y <- 1
   while(y <= usedLength(newLabelVector)){
     
-    #print(y)
+    
     if(newLabelVector[y,1]==newLabelVector[y,2] && newLabelVector[y,1]!= 0){ # remove entries which have identical initial and final
+      
       newLabelVector <- newLabelVector[-y,]
     }
     y <- y +1
     
   }
-  #print("B")
+  
   existingInitialsVec <- unlist(newLabelVector[,2])
   existingInitialsVec <- existingInitialsVec[which(!duplicated(existingInitialsVec))]
   existingInitialsVec <- sort(existingInitialsVec, decreasing = TRUE)
   
   
-  #print("loop")
-  #print(newLabelVector[which(duplicated(newLabelVector[,2])),])
+  
   #wenn links gleich rechts raus!! 
   
   
@@ -169,20 +186,28 @@ while (TRUE) {
   labelVector <- newLabelVector
   newLabelVector <- data.table(x=rep(0,(M**2)),y=rep(0,M**2))
 }
-for (i in c(1:usedLength(newLabelVector))){# vielleicht gute idee das auch in die fors
+
+print(class(labelVector))
+stop()
+for (i in c(1:nrow(labelVector))){# vielleicht gute idee das auch in die fors
   
-  initial <- unlist(newLabelVector[i,2])
-  target <- unlist(newLabelVector[i,1])
-  newLabelVector[which(newLabelVector[,1] == initial),1] <- target
+  initial <- labelVector[i,2]
+  target <- labelVector[i,1]
+  labelVector[which(labelVector[,1] == initial),1] <- target
   
 }
+
+labelVector <- labelVector[order(labelVector[,2], labelVector[,1],decreasing = TRUE),]
+print("E")
+
 #timeReorganizing <- proc.time() - tmp
 #print("D")
-newLabelVector <- setorder(x = newLabelVector,-x)
+#labelVector <- setorder(x = labelVector,-1)
+
 #print("C")
-for(s in c(1:usedLength(newLabelVector))){
-  #print(s)
-  lattice[which(lattice == unlist(newLabelVector[s,2]))] <- unlist(newLabelVector[s,1])
+
+for(s in c(1:nrow(labelVector))){
+  lattice[which(lattice == labelVector[s,2])] <- labelVector[s,1]
   #print(s)
 }
 
@@ -214,6 +239,6 @@ largestCluster <- max(sizes)
 # for(x in usedClusters){
 #   
 # }
-})
+#})
 #write(x = c(M**2, runTime[1]), file = "timesRenamingAfter.txt", append = TRUE,sep = "\t")
 profile
