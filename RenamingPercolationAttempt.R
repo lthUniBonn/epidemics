@@ -132,11 +132,12 @@ labelVector <- labelVector[order(labelVector[,1], labelVector[,2]),]
 
 #print("C")
 #reduce chains of targeting
-for (i in c(1:nrow(labelVector))){
+for (i in c(1:nrow(labelVector))){ # Error happens in this for loop
   initial <- labelVector[i,2]
   target <- labelVector[i,1]
   labelVector[which(labelVector[,1] == initial),1] <- target
 }
+
 stop()
 labelVector <- labelVector[which(!duplicated(labelVector)),]
 labelVector <- labelVector[order(labelVector[,1], labelVector[,2]),]
