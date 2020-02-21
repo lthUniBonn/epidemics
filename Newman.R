@@ -38,14 +38,14 @@ for(j in c(1:N)){
 }
 
 for(s in c(1:nrow(usefulIndices))){
-  print(s)
-  print(calcDistance(usefulIndices[s,1],usefulIndices[s,1]))
-  if(calcDistance(usefulIndices[s,1],usefulIndices[s,1]) != 1){
-    usefulIndices[s,] <- 0
+  if(calcDistance(usefulIndices[s,1],usefulIndices[s,2]) != 1){
+    print('here')
+    usefulIndices[s,1] <- 0
+    usefulIndices[s,2] <- 0
   }
 }
 
-usefulIndices <- usefulIndices[-which(usefulIndices ==0)]
+usefulIndices <- usefulIndices[-which(usefulIndices ==0),]
 
 for(x in c(1:No-1)){
   addConnection()
