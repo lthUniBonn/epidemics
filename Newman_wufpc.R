@@ -6,9 +6,9 @@ library('profvis')
 startTime <- proc.time()
 profile <- profvis({
 N = 10**2 # number of people
-No = sqrt(N)*2 #the No. of connections that will be added
+No = sqrt(N)*14 #the No. of connections that will be added
 people <- c(1:N)
-set.seed(1)
+#set.seed(1)
 weight <- rep(1,N)
 visual <- rep(0,N)
 merges <- 0 # how many connections were already made
@@ -93,11 +93,36 @@ addConnection <- function(from, to){
 #main
 findConn()                                                        #find all possible connections
 connections <- possConn[sample(nrow(possConn),No,replace=FALSE),] #choose bonds which will be occupied gradually
-#for(x in c(1:No)){
-  #addConnection(connections[x,2], connections[x,1])
+
+isPercolating <- function(){
+  leftRoots <- sapply(c(1:sqrt(N)), findRoot)
+  rightRoots <- sapply(c((N-sqrt(N)+1):N), findRoot)
+  allIndices <- c(1:N)
+  topIndices <- allIndices[which((allIndices %% sqrt(N))== 1)]
+  botIndices <- allIndices[which((allIndices %% sqrt(N))== 0)]
+  topRoots <- sapply(topIndices, findRoot)
+  botRoots <- sapply(botIndices, findRoot)
+  percolatingLeftRight <- numeric()
+  percolatingTopBot <- numeric()
+  percolatingLeftRight <-Reduce(intersect, list(leftRoots,rightRoots))
+  percolatingTopBot <-Reduce(intersect, list(topRoots,botRoots))
+  if(length(percolatingLeftRight) != 0){
+    return(TRUE)
+  }
+  if(length(percolatingTopBot) != 0){
+    return(TRUE)
+  }
+  return(FALSE)
+}
+
+for(x in c(1:No)){
+  addConnection(connections[x,2], connections[x,1])
+  if(isPercolating()){
+    print("found one")
+  }
   #evaluate!
-#}
-addConnection(connections[1,2], connections[1,1])
+}
+#addConnection(connections[1,2], connections[1,1])
 endTime <- proc.time()
 runTime <- endTime-startTime
 #write(x = c(N, runTime[1]), file = "timesNewman.txt", append = TRUE,sep = "\t")
@@ -110,5 +135,3 @@ runTime <- endTime-startTime
  # }
 
 #find percolation
-leftRoots <- sapply(c(1:sqrt(N)), findRoot)
-
