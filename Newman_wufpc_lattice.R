@@ -1,13 +1,16 @@
 #fast checking of trees (?)
-# slow finding possible connections : findCon
+# slow finding possible connections : findCon : doch in 2x2 matrix? 
+# percolation finden durch displacement zum parent? --> in find root noch setzen? 
+# laufzeit soll linear skalieren mit lattice größe zeigen
+# auf netzwerke übertragen
+
 # visualization? 
 
 library('profvis')
 startTime <- proc.time()
 profile <- profvis({
 N = 100**2 # number of people
-No = sqrt(N)*14 #the No. of connections that will be added
-
+lattice <- array(data=c(1:N), dim = c(sqrt(N),sqrt(N)))
 #set.seed(1)
 
 merges <- 0 # how many connections were already made
@@ -33,20 +36,26 @@ calcDistance<- function(first, second){ # calculate distance between people in 2
 
 findConn <- function(){
   counter <- 0
-  for(j in c(1:N)){
-    for(i in c(j:N)){
+  for(j in c(1:(sqrt(N)-1))){
+    for(i in c(1:(sqrt(N)-1))){
+      #poss con add C(lattice[i,j], lattice [i+1,j]) to the bottom and to the right
       counter <- counter + 1
-      possConn[counter,1] <<- j # filters out the lower triangle 
-      possConn[counter,2] <<- i 
+      possConn[counter,1] <<- lattice[i,j]  
+      possConn[counter,2] <<- lattice [i+1,j] 
+      counter <- counter +1 
+      possConn[counter,1] <<- lattice[i,j] 
+      possConn[counter,2] <<- lattice [i,j+1]
       
     }
+    #poss con add C(lattice[i,j], lattice [i+1,j]) to the bottom and to the right
+    counter <- counter + 1
+    possConn[counter,1] <<- lattice[sqrt(N),j]  
+    possConn[counter,2] <<- lattice [sqrt(N),j+1] 
   }
-  
-  for(s in c(1:nrow(possConn))){
-    if(calcDistance(possConn[s,1],possConn[s,2]) != 1){
-      possConn[s,1] <<- 0 #filter out non-next-neighbour i.a.
-      possConn[s,2] <<- 0
-    }
+  for (i in c(1:(sqrt(N)-1))){
+    counter <- counter + 1
+    possConn[counter,1] <<- lattice[i,sqrt(N)]  
+    possConn[counter,2] <<- lattice [i+1,sqrt(N)]  
   }
   possConn <<- possConn[-which(possConn ==0),] #remove filtered from array
 }
