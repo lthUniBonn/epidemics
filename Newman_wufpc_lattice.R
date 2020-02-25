@@ -1,8 +1,14 @@
 #fast checking of trees (?)
-# slow finding possible connections : findCon : doch in 2x2 matrix? ist das schneller?
+
 # percolation finden durch displacement zum parent? --> in find root noch setzen? 
-# laufzeit soll linear skalieren mit lattice größe zeigen
+# easy: largest cluster 
+
 # auf netzwerke übertragen
+
+# kann man sich rechenpunkte einfach sparen? hängt von observable ab! 
+
+# laufzeit soll linear skalieren mit lattice größe zeigen --> yes
+
 
 # visualization? 
 library('gmp')
@@ -10,7 +16,7 @@ library('profvis')
 library('Brobdingnag')
 #startTime <- proc.time()
 #profile <- profvis({
-N = 100**2 # number of people
+N = 40**2 # number of people
 lattice <- array(data=c(1:N), dim = c(sqrt(N),sqrt(N)))
 #set.seed(1)
 
@@ -128,7 +134,7 @@ erf <- function(x,a,b) (pnorm(a*(x-b) * sqrt(2)))
 
 
 #main
-nTest <- 100
+nTest <- 1
 findConn()#find all possible connections
 nCon <- nrow(possConn)
 percolTest <- numeric(length=nCon)
@@ -149,14 +155,14 @@ for (a in c(1:nTest)){
 # percolation threshold finden als checkup
 #find p from n
 percolTest <- percolTest / nTest
-nProb <- 20
+nProb <- 50
 percolProb <- numeric(length=nProb)
 
 #maybe calc once and write to file? takes looong
 nOverK <- as.brob(chooseZ(nCon, 1:nCon))
 
 
-for (i in seq(1,nProb)){
+for (i in seq(1,(nProb-1))){ #all p but p=1 makes problem in logarithmic expression
   print(i)
   p <- i / nProb
   percolBinom <- double(length=nCon)
@@ -166,20 +172,21 @@ for (i in seq(1,nProb)){
   }
   percolProb[i] <- sum(percolBinom)
 }
-#error in last percol: percolBinom[19800]
-#[1] NaN
- 
+#p <- 1 
+percolProb[nProb] <- percolTest[nCon] #per def
+
 
 percolProbData <- data.frame(x=c(1:nProb)/nProb, y=percolProb)
-ourFit <- nls(y ~ erf(x,a,b), data = percolProbData, start=list(a=1, b=0.5))
+ourFit <- nls(y ~ erf(x,a,b), data = percolProbData, start=list(a=50, b=0.4))
 
 plot(percolProbData)
-lines(predict(ourFit)~percolProbData$x)
+#lines(predict(ourFit)~percolProbData$x)
+x <- seq(0,1,by=0.001)
+lines(y=erf(x,summary(ourFit)$coefficients[1], summary(ourFit)$coefficients[2]), x = x)
 
-
-endTime <- proc.time()
-runTime <- endTime-startTime
+#endTime <- proc.time()
+#runTime <- endTime-startTime
 #write(x = c(N, runTime[1]), file = "timesNewman.txt", append = TRUE,sep = "\t")
 
 
-
+#})
