@@ -1,5 +1,5 @@
 #fast checking of trees (?)
-# slow finding possible connections : findCon : doch in 2x2 matrix? 
+# slow finding possible connections : findCon : doch in 2x2 matrix? ist das schneller?
 # percolation finden durch displacement zum parent? --> in find root noch setzen? 
 # laufzeit soll linear skalieren mit lattice größe zeigen
 # auf netzwerke übertragen
@@ -7,9 +7,10 @@
 # visualization? 
 library('gmp')
 library('profvis')
+library('Brobdingnag')
 #startTime <- proc.time()
 #profile <- profvis({
-N = 40**2 # number of people
+N = 100**2 # number of people
 lattice <- array(data=c(1:N), dim = c(sqrt(N),sqrt(N)))
 #set.seed(1)
 
@@ -65,7 +66,6 @@ findConn <- function(){
 }
 
 findRoot <- function(startIndex){
-  #print(startIndex)
   #find root plus path compression
   root <- startIndex
   while (people[root] != root){
@@ -128,7 +128,7 @@ erf <- function(x,a,b) (pnorm(a*(x-b) * sqrt(2)))
 
 
 #main
-nTest <- 10
+nTest <- 100
 findConn()#find all possible connections
 nCon <- nrow(possConn)
 percolTest <- numeric(length=nCon)
@@ -143,27 +143,33 @@ for (a in c(1:nTest)){
       percolTest[c(x:nCon)] <- percolTest[c(x:nCon)] + 1
       break
     }
-    
-    #evaluate!
   }
 }
 
+# percolation threshold finden als checkup
 #find p from n
 percolTest <- percolTest / nTest
-nProb <- 100
+nProb <- 20
 percolProb <- numeric(length=nProb)
+
+#maybe calc once and write to file? takes looong
+nOverK <- as.brob(chooseZ(nCon, 1:nCon))
+
+
 for (i in seq(1,nProb)){
+  print(i)
   p <- i / nProb
   percolBinom <- double(length=nCon)
   for (x in c(1:nCon)){#should start at 0 
-    percolBinom[x] <- choose(nCon, x)*(p**x)*((1-p)**(nCon-x))*percolTest[x]
+    percolBinom[x] <- as.numeric(nOverK[x]*(as.brob(p)**x)*(as.brob(1-p)**(nCon-x))*percolTest[x])
+    if (x %% 1000 == 0){  print(x)}
     # this is not calculating right, gives Inf 
   }
   percolProb[i] <- sum(percolBinom)
 }
-# percolation threshold finden als checkup
-# durchführen für jedes n bond zB 10 mal --> p(n bond)
-
+#error in last percol: percolBinom[19800]
+#[1] NaN
+ 
 
 percolProbData <- data.frame(x=c(1:nProb)/nProb, y=percolProb)
 ourFit <- nls(y ~ erf(x,a,b), data = percolProbData, start=list(a=1, b=0.5))
@@ -171,16 +177,10 @@ ourFit <- nls(y ~ erf(x,a,b), data = percolProbData, start=list(a=1, b=0.5))
 plot(percolProbData)
 lines(predict(ourFit)~percolProbData$x)
 
-#addConnection(connections[1,2], connections[1,1])
+
 endTime <- proc.time()
 runTime <- endTime-startTime
 #write(x = c(N, runTime[1]), file = "timesNewman.txt", append = TRUE,sep = "\t")
 
-#})
- # for (i in c(1:N)){
- #   if (people[i] != 25){
- #     people[i] <- 0
- #   }
- # }
 
-#find percolation
+
