@@ -5,11 +5,11 @@
 # auf netzwerke übertragen
 
 # visualization? 
-
+library('gmp')
 library('profvis')
-startTime <- proc.time()
-profile <- profvis({
-N = 100**2 # number of people
+#startTime <- proc.time()
+#profile <- profvis({
+N = 40**2 # number of people
 lattice <- array(data=c(1:N), dim = c(sqrt(N),sqrt(N)))
 #set.seed(1)
 
@@ -17,6 +17,10 @@ merges <- 0 # how many connections were already made
 dof <- N*(N+1)/2 # degrees of freedom in symmetric matrix
 possConn <- array(0,dim=c(dof,2)) # these are the possible connections
 
+topIndices <- seq(1, N-sqrt(N)+1, by = sqrt(N))
+botIndices <- seq(sqrt(N), N, by = sqrt(N))
+leftIndices <- c(1:sqrt(N))
+rightIndices <- c((N-sqrt(N)+1):N)
 #now the indices that need to be checked are all in useful indices, this reduces the array size by N^2-N*(N+1)/2, for 100*100 grid is 4950 sites smaller
 
 #connections is the list of random connections that will be made
@@ -24,10 +28,10 @@ possConn <- array(0,dim=c(dof,2)) # these are the possible connections
 # find possible connections in 2d case
 calcDistance<- function(first, second){ # calculate distance between people in 2dim
   rowfirst <- first %% sqrt(N)
-  if (rowfirst == 0){rowfirst <- 10}
+  if (rowfirst == 0){rowfirst <- sqrt(N)}
   columnfirst <- (first-1) %/% sqrt(N)
   rowsecond <- second %% sqrt(N)
-  if (rowsecond == 0){rowsecond <- 10}
+  if (rowsecond == 0){rowsecond <- sqrt(N)}
   columnsecond <- (second-1) %/% sqrt(N)
   
   distance <- sqrt((rowfirst-rowsecond)**2+(columnfirst - columnsecond)**2)
@@ -99,13 +103,12 @@ addConnection <- function(from, to){
 
 
 isPercolating <- function(){
-  leftRoots <- sapply(c(1:sqrt(N)), findRoot)
-  rightRoots <- sapply(c((N-sqrt(N)+1):N), findRoot)
+  leftRoots <- sapply(leftIndices, findRoot)
+  rightRoots <- sapply(rightIndices, findRoot)
   #allIndices <- c(1:N)
   #topIndices <- allIndices[which((allIndices %% sqrt(N))== 1)]
   #botIndices <- allIndices[which((allIndices %% sqrt(N))== 0)]
-  topIndices <- seq(1, N-sqrt(N)+1, by = sqrt(N))
-  botIndices <- seq(sqrt(N), N, by = sqrt(N))
+  
   topRoots <- sapply(topIndices, findRoot)
   botRoots <- sapply(botIndices, findRoot)
   percolatingLeftRight <- numeric()
@@ -125,7 +128,7 @@ erf <- function(x,a,b) (pnorm(a*(x-b) * sqrt(2)))
 
 
 #main
-nTest <- 100
+nTest <- 10
 findConn()#find all possible connections
 nCon <- nrow(possConn)
 percolTest <- numeric(length=nCon)
@@ -133,12 +136,14 @@ for (a in c(1:nTest)){
   people <- c(1:N)
   weight <- rep(1,N)
   connections <- possConn[sample(nCon,nCon,replace=FALSE),] #choose bonds which will be occupied gradually
-  
+  print(a)
   for(x in c(1:nCon)){ 
     addConnection(connections[x,2], connections[x,1])
     if(isPercolating()){
-      percolTest[x] <- percolTest[x] + 1
+      percolTest[c(x:nCon)] <- percolTest[c(x:nCon)] + 1
+      break
     }
+    
     #evaluate!
   }
 }
@@ -149,18 +154,19 @@ nProb <- 100
 percolProb <- numeric(length=nProb)
 for (i in seq(1,nProb)){
   p <- i / nProb
-  percolBinom <- numeric(length=nCon)
+  percolBinom <- double(length=nCon)
   for (x in c(1:nCon)){#should start at 0 
     percolBinom[x] <- choose(nCon, x)*(p**x)*((1-p)**(nCon-x))*percolTest[x]
+    # this is not calculating right, gives Inf 
   }
-  percolProb[i] <- sum(percolBinom) 
+  percolProb[i] <- sum(percolBinom)
 }
 # percolation threshold finden als checkup
 # durchführen für jedes n bond zB 10 mal --> p(n bond)
 
 
 percolProbData <- data.frame(x=c(1:nProb)/nProb, y=percolProb)
-ourFit <- nls(y ~ erf(x,a,b), data = percolProbData, start=list(a=1, b=1))
+ourFit <- nls(y ~ erf(x,a,b), data = percolProbData, start=list(a=1, b=0.5))
 
 plot(percolProbData)
 lines(predict(ourFit)~percolProbData$x)
@@ -170,7 +176,7 @@ endTime <- proc.time()
 runTime <- endTime-startTime
 #write(x = c(N, runTime[1]), file = "timesNewman.txt", append = TRUE,sep = "\t")
 
-})
+#})
  # for (i in c(1:N)){
  #   if (people[i] != 25){
  #     people[i] <- 0
