@@ -160,10 +160,9 @@ for (i in seq(1,nProb)){
   print(i)
   p <- i / nProb
   percolBinom <- double(length=nCon)
-  for (x in c(1:nCon)){#should start at 0 
+  for (x in c(1:nCon)){#should start at 0 if observable is not 0 for n=0 
     percolBinom[x] <- as.numeric(nOverK[x]*(as.brob(p)**x)*(as.brob(1-p)**(nCon-x))*percolTest[x])
     if (x %% 1000 == 0){  print(x)}
-    # this is not calculating right, gives Inf 
   }
   percolProb[i] <- sum(percolBinom)
 }
