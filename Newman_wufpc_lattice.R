@@ -16,8 +16,9 @@ library('profvis')
 library('Brobdingnag')
 #startTime <- proc.time()
 #profile <- profvis({
-N = 40**2 # number of people
+N = 100**2 # number of people
 lattice <- array(data=c(1:N), dim = c(sqrt(N),sqrt(N)))
+
 #set.seed(1)
 
 merges <- 0 # how many connections were already made
@@ -155,21 +156,19 @@ for (a in c(1:nTest)){
 # percolation threshold finden als checkup
 #find p from n
 percolTest <- percolTest / nTest
-nProb <- 50
+nProb <- 200
 percolProb <- numeric(length=nProb)
 
 #maybe calc once and write to file? takes looong
-nOverK <- as.brob(chooseZ(nCon, 1:nCon))
+#nOverK <- as.brob(chooseZ(nCon, 1:nCon))
 
 
 for (i in seq(1,(nProb-1))){ #all p but p=1 makes problem in logarithmic expression
   print(i)
   p <- i / nProb
   percolBinom <- double(length=nCon)
-  for (x in c(1:nCon)){#should start at 0 if observable is not 0 for n=0 
-    percolBinom[x] <- as.numeric(nOverK[x]*(as.brob(p)**x)*(as.brob(1-p)**(nCon-x))*percolTest[x])
-    if (x %% 1000 == 0){  print(x)}
-  }
+  #should start at 0 if observable is not 0 for n=0 
+  percolBinom <- dbinom(x = c(1:nCon),size = nCon, prob = p)*percolTest
   percolProb[i] <- sum(percolBinom)
 }
 #p <- 1 
