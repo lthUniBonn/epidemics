@@ -13,15 +13,15 @@ library('profvis')
 library('Brobdingnag')
 #startTime <- proc.time()
 profile <- profvis({
-N = 100**2 # number of people
+N = 10**2 # number of people
 
 lattice <- array(data=c(1:N), dim = c(sqrt(N),sqrt(N),3),dimnames = list(c(),c() , c("id", "I", "S")))
-nShort <- sqrt(N)
+nShort <- 0
 #set.seed(1)
 
 merges <- 0 # how many connections were already made
 dof <- N*(N+1)/2 # degrees of freedom in symmetric matrix
-possConn <- array(0,dim=c((2*N-2*sqrt(N)+nShort),2)) # these are the possible connections
+possConn <- array(0,dim=c((2*N+nShort),2)) # these are the possible connections
 
 topIndices <- seq(1, N-sqrt(N)+1, by = sqrt(N))
 botIndices <- seq(sqrt(N), N, by = sqrt(N))
@@ -38,27 +38,38 @@ findConn <- function(){
     for(i in c(1:(sqrt(N)-1))){
       #poss con add C(lattice[i,j], lattice [i+1,j]) to the bottom and to the right
       counter <- counter + 1
-      possConn[counter,1] <<- lattice[i,j]  
-      possConn[counter,2] <<- lattice [i+1,j] 
+      possConn[counter,1] <<- lattice[i,j,1]  
+      possConn[counter,2] <<- lattice [i+1,j,1] 
       counter <- counter +1 
-      possConn[counter,1] <<- lattice[i,j] 
-      possConn[counter,2] <<- lattice [i,j+1]
+      possConn[counter,1] <<- lattice[i,j,1] 
+      possConn[counter,2] <<- lattice [i,j+1,1]
       
     }
     #poss con add C(lattice[i,j], lattice [i+1,j]) to the bottom and to the right
     counter <- counter + 1
-    possConn[counter,1] <<- lattice[sqrt(N),j]  
-    possConn[counter,2] <<- lattice [sqrt(N),j+1] 
+    possConn[counter,1] <<- lattice[sqrt(N),j,1]  
+    possConn[counter,2] <<- lattice [sqrt(N),j+1,1] 
   }
   for (i in c(1:(sqrt(N)-1))){
     counter <- counter + 1
-    possConn[counter,1] <<- lattice[i,sqrt(N)]  
-    possConn[counter,2] <<- lattice [i+1,sqrt(N)]  
+    possConn[counter,1] <<- lattice[i,sqrt(N),1]  
+    possConn[counter,2] <<- lattice [i+1,sqrt(N),1]  
   }
-
+  for(i in c(1:length(topIndices))){
+    counter <- counter + 1
+    print(counter)
+    print(topIndices[i])
+    possConn[counter,1] <<- topIndices[i]
+    possConn[counter,2] <<- botIndices[i]
+  }
+  for(i in c(1:length(leftIndices))){
+    counter <- counter + 1
+    possConn[counter,1] <<- leftIndices[i]
+    possConn[counter,2] <<- rightIndices[i]
+  }
   counter <- counter + 1
-  possConn[c(counter:(counter+nShort-1)),1] <<- sample(c(1:N),size = 10,replace = TRUE)
-  possConn[c(counter:(counter+nShort-1)),2] <<- sample(c(1:N),size=10,replace = TRUE)
+  #possConn[c(counter:(counter+nShort-1)),1] <<- sample(c(1:N),size = 10,replace = TRUE)
+  #possConn[c(counter:(counter+nShort-1)),2] <<- sample(c(1:N),size=10,replace = TRUE)
   # get duplicates and self connections
 }
 
@@ -155,10 +166,7 @@ canonical <- function(){#find p from n
     print(i)
     p <- i / nProb
     percolBinom <- double(length=nCon)
-    for (x in c(1:nCon)){#should start at 0 if observable is not 0 for n=0 
-      percolBinom[x] <- as.numeric(nOverK[x]*(as.brob(p)**x)*(as.brob(1-p)**(nCon-x))*percolTest[x])
-      if (x %% 1000 == 0){  print(x)}
-    }
+    percolBinom <- dbinom(x = c(1:nCon),size = nCon, prob = p)*percolTest
     percolProb[i] <- sum(percolBinom)
   }
 #p <- 1 
