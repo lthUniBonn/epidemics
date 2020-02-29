@@ -8,15 +8,20 @@
 
 
 # visualization? 
+library('plot.matrix')
 library('gmp')
 library('profvis')
 library('Brobdingnag')
 #startTime <- proc.time()
 profile <- profvis({
-N = 10**2 # number of people
+N = 1000**2 # number of people
 
 lattice <- array(data=c(1:N), dim = c(sqrt(N),sqrt(N),3),dimnames = list(c(),c() , c("id", "I", "S")))
 nShort <- 0
+pFrom <- 0.4
+pTo <- 0.6
+nProb <- 100
+nTest <- 10
 #set.seed(1)
 
 merges <- 0 # how many connections were already made
@@ -57,8 +62,6 @@ findConn <- function(){
   }
   for(i in c(1:length(topIndices))){
     counter <- counter + 1
-    print(counter)
-    print(topIndices[i])
     possConn[counter,1] <<- topIndices[i]
     possConn[counter,2] <<- botIndices[i]
   }
@@ -110,7 +113,7 @@ addConnection <- function(from, to){
 }
 
 
-isPercolating <- function(){
+isPercolating <- function(){ # this does not work for lattices with boundary conditions
   leftRoots <- sapply(leftIndices, findRoot)
   rightRoots <- sapply(rightIndices, findRoot)
   #allIndices <- c(1:N)
@@ -134,25 +137,46 @@ isPercolating <- function(){
 
 erf <- function(x,a,b) (pnorm(a*(x-b) * sqrt(2)))
 
+canonical <- function(micObs){#find p from n
+  canObs <- numeric(nProb)
+  i <- 0
+  for (p in seq(pFrom, pTo, (pTo-pFrom)/(nProb-1))){ 
+    i <- i+1
+    binoms <- double(length=nCon)
+    binoms <- dbinom(x = c(1:nCon),size = nCon, prob = p)*micObs
+    canObs[i] <- sum(binoms)
+  }
+  #p <- 1 
+  
+  #percolProb[nProb] <- percolTest[nCon] #per def
+  return(canObs)
+  
+}
 
 #main
-nTest <- 1
+
 findConn()#find all possible connections
 nCon <- nrow(possConn)
 percolTest <- numeric(length=nCon)
+largestWeight <- numeric(length=nCon)
 for (a in c(1:nTest)){
   people <- c(1:N)
   weight <- rep(1,N)
   connections <- possConn[sample(nCon,nCon,replace=FALSE),] #choose bonds which will be occupied gradually
-  print(a)
   for(x in c(1:nCon)){ 
     addConnection(connections[x,2], connections[x,1])
-    #if(isPercolating()){
-     # percolTest[c(x:nCon)] <- percolTest[c(x:nCon)] + 1
-      #break
-    #}
+    #does not make sense to check for percolation if shprtcuts are introduced 
+    # if(isPercolating()){
+    #   percolTest[c(x:nCon)] <- percolTest[c(x:nCon)] + 1
+    #   break
+    # }
+    
+    #largestWeight[x] <- max(weight)
   }
+  
 }
+
+
 
 # percolation threshold finden als checkup
 
@@ -161,19 +185,11 @@ for (a in c(1:nTest)){
 #maybe calc once and write to file? takes looong
 #nOverK <- as.brob(chooseZ(nCon, 1:nCon))
 
-canonical <- function(){#find p from n
-  for (i in seq(1,(nProb-1))){ #all p but p=1 makes problem in logarithmic expression
-    print(i)
-    p <- i / nProb
-    percolBinom <- double(length=nCon)
-    percolBinom <- dbinom(x = c(1:nCon),size = nCon, prob = p)*percolTest
-    percolProb[i] <- sum(percolBinom)
-  }
-#p <- 1 
-percolProb[nProb] <- percolTest[nCon] #per def
-}
 
-
+#largestCluster <- data.frame( x= seq(pFrom, pTo, (pTo-pFrom)/(nProb-1)), y=canonical(largestWeight))
+#plot(largestCluster)
+#percolProb <- data.frame( x= seq(pFrom, pTo, (pTo-pFrom)/(nProb-1)), y=canonical(percolTest))
+#plot(percolProb)
 
 #endTime <- proc.time()
 #runTime <- endTime-startTime
