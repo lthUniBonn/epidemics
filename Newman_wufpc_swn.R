@@ -15,12 +15,12 @@ library('Brobdingnag')
 #startTime <- proc.time()
 #---------- Parameters to be set ----------------
 profile <- profvis({
-N = 10**2 # number of people
-nShort <- 5 # how many shortcuts are created
-pFrom <- 0.4 # which canociacl Q(p) are created
-pTo <- 0.6
+N = 200**2 # number of people
+nShort <- 0 # how many shortcuts are created
+pFrom <- 0.2 # which canociacl Q(p) are created
+pTo <- 0.8
 nProb <- 100 # how many datapoints are calculated in the above range
-nTest <- 10 # how many times is the same thing done
+nTest <- 1 # how many times is the same thing done
 # we completely ignored this so far....
 checkPercolation <- FALSE 
 checkLargestCluster <- TRUE
@@ -100,6 +100,9 @@ findRoot <- function(startIndex){
 }
 
 addConnection <- function(from, to){ # does this work with shortcuts? I think yes, but not 100% sure
+  #definetly get a problem when people can recover, as this should interrupt the tree
+  #this cannot be taken care of in hindsight, as the trees do not contain this information anymore
+  # maybe sacrifice the path compression?
   #find roots for both parts of conn (A,B) [path compression]
   fromRoot <- findRoot(from)#index of root node 
   toRoot <- findRoot(to)
@@ -147,9 +150,16 @@ isPercolating <- function(){ # this does not work for lattices with boundary con
 erf <- function(x,a,b) (pnorm(a*(x-b) * sqrt(2)))
 
 canonical <- function(micObs){#find p from n
+  # does this still work when shortcuts are introduced? question is wether it makes a difference that upper bound of n rises but p stays the same
+  # again: I think this is okay, but need to talk about it
   canObs <- numeric(nProb)
   i <- 0
   for (p in seq(pFrom, pTo, (pTo-pFrom)/(nProb-1))){ 
+    # think about next lines, it meight be fine after all
+    # we need to change something about how p is calculated
+    # if we want to compare different shortcuts
+    # For example: 100*100 Lattice has 20000 possible connections, 
+    # if we add 1000 shortcuts p should not be 100% if 20000 connections are filled but when 21000 connections were made
     i <- i+1
     binoms <- double(length=nCon)
     binoms <- dbinom(x = c(1:nCon),size = nCon, prob = p)*micObs
@@ -161,6 +171,8 @@ canonical <- function(micObs){#find p from n
   return(canObs)
   
 }
+
+erf <- function(x,a,b) (pnorm(a*(x-b) * sqrt(2)))
 
 #main
 
@@ -174,10 +186,11 @@ for (a in c(1:nTest)){
   connections <- possConn[sample(nCon,nCon,replace=FALSE),] #choose bonds which will be occupied gradually
   for(x in c(1:nCon)){ 
     addConnection(connections[x,2], connections[x,1])
-    #does not make sense to check for percolation if shprtcuts are introduced 
+    #does not make sense to check for percolation if shprtcuts are introduced, od does it?
+    #certainly not when closed boundary conditions are present
     # if boundary conditions are turned on this needs changing as well
     # if(isPercolating()){
-    #   percolTest[c(x:nCon)] <- percolTest[c(x:nCon)] + 1
+    #   percolTest[c(x:nCon),a] <- percolTest[c(x:nCon),a] + 1
     #   break
     # }
     
@@ -186,18 +199,39 @@ for (a in c(1:nTest)){
   
 }
 
+#----------- display data -----------------
 
 
 # percolation threshold finden als checkup
 
 
 
-#maybe calc once and write to file? takes looong
-#nOverK <- as.brob(chooseZ(nCon, 1:nCon))
 
+if(checkLargestCluster){
+  xData <- seq(pFrom, pTo, (pTo-pFrom)/(nProb-1))
+  yData <- array(0,c(nProb,nTest))
+  ySEM <- numeric(nProb)
+  for(i in c(1:nTest)){
+    yData[,i] <- canonical(largestWeight[,i]) 
+  }
+  for(i in c(1:nProb)){
+    ySEM[i] <- sd(yData[i,])/(sqrt(nTest)*N)
+  }
+  yMean <- rowMeans(yData)/N
+  yData <- yData/N
+  largestCluster <- data.frame( x= xData, y=yMean)
+  plot(largestCluster,xlab = "", ylab = "")
+  arrows(xData, yMean-ySEM, xData, yMean+ySEM, length=0.05, angle=90, code=3)
+  title(main="Largest Cluster Size",  xlab="Q(p)", ylab="Size") 
+  text(x = 0.2, y = 1, labels = paste("N:", N,"  nShort:", nShort, "  nTest:", nTest,sep = " "),pos = 4)
+  #mtext(paste("N:", N,"  nShort:", nShort, "  nTest:", nTest,sep = " "),side = 3)
+  
+  ourFit <- nls(y ~ erf(x,a,b), data = largestCluster, start=list(a=50, b=0.4))
+  # this ignores the known errors
+  x <- seq(0.2,1,by=0.001)
+  lines(y=erf(x,summary(ourFit)$coefficients[1], summary(ourFit)$coefficients[2]), x = x)
+}
 
-#largestCluster <- data.frame( x= seq(pFrom, pTo, (pTo-pFrom)/(nProb-1)), y=canonical(largestWeight))
-#plot(largestCluster)
 #percolProb <- data.frame( x= seq(pFrom, pTo, (pTo-pFrom)/(nProb-1)), y=canonical(percolTest))
 #plot(percolProb)
 
