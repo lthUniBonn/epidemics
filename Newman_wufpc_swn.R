@@ -13,15 +13,21 @@ library('gmp')
 library('profvis')
 library('Brobdingnag')
 #startTime <- proc.time()
+#---------- Parameters to be set ----------------
 profile <- profvis({
-N = 1000**2 # number of people
-
-lattice <- array(data=c(1:N), dim = c(sqrt(N),sqrt(N),3),dimnames = list(c(),c() , c("id", "I", "S")))
-nShort <- 0
-pFrom <- 0.4
+N = 10**2 # number of people
+nShort <- 5 # how many shortcuts are created
+pFrom <- 0.4 # which canociacl Q(p) are created
 pTo <- 0.6
-nProb <- 100
-nTest <- 10
+nProb <- 100 # how many datapoints are calculated in the above range
+nTest <- 10 # how many times is the same thing done
+# we completely ignored this so far....
+checkPercolation <- FALSE 
+checkLargestCluster <- TRUE
+
+#-----------global declarations---------------------
+lattice <- array(data=c(1:N), dim = c(sqrt(N),sqrt(N),3),dimnames = list(c(),c() , c("id", "I", "S")))
+
 #set.seed(1)
 
 merges <- 0 # how many connections were already made
@@ -36,6 +42,7 @@ rightIndices <- c((N-sqrt(N)+1):N)
 
 #connections is the list of random connections that will be made
 
+#--------------functions-------------------------
 # find possible connections in 2d case
 findConn <- function(){
   counter <- 0
@@ -70,10 +77,12 @@ findConn <- function(){
     possConn[counter,1] <<- leftIndices[i]
     possConn[counter,2] <<- rightIndices[i]
   }
-  counter <- counter + 1
-  #possConn[c(counter:(counter+nShort-1)),1] <<- sample(c(1:N),size = 10,replace = TRUE)
-  #possConn[c(counter:(counter+nShort-1)),2] <<- sample(c(1:N),size=10,replace = TRUE)
-  # get duplicates and self connections
+  if(nShort != 0){
+    counter <- counter + 1
+    possConn[c(counter:(counter+nShort-1)),1] <<- sample(c(1:N),size = nShort,replace = TRUE)
+    possConn[c(counter:(counter+nShort-1)),2] <<- sample(c(1:N),size=nShort,replace = TRUE)
+    # get duplicates and self connections
+  }
 }
 
 findRoot <- function(startIndex){
@@ -90,7 +99,7 @@ findRoot <- function(startIndex){
   return(root)
 }
 
-addConnection <- function(from, to){
+addConnection <- function(from, to){ # does this work with shortcuts? I think yes, but not 100% sure
   #find roots for both parts of conn (A,B) [path compression]
   fromRoot <- findRoot(from)#index of root node 
   toRoot <- findRoot(to)
@@ -157,8 +166,8 @@ canonical <- function(micObs){#find p from n
 
 findConn()#find all possible connections
 nCon <- nrow(possConn)
-percolTest <- numeric(length=nCon)
-largestWeight <- numeric(length=nCon)
+percolTest <- array(0, dim = c(nCon,nTest))
+largestWeight <- array(0, dim = c(nCon,nTest))
 for (a in c(1:nTest)){
   people <- c(1:N)
   weight <- rep(1,N)
@@ -166,12 +175,13 @@ for (a in c(1:nTest)){
   for(x in c(1:nCon)){ 
     addConnection(connections[x,2], connections[x,1])
     #does not make sense to check for percolation if shprtcuts are introduced 
+    # if boundary conditions are turned on this needs changing as well
     # if(isPercolating()){
     #   percolTest[c(x:nCon)] <- percolTest[c(x:nCon)] + 1
     #   break
     # }
     
-    #largestWeight[x] <- max(weight)
+    largestWeight[x,a] <- max(weight)
   }
   
 }
