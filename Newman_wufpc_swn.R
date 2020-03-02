@@ -15,10 +15,10 @@ library('Brobdingnag')
 #startTime <- proc.time()
 #---------- Parameters to be set ----------------
 profile <- profvis({
-N = 100**2 # number of people
+N = 800**2 # number of people
 nShort <- 0 # how many shortcuts are created
-pFrom <- 0.2 # which canociacl Q(p) are created
-pTo <- 0.8
+pFrom <- 0.4 # which canociacl Q(p) are created
+pTo <- 0.7
 nProb <- 100 # how many datapoints are calculated in the above range
 nTest <- 1 # how many times is the same thing done
 # we completely ignored this so far....
@@ -40,6 +40,10 @@ botIndices <- seq(sqrt(N), N, by = sqrt(N))
 leftIndices <- c(1:sqrt(N))
 rightIndices <- c((N-sqrt(N)+1):N)
 #now the indices that need to be checked are all in useful indices, this reduces the array size by N^2-N*(N+1)/2, for 100*100 grid is 4950 sites smaller
+
+nCon <- nrow(possConn)
+percolTest <- array(0, dim = c(nCon,nTest))
+largestWeight <- array(0, dim = c(nCon,nTest))
 
 #connections is the list of random connections that will be made
 
@@ -122,8 +126,9 @@ addConnection <- function(from, to){ # does this work with shortcuts? I think ye
     #.subset(weight)[toRoot] <<- .subset(weight)[fromRoot] + .subset(weight)[fromRoot]
     weight[fromRoot] <<- 0
     merges <<- merges +1
+    
   }
-  
+  return(weight[toRoot])
 }
 
 
@@ -179,15 +184,24 @@ erf <- function(x,a,b) (pnorm(a*(x-b) * sqrt(2)))
 #main
 
 findConn()#find all possible connections
-nCon <- nrow(possConn)
-percolTest <- array(0, dim = c(nCon,nTest))
-largestWeight <- array(0, dim = c(nCon,nTest))
+
 for (a in c(1:nTest)){
   people <- c(1:N)
   weight <- rep(1,N)
+  maxWeight <- 1
   connections <- possConn[sample(nCon,nCon,replace=FALSE),] #choose bonds which will be occupied gradually
   for(x in c(1:nCon)){ 
-    addConnection(connections[x,2], connections[x,1])
+     if(checkLargestCluster){ # this if is really just for comfort, can remove it if it takes too long
+       newWeight <- addConnection(connections[x,2], connections[x,1])
+       if(newWeight > maxWeight){
+         maxWeight <- newWeight
+       }
+       largestWeight[x,a] <- maxWeight
+       #largestWeight[x,a] <- weight[which.max(weight)] # this is sligthly faster than max(weight)
+     }else {
+       addConnection(connections[x,2], connections[x,1])
+     }
+    
     #does not make sense to check for percolation if shprtcuts are introduced, od does it?
     #certainly not when closed boundary conditions are present
     # if boundary conditions are turned on this needs changing as well
@@ -195,9 +209,9 @@ for (a in c(1:nTest)){
     #   percolTest[c(x:nCon),a] <- percolTest[c(x:nCon),a] + 1
     #   break
     # }
-    if(checkLargestCluster){ # this if is really just for comfort, can remove it if it takes too long
-      largestWeight[x,a] <- weight[which.max(weight)] # this is sligthly faster than max(weight)
-    }
+    # if(checkLargestCluster){ # this if is really just for comfort, can remove it if it takes too long
+    #   largestWeight[x,a] <- weight[which.max(weight)] # this is sligthly faster than max(weight)
+    # }
   }
   
 }
