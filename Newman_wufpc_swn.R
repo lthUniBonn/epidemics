@@ -15,7 +15,7 @@ library('Brobdingnag')
 #startTime <- proc.time()
 #---------- Parameters to be set ----------------
 profile <- profvis({
-N = 200**2 # number of people
+N = 100**2 # number of people
 nShort <- 0 # how many shortcuts are created
 pFrom <- 0.2 # which canociacl Q(p) are created
 pTo <- 0.8
@@ -29,6 +29,7 @@ checkLargestCluster <- TRUE
 lattice <- array(data=c(1:N), dim = c(sqrt(N),sqrt(N),3),dimnames = list(c(),c() , c("id", "I", "S")))
 
 #set.seed(1)
+
 
 merges <- 0 # how many connections were already made
 dof <- N*(N+1)/2 # degrees of freedom in symmetric matrix
@@ -117,7 +118,8 @@ addConnection <- function(from, to){ # does this work with shortcuts? I think ye
     }
     # write connection "from root node" to "to root node"
     people[fromRoot] <<- toRoot 
-    weight[toRoot] <<- weight[fromRoot] + weight[toRoot]
+    weight[toRoot] <<- weight[fromRoot] + weight[toRoot] # this line takes longer (50-200x) when checkLargestCluster = True. wat?
+    #.subset(weight)[toRoot] <<- .subset(weight)[fromRoot] + .subset(weight)[fromRoot]
     weight[fromRoot] <<- 0
     merges <<- merges +1
   }
@@ -193,8 +195,9 @@ for (a in c(1:nTest)){
     #   percolTest[c(x:nCon),a] <- percolTest[c(x:nCon),a] + 1
     #   break
     # }
-    
-    largestWeight[x,a] <- max(weight)
+    if(checkLargestCluster){ # this if is really just for comfort, can remove it if it takes too long
+      largestWeight[x,a] <- weight[which.max(weight)] # this is sligthly faster than max(weight)
+    }
   }
   
 }
