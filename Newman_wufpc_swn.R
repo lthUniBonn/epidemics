@@ -16,15 +16,16 @@ library('Brobdingnag')
 #startTime <- proc.time()
 #---------- Parameters to be set ----------------
 profile <- profvis({
-N = 1000**2 # number of people
-nShort <- 400 # how many shortcuts are created
-pFrom <- 0.2 # which canociacl Q(p) are created
+N = 10**2 # number of people
+nShort <- 0 # how many shortcuts are created
+pFrom <- 0 # which canociacl Q(p) are created
 pTo <- 0.8
 nProb <- 40 # how many datapoints are calculated in the above range
-nTest <- 2 # how many times is the same thing done
+nTest <- 20 # how many times is the same thing done
 # we completely ignored this so far....
-checkPercolation <- FALSE 
+checkPercolation <- FALSE
 checkLargestCluster <- TRUE
+openBoundaries <- FALSE # if FALSE the opposing edges of the lattice are connected
 
 #-----------global declarations---------------------
 lattice <- array(data=c(1:N), dim = c(sqrt(N),sqrt(N),3),dimnames = list(c(),c() , c("id", "I", "S")))
@@ -33,9 +34,11 @@ lattice <- array(data=c(1:N), dim = c(sqrt(N),sqrt(N),3),dimnames = list(c(),c()
 
 
 merges <- 0 # how many connections were already made
-dof <- N*(N+1)/2 # degrees of freedom in symmetric matrix
-possConn <- array(0,dim=c((2*N+nShort),2)) # these are the possible connections
-
+if(!openBoundaries){
+  possConn <- array(0,dim=c((2*N+nShort),2)) # these are the possible connections
+} else {
+  possConn <- array(0,dim=c((2*N-2*sqrt(N)+nShort),2))
+}
 topIndices <- seq(1, N-sqrt(N)+1, by = sqrt(N))
 botIndices <- seq(sqrt(N), N, by = sqrt(N))
 leftIndices <- c(1:sqrt(N))
@@ -73,16 +76,20 @@ findConn <- function(){
     possConn[counter,1] <<- lattice[i,sqrt(N),1]  
     possConn[counter,2] <<- lattice [i+1,sqrt(N),1]  
   }
-  for(i in c(1:length(topIndices))){
-    counter <- counter + 1
-    possConn[counter,1] <<- topIndices[i]
-    possConn[counter,2] <<- botIndices[i]
+  
+  if(!openBoundaries){
+    for(i in c(1:length(topIndices))){
+      counter <- counter + 1
+      possConn[counter,1] <<- topIndices[i]
+      possConn[counter,2] <<- botIndices[i]
+    }
+    for(i in c(1:length(leftIndices))){
+      counter <- counter + 1
+      possConn[counter,1] <<- leftIndices[i]
+      possConn[counter,2] <<- rightIndices[i]
+    }
   }
-  for(i in c(1:length(leftIndices))){
-    counter <- counter + 1
-    possConn[counter,1] <<- leftIndices[i]
-    possConn[counter,2] <<- rightIndices[i]
-  }
+  
   if(nShort != 0){
     counter <- counter + 1
     possConn[c(counter:(counter+nShort-1)),1] <<- sample(c(1:N),size = nShort,replace = TRUE)
