@@ -12,15 +12,16 @@ library('plot.matrix')
 library('gmp')
 library('profvis')
 library('Brobdingnag')
+
 #startTime <- proc.time()
 #---------- Parameters to be set ----------------
 profile <- profvis({
-N = 800**2 # number of people
-nShort <- 0 # how many shortcuts are created
-pFrom <- 0.4 # which canociacl Q(p) are created
-pTo <- 0.7
-nProb <- 100 # how many datapoints are calculated in the above range
-nTest <- 1 # how many times is the same thing done
+N = 1000**2 # number of people
+nShort <- 400 # how many shortcuts are created
+pFrom <- 0.2 # which canociacl Q(p) are created
+pTo <- 0.8
+nProb <- 40 # how many datapoints are calculated in the above range
+nTest <- 2 # how many times is the same thing done
 # we completely ignored this so far....
 checkPercolation <- FALSE 
 checkLargestCluster <- TRUE
@@ -44,7 +45,7 @@ rightIndices <- c((N-sqrt(N)+1):N)
 nCon <- nrow(possConn)
 percolTest <- array(0, dim = c(nCon,nTest))
 largestWeight <- array(0, dim = c(nCon,nTest))
-
+binoms <- array(0, dim=c(nCon,nProb))
 #connections is the list of random connections that will be made
 
 #--------------functions-------------------------
@@ -168,9 +169,19 @@ canonical <- function(micObs){#find p from n
     # For example: 100*100 Lattice has 20000 possible connections, 
     # if we add 1000 shortcuts p should not be 100% if 20000 connections are filled but when 21000 connections were made
     i <- i+1
-    binoms <- double(length=nCon)
-    binoms <- dbinom(x = c(1:nCon),size = nCon, prob = p)*micObs
-    canObs[i] <- sum(binoms)
+    #binoms <- double(length=nCon)
+    #binoms <- dbinom(x = c(1:nCon),size = nCon, prob = p)*micObs
+    #https://math.stackexchange.com/questions/3098609/convolution-of-a-binomial-and-uniform-distribution
+    #canObs[i] <- convolve(dbinom(x = c(1:nCon),size = nCon, prob = p), micObs, type = "filter")
+    #convolve(c(a,b,c),c(d,e,f)= c(a*d+b*e+c*f,b*d+c*e+a*f,c*d+a*e+b*f)
+    #print(binoms2)
+    #print(binoms)
+    #canObs2[i] <- sum(binoms2)
+    #print(canObs2)
+    #canObs[i] <- sum(binoms)
+    #print(canObs)
+    #stop()
+    canObs[i] <- sum(binoms[,i]*micObs)
   }
   #p <- 1 
   
@@ -181,10 +192,19 @@ canonical <- function(micObs){#find p from n
 
 erf <- function(x,a,b) (pnorm(a*(x-b) * sqrt(2)))
 
+initializeBinoms <- function(){
+  i <- 0
+  for (p in seq(pFrom, pTo, (pTo-pFrom)/(nProb-1))){
+    i <- i+1
+    binoms[,i] <<- dbinom(x = c(1:nCon),size = nCon, prob = p)
+  }
+}
+
+
 #main
 
 findConn()#find all possible connections
-
+initializeBinoms()
 for (a in c(1:nTest)){
   people <- c(1:N)
   weight <- rep(1,N)
@@ -243,10 +263,10 @@ if(checkLargestCluster){
   text(x = 0.2, y = 1, labels = paste("N:", N,"  nShort:", nShort, "  nTest:", nTest,sep = " "),pos = 4)
   #mtext(paste("N:", N,"  nShort:", nShort, "  nTest:", nTest,sep = " "),side = 3)
   
-  ourFit <- nls(y ~ erf(x,a,b), data = largestCluster, start=list(a=50, b=0.4))
+  #ourFit <- nls(y ~ erf(x,a,b), data = largestCluster, start=list(a=50, b=0.4))
   # this ignores the known errors
-  x <- seq(0.2,1,by=0.001)
-  lines(y=erf(x,summary(ourFit)$coefficients[1], summary(ourFit)$coefficients[2]), x = x)
+  #x <- seq(0.2,1,by=0.001)
+  #lines(y=erf(x,summary(ourFit)$coefficients[1], summary(ourFit)$coefficients[2]), x = x)
 }
 
 #percolProb <- data.frame( x= seq(pFrom, pTo, (pTo-pFrom)/(nProb-1)), y=canonical(percolTest))
