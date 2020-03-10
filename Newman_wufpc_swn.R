@@ -48,10 +48,6 @@ if(!openBoundaries){
 } else {
   possConn <- array(0,dim=c((2*N-2*sqrt(N)+nShort),3))
 }
-topIndices <- seq(1, N-sqrt(N)+1, by = sqrt(N))
-botIndices <- seq(sqrt(N), N, by = sqrt(N))
-leftIndices <- c(1:sqrt(N))
-rightIndices <- c((N-sqrt(N)+1):N)
 
 
 
@@ -85,13 +81,13 @@ findConn <- function(){
   }
   
   if(!openBoundaries){
-    for(i in c(1:length(topIndices))){
+    for(i in c(1:sqrt(N))){
       counter <- counter + 1
       possConn[counter,1] <<- lattice[1,i,1]
       possConn[counter,2] <<- lattice[sqrt(N),i,1]
       possConn[counter,3] <<- transProb(lattice[1,i,3],lattice[sqrt(N),i,3])
     }
-    for(i in c(1:length(leftIndices))){
+    for(i in c(1:sqrt(N))){
       counter <- counter + 1
       possConn[counter,1] <<- lattice[i,1,1]
       possConn[counter,2] <<- lattice[i,sqrt(N),1]
