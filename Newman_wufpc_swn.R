@@ -25,14 +25,14 @@ library('Brobdingnag')
 #profile <- profvis({
 N = 100**2 # number of people
 immunity <- 0.4
-nShort <- 0 # how many shortcuts are created
+nShort <- 100 # how many shortcuts are created
 pFrom <- 0 # which canonical Q(p) are created
 pTo <- 1
 nProb <- 40 # how many datapoints are calculated in the above range
 nTest <- 10 # how many times is the same thing done
 checkPercolation <- FALSE
 checkLargestCluster <- TRUE
-openBoundaries <- FALSE # if FALSE the opposing edges of the lattice are connected
+openBoundaries <- FALSE # if FALSE the opposing edges of the lattice are connected (periodic)
 sBool <- TRUE # if True the susceptibility is 1 or 0
 #observed that for large (>100) lattices the boundaries are basically irrelevant for the largest cluster size
 
@@ -105,10 +105,12 @@ findConn <- function(){
     fromCol <- sample(c(1:sqrt(N)), size = nShort, replace = TRUE)
     toRow   <- sample(c(1:sqrt(N)), size = nShort, replace = TRUE)
     toCol   <- sample(c(1:sqrt(N)), size = nShort, replace = TRUE)
-    possConn[c(counter:(counter+nShort-1)),1] <<- lattice[fromRow,fromCol,1]
-    possConn[c(counter:(counter+nShort-1)),2] <<- lattice[toRow,toCol,1]
-    possConn[c(counter:(counter+nShort-1)),3] <<- transProb(lattice[fromRow,fromCol,3],lattice[toRow,toCol,3])
+    for (i in c(0:(nShort-1))){
+    possConn[counter + i,1] <<- lattice[fromRow[i+1],fromCol[i+1],1]
+    possConn[counter + i,2] <<- lattice[toRow[i+1],toCol[i+1],1]
+    possConn[counter + i,3] <<- transProb(lattice[fromRow[i+1],fromCol[i+1],3],lattice[toRow[i+1],toCol[i+1],3])
     # get duplicates and self connections
+    }
   }
 }
 
@@ -203,7 +205,7 @@ initializeBinoms <- function(){
 
 #-----------------------main--------------------------------------
 
-if(sBool){
+if(sBool){#should change for each test 
   sDistribution <- sample(c(0,1), replace=TRUE, size=N,prob = c(immunity,1-immunity))
 }
 lattice[,,3] <- sDistribution # set a uniform suceptibility 
@@ -273,9 +275,9 @@ if(checkLargestCluster){
   yData <- yData/N
   largestCluster <- data.frame( x= xData, y=yMean)
   plot(largestCluster,xlab = "", ylab = "",xlim = c(0,1), ylim = c(0,1))
-  arrows(xData, yMean-ySEM, xData, yMean+ySEM, length=0.05, angle=90, code=3) #?? warnings: zero-length arrows skipped
+  arrows(xData, yMean-ySEM, xData, yMean+ySEM, length=0.05, angle=90, code=3) 
   title(main="Largest Cluster Size",  xlab="Q(p)", ylab="Size") 
-  text(x = pFrom, y = 1, labels = paste("N:", N,"  nShort:", nShort, "  nTest:", nTest,sep = " "),pos = 4)
+  text(x = pFrom, y = 1, labels = paste("N:", N,"  nShort:", nShort, "  nTest:", nTest, "do not trust errorbars yet",sep = " "),pos = 4)
   abline(h=1-immunity)
   
   #ourFit <- nls(y ~ erf(x,a,b), data = largestCluster, start=list(a=50, b=0.4))
