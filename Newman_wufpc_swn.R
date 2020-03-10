@@ -1,3 +1,6 @@
+#?? das arbeitet noch nicht mit timesteps, oder?
+#?? tree structure mit Recovery: path compression scheint kontraproduktiv --> timesteps komplett laufen lassen, danach path compression? 
+
 # create 2d lattice 
 # add shortcuts (density of these is important says newman)
 # SIR model - suscetible, infectious, removed
@@ -51,11 +54,7 @@ leftIndices <- c(1:sqrt(N))
 rightIndices <- c((N-sqrt(N)+1):N)
 
 
-nCon <- nrow(possConn)
-percolTest <- array(0, dim = c(nCon,nTest))
-largestWeight <- array(0, dim = c(nCon,nTest))
 
-conProb <- numeric(nCon)
 #--------------functions-------------------------
 # find possible connections in 2d case
 findConn <- function(){
@@ -189,18 +188,15 @@ canonical <- function(micObs){#find p from n
     i <- i+1
     canObs[i] <- sum(binoms[,i]*micObs)
   }
-  #percolProb[nProb] <- percolTest[nCon] #per def
   return(canObs)
 }
-
-erf <- function(x,a,b) (pnorm(a*(x-b) * sqrt(2)))
 
 initializeBinoms <- function(){
   i <- 0
   print(nCon)
   for (p in seq(pFrom, pTo, (pTo-pFrom)/(nProb-1))){
     i <- i+1
-    binoms[,i] <<- dbinom(x = c(1:nCon),size = nCon, prob = p)
+    binoms[,i] <<- dbinom(x = c(1:nCon),size = nCon, prob = p) 
   }
 }
 
@@ -211,12 +207,19 @@ if(sBool){
   sDistribution <- sample(c(0,1), replace=TRUE, size=N,prob = c(immunity,1-immunity))
 }
 lattice[,,3] <- sDistribution # set a uniform suceptibility 
+
 findConn()#find all possible connections and their likelihoods
 #remove the impossible connections
 possConn <- possConn[-which(possConn[,3]==0),]
 nCon <- nrow(possConn)
 binoms <- array(0, dim=c(nCon,nProb))
+percolTest <- array(0, dim = c(nCon,nTest))
+largestWeight <- array(0, dim = c(nCon,nTest))
+
+conProb <- numeric(nCon)
+
 initializeBinoms()
+
 for (a in c(1:nTest)){
   people <- c(1:N)
   weight <- rep(1,N)
@@ -241,7 +244,7 @@ for (a in c(1:nTest)){
     #   percolTest[c(x:nCon),a] <- percolTest[c(x:nCon),a] + 1
     #   break
     # }
-    # if(checkLargestCluster){ # this if is really just for comfort, can remove it if it takes too long
+    # if(checkLargestClusterwarnings()){ # this if is really just for comfort, can remove it if it takes too long
     #   largestWeight[x,a] <- weight[which.max(weight)] # this is sligthly faster than max(weight)
     # }
   }
@@ -270,13 +273,13 @@ if(checkLargestCluster){
   yData <- yData/N
   largestCluster <- data.frame( x= xData, y=yMean)
   plot(largestCluster,xlab = "", ylab = "",xlim = c(0,1), ylim = c(0,1))
-  arrows(xData, yMean-ySEM, xData, yMean+ySEM, length=0.05, angle=90, code=3)
+  arrows(xData, yMean-ySEM, xData, yMean+ySEM, length=0.05, angle=90, code=3) #?? warnings: zero-length arrows skipped
   title(main="Largest Cluster Size",  xlab="Q(p)", ylab="Size") 
   text(x = pFrom, y = 1, labels = paste("N:", N,"  nShort:", nShort, "  nTest:", nTest,sep = " "),pos = 4)
   abline(h=1-immunity)
   
   #ourFit <- nls(y ~ erf(x,a,b), data = largestCluster, start=list(a=50, b=0.4))
-  # this ignores the known errors
+  # this ignores the known errors #??
   #x <- seq(0.2,1,by=0.001)
   #lines(y=erf(x,summary(ourFit)$coefficients[1], summary(ourFit)$coefficients[2]), x = x)
 }
