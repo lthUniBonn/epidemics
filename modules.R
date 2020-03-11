@@ -123,7 +123,7 @@ addConnection <- function(from, to){ # does this work with shortcuts? I think ye
     weight[toRoot] <<- weight[fromRoot] + weight[toRoot] # this line takes longer (50-200x) when checkLargestCluster = True. wat?
     #.subset(weight)[toRoot] <<- .subset(weight)[fromRoot] + .subset(weight)[fromRoot]
     weight[fromRoot] <<- 0
-    merges <<- merges +1
+    #merges <<- merges +1
     
   }
   return(weight[toRoot])

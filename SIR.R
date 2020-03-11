@@ -1,3 +1,4 @@
+# https://www.healthknowledge.org.uk/public-health-textbook/research-methods/1a-epidemiology/epidemic-theory
 library('plot.matrix')
 source('modules.R')
 
@@ -10,20 +11,30 @@ immunity <- 0.3 #ratio of immune people
 bondOccProb <- 0.5
 
 #network
-N = 100**2 # number of people
+N = 400**2 # number of people
 nShort <- 100 # how many shortcuts are created // not impossibly many, could lead to ~inf loop #!!
 openBoundaries <- FALSE # if FALSE the opposing edges of the lattice are connected (periodic)
 
 sBool <- FALSE # if True the susceptibility is 1 or 0 // other poss like gaussian with age etc
-sFixed <- TRUE
+sFixed <- FALSE
+sNot <- TRUE
 
-time <- 100
 #observables
+#plotting
+plotIt <- TRUE
+plotEvery <- 10
+
+#clusters
+checkCluster <- TRUE
+clusterEvery <- 10
+
+count <- 0
+auswertungsVector <- array(0, dim=c(100,6), dimnames = list(c(),c("time","largestCluster", "numberCluster","numberInfected","largeOverTotal","largeOverRest")))
+
 # pFrom <- 0 # which canonical Q(p) are created
 # pTo <- 1
 # nProb <- 40 # how many datapoints are calculated in the above range
 # nTest <- 10 # how many times is the same thing done
-#checkLargestCluster <- TRUE
 
 
 #-----------initialise network---------------------
@@ -41,6 +52,9 @@ if(sBool){
 }
 if(sFixed){
   sDistribution <- sample(c(0,0.25,0.5,0.75,1), replace=TRUE, size=N,prob = c(immunity,(1-immunity)/8,  (1-immunity)/2, (1-immunity)/4, (1-immunity)/8))
+}
+if(sNot){
+  sDistribution <- sample(c(0.25,0.5,0.75,1), replace=TRUE, size=N,prob = c((1-immunity)/8,  (1-immunity)/2, (1-immunity)/4, (1-immunity)/8))
 }
 lattice[,,3] <- sDistribution # set a uniform suceptibility 
 #at the beginning nobody is infected
@@ -64,7 +78,9 @@ patientZero()
 timesteps <- function(){
   #infected people
   infPeople <- which(infectionTime != 0)
-  if (length(infPeople) == 0){stop()}
+  if (length(infPeople) == 0){
+    stop(... = "No more infected", call. = TRUE)
+  }
   #infected connections
   infConn <- possConn[which(possConn[,1] %in% infPeople | possConn[,2] %in% infPeople),c(1,2)]
   
@@ -96,14 +112,46 @@ findRecBool <- function(t){
 
 x <- 0
 while (TRUE) {
+
+    
   timesteps()
-  if(x %% 10 == 0){
+  if((x %% plotEvery == 0) && (plotIt == TRUE)){
     visibleLattice <- array(0, dim= c(sqrt(N),sqrt(N)))
     visibleLattice[which(infectionTime != 0)] <- 1
     plot(which(visibleLattice==1, arr.ind = TRUE)[,1], which(visibleLattice==1, arr.ind = TRUE)[,2],xlim = c(0,sqrt(N)), ylim = c(0,sqrt(N)))
     #plot(visibleLattice)
-
   }
+
+  if ((x %% clusterEvery == 0) && (checkCluster == TRUE)){
+    count <- count +1
+    people <- c(1:N)
+    weight <- numeric(N) #rep(1,N)
+    # now identifiy clusters as before, but instead of the connections sampled from possConn use infConn
+    infPeople <- which(infectionTime != 0)
+    weight[infPeople] <- 1
+    infConn <- possConn[which((possConn[,1] %in% infPeople) & (possConn[,2] %in% infPeople)),c(1,2)]
+    if (!is.array(infConn)){infConn <- array(data = infConn, dim = c(1,2))}
+    if(nrow(infConn) != 0){
+      for(i in c(1:nrow(infConn))){
+        
+        addConnection(infConn[i,1],infConn[i,2])
+      }
+    }
+    auswertungsVector[count,1] <- x
+    auswertungsVector[count,2] <- weight[which.max(weight)]
+    auswertungsVector[count,3] <- length(which(weight!=0))
+    auswertungsVector[count,4] <- sum(weight)
+    auswertungsVector[count,5] <- weight[which.max(weight)]/sum(weight)
+    auswertungsVector[count,6] <- weight[which.max(weight)]/sum(weight[-which.max(weight)]) #! is this right?
+    # print(paste("largest cluster:" , weight[which.max(weight)], sep = " "))
+    # print(paste("Number cluster:" , length(which(weight!=0)), sep = " "))
+    # print(paste("Infected:" , sum(weight), sep = " "))
+    # print(paste("Largest cluster over total infected:" , weight[which.max(weight)]/sum(weight), sep = " "))
+    # print(paste("Largest cluster over smaller clusters:" , weight[which.max(weight)]/sum(weight[-which.max(weight)]), sep = " "))
+    #!! interessantes in auswertungsvektor schreiben? 
+     
+  }
+  
   x <- x + 1
 }
 
