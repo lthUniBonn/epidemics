@@ -29,7 +29,7 @@ checkCluster <- TRUE
 clusterEvery <- 10
 
 count <- 0
-auswertungsVector <- array(0, dim=c(100,6), dimnames = list(c(),c("time","largestCluster", "numberCluster","numberInfected","largeOverTotal","largeOverRest")))
+auswertungsVector <- array(0, dim=c(100,7), dimnames = list(c(),c("time","largestCluster", "numberCluster","numberInfected","largeOverTotal","largeOverRest","accInfections")))
 
 # pFrom <- 0 # which canonical Q(p) are created
 # pTo <- 1
@@ -56,6 +56,7 @@ if(sFixed){
 if(sNot){
   sDistribution <- sample(c(0.25,0.5,0.75,1), replace=TRUE, size=N,prob = c((1-immunity)/8,  (1-immunity)/2, (1-immunity)/4, (1-immunity)/8))
 }
+initialsDistribution <- sDistribution
 lattice[,,3] <- sDistribution # set a uniform suceptibility 
 #at the beginning nobody is infected
 lattice[,,2] <- 0
@@ -143,6 +144,7 @@ while (TRUE) {
     auswertungsVector[count,4] <- sum(weight)
     auswertungsVector[count,5] <- weight[which.max(weight)]/sum(weight)
     auswertungsVector[count,6] <- weight[which.max(weight)]/sum(weight[-which.max(weight)]) #! is this right?
+    auswertungsVector[count,7] <- length(which(sDistribution != initialsDistribution))/N
     # print(paste("largest cluster:" , weight[which.max(weight)], sep = " "))
     # print(paste("Number cluster:" , length(which(weight!=0)), sep = " "))
     # print(paste("Infected:" , sum(weight), sep = " "))
