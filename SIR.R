@@ -5,19 +5,20 @@ source('modules.R')
 #startTime <- proc.time()
 #---------- Parameters to be set ----------------
 profile <- profvis({
-#set.seed(1)
+set.seed(1)
 
-immunity <- 0.42 #ratio of immune people 
-bondOccProb <- 0.5
+immunity <- 0.5 #ratio of immune people 
+bondOccProb <- 1
+avgRecoveryTime <- 3
 
 #network
-N = 400**2 # number of people
+N = 100**2 # number of people
 nShort <- 10 # how many shortcuts are created // not impossibly many, could lead to ~inf loop #!!
 openBoundaries <- FALSE # if FALSE the opposing edges of the lattice are connected (periodic)
 
-sBool <- TRUE # if True the susceptibility is 1 or 0 // other poss like gaussian with age etc
+sBool <- FALSE # if True the susceptibility is 1 or 0 // other poss like gaussian with age etc
 sFixed <- FALSE
-sNot <- FALSE
+sNot <- TRUE
 
 #observables
 #plotting
@@ -26,10 +27,10 @@ plotEvery <- 10
 
 #clusters
 checkCluster <- TRUE
-clusterEvery <- 10
+clusterEvery <- 1
 
 count <- 0
-auswertungsVector <- array(0, dim=c(100,7), dimnames = list(c(),c("time","largestCluster", "numberCluster","numberInfected","largeOverTotal","largeOverRest","accInfections")))
+auswertungsVector <- array(0, dim=c(1000,8), dimnames = list(c(),c("time","largestCluster", "numberCluster","numberInfected","largeOverTotal","largeOverRest","accInfections", "R0")))
 
 # pFrom <- 0 # which canonical Q(p) are created
 # pTo <- 1
@@ -45,6 +46,8 @@ if(!openBoundaries){# these are the possible connections in 2D lattice
 } else {
   possConn <- array(0,dim=c((2*N-2*sqrt(N)+nShort),3))
 }
+#set Infection status
+infected <- logical(length = N)
 
 #set susceptibility distribution in population
 if(sBool){
@@ -78,45 +81,87 @@ patientZero()
 
 timesteps <- function(){
   #infected people
-  infPeople <- which(infectionTime != 0)
+  infPeople <- which(infected==TRUE)
   if (length(infPeople) == 0){
     stop(... = "No more infected", call. = TRUE)
   }
+
+  
   #infected connections
-  infConn <- possConn[which(possConn[,1] %in% infPeople | possConn[,2] %in% infPeople),c(1,2)]
+  #infConn <- possConn[which(possConn[,1] %in% infPeople | possConn[,2] %in% infPeople),c(1,2,3)]
+                                              #will hier ^  ein xor
+  # schmeisse alle raus wo beide sites infiziert sind
+  
+  infConn <- possConn[which(xor(possConn[,1] %in% infPeople, possConn[,2] %in% infPeople)),c(1,2,3)]
+
+  infBondProb <- infConn[,3]
+  possiblyInf1 <- infConn[,1]
+  possiblyInf2 <- infConn[,2]
+  susc1 <- sDistribution[possiblyInf1]
+  susc2 <- sDistribution[possiblyInf2]
+  #infect people in second row
+  possiblyInf1 <- possiblyInf1[which(infBondProb >= runif(n = nrow(infConn)))]
+  possiblyInf2 <- possiblyInf2[which(infBondProb >= runif(n = nrow(infConn)))]
+  
+  
+  randVec <- runif(n = nrow(infConn))
+  randVec2 <- runif(n = nrow(infConn))
+  newlyInf1 <- possiblyInf1[which(3.000000*randVec <= susc1)]
+  newlyInf2 <- possiblyInf2[which(3.000000*randVec2 <= susc2)]
+  
+  # teste ersten bond, mache beide abfragen S und T
+  # for(i in c(1:nrow(infConn))){
+     
+     # if (infConn[i,2] %in% infPeople){
+     #   safe <- infConn[i,1]
+     #   safe2 <- infConn[i,2]
+     #   infConn[i,1] <- safe2
+     #   infConn[i,2] <- safe
+     # }
+   #}
+  
+  #brb
   
   #infect people
-  possiblyInf <- infConn[which(!(infConn %in% infPeople))]
-  possiblyInf <- possiblyInf[which(!(possiblyInf %in% infPeople))]
-  randVec <- runif(n = length(possiblyInf))
-  susc <- sDistribution[possiblyInf]  
-  newlyInf <- possiblyInf[susc>=randVec]
+  #possiblyInf <- infConn[which(!(infConn[,c(1,2)] %in% infPeople)),3]
+  #infBondProb <- infBondProb[which(!(infConn %in% infPeople),arr.ind =TRUE)[,1]]
+ #possiblyInf <- possiblyInf[which(!(possiblyInf %in% infPeople))] useless?
+  
+  #susc <- sDistribution[possiblyInf]
+  #newlyInf <- possiblyInf[((susc>=randVec) & (infBondProb >=randVec2))]
   
   #recovery // remove people
-  recoveryCheck <- findRecBool(infectionTime[infPeople])
+  recoveryCheck <- findRecBool(infectionTime[infected])
   recPeople <- infPeople[recoveryCheck]
-  infPeople <- infPeople[!recoveryCheck]
+  #infPeople <- infPeople[!recoveryCheck]
   infectionTime[recPeople] <<- 0
   sDistribution[recPeople] <<- 0
-  
+
   #increase infection time 
-  infectionTime[infPeople] <<- infectionTime[infPeople] + 1
-  infectionTime[newlyInf] <<- 1
+  primaryInfected <- length(which(infected == TRUE))
+  infected[newlyInf1] <<- TRUE
+  infected[newlyInf2] <<- TRUE
+  newlyInfected <- length(which(infected == TRUE))
+  R0 <- (newlyInfected-primaryInfected)/primaryInfected
+  infected[recPeople] <<- FALSE
+  infectionTime[infected] <<- infectionTime[infected] + 1
+  return(R0)
 }
 
 
 
 findRecBool <- function(t){
   #p <- 0.5-1/t**2
-  #return(p>=runif(length(t))) #!! more realistic: sample gaussian? 
-  if(t >= 2){return(TRUE)} else {return(FALSE)}
+  return(t>=rnorm(length(t), mean = avgRecoveryTime, sd =1)) #!! more realistic: sample gaussian? 
+
+  #if(t >= 2){return(TRUE)} else {return(FALSE)}
 }
 
 x <- 0
 while (TRUE) {
 
     
-  timesteps()
+  R0 <- timesteps()
   if((x %% plotEvery == 0) && (plotIt == TRUE)){
     visibleLattice <- array(0, dim= c(sqrt(N),sqrt(N)))
     visibleLattice[which(infectionTime != 0)] <- 1
@@ -145,7 +190,8 @@ while (TRUE) {
     auswertungsVector[count,4] <- sum(weight)
     auswertungsVector[count,5] <- weight[which.max(weight)]/sum(weight)
     auswertungsVector[count,6] <- weight[which.max(weight)]/sum(weight[-which.max(weight)]) #! is this right?
-    auswertungsVector[count,7] <- length(which(sDistribution != initialsDistribution))/N
+    auswertungsVector[count,7] <- (length(which(sDistribution != initialsDistribution))+length(infPeople))/N
+    auswertungsVector[count,8] <- R0
     # print(paste("largest cluster:" , weight[which.max(weight)], sep = " "))
     # print(paste("Number cluster:" , length(which(weight!=0)), sep = " "))
     # print(paste("Infected:" , sum(weight), sep = " "))
@@ -158,12 +204,17 @@ while (TRUE) {
   x <- x + 1
 }
 
-plot(auswertungsVector[,1],auswertungsVector[,2])
-plot(auswertungsVector[,1],auswertungsVector[,3])
-plot(auswertungsVector[,1],auswertungsVector[,4])
-plot(auswertungsVector[,1],auswertungsVector[,5])
-plot(auswertungsVector[,1],auswertungsVector[,6])
-plot(auswertungsVector[,1],auswertungsVector[,7])
+# tau <- avgRecoveryTime
+# x<- ?
+# 
+# R0 <- x*S*tau/N
+plot(auswertungsVector[,1],auswertungsVector[,2], xlab = "T",ylab = "largest Cluster")
+plot(auswertungsVector[,1],auswertungsVector[,3], xlab = "T",ylab = "Number of Clusters")
+plot(auswertungsVector[,1],auswertungsVector[,4], xlab = "T",ylab = "Number Infected")
+plot(auswertungsVector[,1],auswertungsVector[,5], xlab = "T",ylab = "Largest Cluster over Total Infected")
+plot(auswertungsVector[,1],auswertungsVector[,6], xlab = "T",ylab = "Largest Cluster over Smaller Clusters")
+plot(auswertungsVector[,1],auswertungsVector[,7], xlab = "T",ylab = "Attack Rate")
+plot(auswertungsVector[,1],auswertungsVector[,8], xlab = "T",ylab = "R0")
 #plot(auswertungsVector[,1],plot(auswertungsVector[,8])
 #plot(auswertungsVector[,1],plot(auswertungsVector[,9])
 # snapshot <- function(){

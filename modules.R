@@ -6,7 +6,7 @@ library('Brobdingnag')
 
 patientZero <- function(){
   zeroId <- sample(x = which(sDistribution == 1),size = 1) #choose one of the susceptibles to be patient 0
-  infectionTime[zeroId] <<- 1 
+  infected[zeroId] <<- TRUE
   #latticeID <- which(lattice[,,1] == zeroId, arr.ind = TRUE)
   #lattice[latticeID[1], latticeID[2],2] <<- 1 
 }
