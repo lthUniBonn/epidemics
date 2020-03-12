@@ -14,8 +14,10 @@ patientZero <- function(){
 # find possible connections in 2d case next neighbor
 findConn <- function(){
   counter <- 0
+  
   for(j in c(1:(sqrt(N)-1))){
     for(i in c(1:(sqrt(N)-1))){
+      
       counter <- counter + 1
       possConn[counter,1] <<- lattice[i,j,1]  
       possConn[counter,2] <<- lattice [i+1,j,1]
@@ -51,30 +53,32 @@ findConn <- function(){
       possConn[counter,3] <<- transProb(lattice[i,1,3],lattice[i,sqrt(N),3])
     }
   }
-  while (TRUE) {
-    if(nShort != 0){
-      counter <- counter + 1
-      condition <- TRUE
-      while (condition == TRUE) {
-        fromRow <- sample(c(1:sqrt(N)), size = nShort, replace = TRUE)
-        fromCol <- sample(c(1:sqrt(N)), size = nShort, replace = TRUE)
-        toRow   <- sample(c(1:sqrt(N)), size = nShort, replace = TRUE)
-        toCol   <- sample(c(1:sqrt(N)), size = nShort, replace = TRUE)
-        for (i in c(1:nShort)){
-          if (!(fromRow[i] == toRow[i] && fromCol[i] == toCol[i])){
-            condition <- FALSE
-            break
+  if(nShort != 0){   
+    while (TRUE) {
+        if(nShort != 0){
+          counter <- counter + 1
+          condition <- TRUE
+          while (condition == TRUE) {
+            fromRow <- sample(c(1:sqrt(N)), size = nShort, replace = TRUE)
+            fromCol <- sample(c(1:sqrt(N)), size = nShort, replace = TRUE)
+            toRow   <- sample(c(1:sqrt(N)), size = nShort, replace = TRUE)
+            toCol   <- sample(c(1:sqrt(N)), size = nShort, replace = TRUE)
+            for (i in c(1:nShort)){
+              if (!(fromRow[i] == toRow[i] && fromCol[i] == toCol[i])){
+                condition <- FALSE
+                break
+              }
+            }
           }
+          for (i in c(0:(nShort-1))){
+          possConn[counter + i,1] <<- lattice[fromRow[i+1],fromCol[i+1],1]
+          possConn[counter + i,2] <<- lattice[toRow[i+1],toCol[i+1],1]
+          possConn[counter + i,3] <<- transProb(lattice[fromRow[i+1],fromCol[i+1],3],lattice[toRow[i+1],toCol[i+1],3])
+        # not left < right with shortcuts #!!
+          }
+        counter <- counter - 1
+        if (!(TRUE %in% duplicated(possConn))){break}
         }
-      }
-      for (i in c(0:(nShort-1))){
-      possConn[counter + i,1] <<- lattice[fromRow[i+1],fromCol[i+1],1]
-      possConn[counter + i,2] <<- lattice[toRow[i+1],toCol[i+1],1]
-      possConn[counter + i,3] <<- transProb(lattice[fromRow[i+1],fromCol[i+1],3],lattice[toRow[i+1],toCol[i+1],3])
-    # not left < right with shortcuts #!!
-      }
-    counter <- counter - 1
-    if (!(TRUE %in% duplicated(possConn))){break}
     }
   }
   # possConn <<- possConn[-which(possConn[,3]==0),] only works if which retruns something! only needed if 0 possible

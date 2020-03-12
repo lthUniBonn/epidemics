@@ -7,17 +7,17 @@ source('modules.R')
 profile <- profvis({
 #set.seed(1)
 
-immunity <- 0.3 #ratio of immune people 
+immunity <- 0.42 #ratio of immune people 
 bondOccProb <- 0.5
 
 #network
 N = 400**2 # number of people
-nShort <- 100 # how many shortcuts are created // not impossibly many, could lead to ~inf loop #!!
+nShort <- 10 # how many shortcuts are created // not impossibly many, could lead to ~inf loop #!!
 openBoundaries <- FALSE # if FALSE the opposing edges of the lattice are connected (periodic)
 
-sBool <- FALSE # if True the susceptibility is 1 or 0 // other poss like gaussian with age etc
+sBool <- TRUE # if True the susceptibility is 1 or 0 // other poss like gaussian with age etc
 sFixed <- FALSE
-sNot <- TRUE
+sNot <- FALSE
 
 #observables
 #plotting
@@ -107,8 +107,9 @@ timesteps <- function(){
 
 
 findRecBool <- function(t){
-  p <- 0.5-1/t
-  return(p>=runif(length(t))) #!! more realistic: sample gaussian? 
+  #p <- 0.5-1/t**2
+  #return(p>=runif(length(t))) #!! more realistic: sample gaussian? 
+  if(t >= 2){return(TRUE)} else {return(FALSE)}
 }
 
 x <- 0
@@ -157,6 +158,14 @@ while (TRUE) {
   x <- x + 1
 }
 
+plot(auswertungsVector[,1],auswertungsVector[,2])
+plot(auswertungsVector[,1],auswertungsVector[,3])
+plot(auswertungsVector[,1],auswertungsVector[,4])
+plot(auswertungsVector[,1],auswertungsVector[,5])
+plot(auswertungsVector[,1],auswertungsVector[,6])
+plot(auswertungsVector[,1],auswertungsVector[,7])
+#plot(auswertungsVector[,1],plot(auswertungsVector[,8])
+#plot(auswertungsVector[,1],plot(auswertungsVector[,9])
 # snapshot <- function(){
 #   identify clusters
 #   measure observables
