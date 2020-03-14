@@ -5,16 +5,16 @@ source('modules.R')
 #startTime <- proc.time()
 #---------- Parameters to be set ----------------
 profile <- profvis({
-#set.seed(1)
+#set.seed(3)
 
 immunity <- 0.3 #ratio of immune people 
-bondOccProb <- 0.9
-avgRecoveryTime <- 4
+bondOccProb <- 0.99
+avgRecoveryTime <- 3.5
 
 #network
-N = 100**2 # number of people
-nShort <- 10 # how many shortcuts are created // not impossibly many, could lead to ~inf loop #!!
-openBoundaries <- FALSE # if FALSE the opposing edges of the lattice are connected (periodic)
+N = 400**2 # number of people
+nShort <- 0 # how many shortcuts are created // not impossibly many, could lead to ~inf loop #!!
+openBoundaries <- TRUE # if FALSE the opposing edges of the lattice are connected (periodic)
 
 sBool <- FALSE # if True the susceptibility is 1 or 0 // other poss like gaussian with age etc
 sFixed <- FALSE
@@ -23,11 +23,11 @@ sNot <- TRUE
 #observables
 #plotting
 plotIt <- FALSE
-plotEvery <- 10
+plotEvery <- 100
 plotAccumulated <- TRUE
 #clusters
 checkCluster <- TRUE
-clusterEvery <- 1
+clusterEvery <- 100
 
 count <- 0
 auswertungsVector <- array(0, dim=c(1000,8), dimnames = list(c(),c("time","largestCluster", "numberCluster","numberInfected","largeOverTotal","largeOverRest","accInfections", "R0")))
@@ -93,57 +93,46 @@ timesteps <- function(){
   # schmeisse alle raus wo beide sites infiziert sind
   
   infConn <- possConn[which(xor(possConn[,1] %in% infPeople, possConn[,2] %in% infPeople)),c(1,2,3)]
-
+  
   infBondProb <- infConn[,3]
   possiblyInf1 <- infConn[,1]
   possiblyInf2 <- infConn[,2]
+  
   susc1 <- sDistribution[possiblyInf1]
   susc2 <- sDistribution[possiblyInf2]
-  #infect people in second row
+  
+  # test for bond probability
   possiblyInf1 <- possiblyInf1[which(infBondProb >= runif(n = nrow(infConn)))]
   possiblyInf2 <- possiblyInf2[which(infBondProb >= runif(n = nrow(infConn)))]
   
+  #randVec <- runif(n = nrow(infConn))
+  #randVec2 <- runif(n = nrow(infConn))
+  # test for susceptibility
+  newlyInf1 <- possiblyInf1[which(susc1 >= 3.000000*runif(n = nrow(infConn)))]
+  newlyInf2 <- possiblyInf2[which(susc2 >= 3.000000*runif(n = nrow(infConn)))]
   
-  randVec <- runif(n = nrow(infConn))
-  randVec2 <- runif(n = nrow(infConn))
-  newlyInf1 <- possiblyInf1[which(3.000000*randVec <= susc1)]
-  newlyInf2 <- possiblyInf2[which(3.000000*randVec2 <= susc2)]
-  
-  # teste ersten bond, mache beide abfragen S und T
-  # for(i in c(1:nrow(infConn))){
-     
-     # if (infConn[i,2] %in% infPeople){
-     #   safe <- infConn[i,1]
-     #   safe2 <- infConn[i,2]
-     #   infConn[i,1] <- safe2
-     #   infConn[i,2] <- safe
-     # }
-   #}
-  
-  #brb
-  
-  #infect people
-  #possiblyInf <- infConn[which(!(infConn[,c(1,2)] %in% infPeople)),3]
-  #infBondProb <- infBondProb[which(!(infConn %in% infPeople),arr.ind =TRUE)[,1]]
- #possiblyInf <- possiblyInf[which(!(possiblyInf %in% infPeople))] useless?
-  
-  #susc <- sDistribution[possiblyInf]
-  #newlyInf <- possiblyInf[((susc>=randVec) & (infBondProb >=randVec2))]
   
   #recovery // remove people
   recoveryCheck <- findRecBool(infectionTime[infected])
   recPeople <- infPeople[recoveryCheck]
-  #infPeople <- infPeople[!recoveryCheck]
+  
+  # check if people who are recovering are newly infected and dismiss these infections
+  
+  # an effective %in% is setdiff:
+  newlyInf1 <- setdiff(newlyInf1,recPeople)
+  newlyInf2 <- setdiff(newlyInf2,recPeople)
+  
   infectionTime[recPeople] <<- 0
   sDistribution[recPeople] <<- 0
 
   #increase infection time 
   primaryInfected <- length(which(infected == TRUE))
+  infected[recPeople] <<- FALSE
   infected[newlyInf1] <<- TRUE
   infected[newlyInf2] <<- TRUE
   newlyInfected <- length(which(infected == TRUE))
   R0 <- (newlyInfected-primaryInfected)/primaryInfected
-  infected[recPeople] <<- FALSE
+  
   infectionTime[infected] <<- infectionTime[infected] + 1
   return(R0)
 }
@@ -160,7 +149,7 @@ findRecBool <- function(t){
 x <- 0
 while (TRUE) {
 
-    
+  
   R0 <- timesteps()
   if((x %% plotEvery == 0) && (plotIt == TRUE)){
     visibleLattice <- array(0, dim= c(sqrt(N),sqrt(N)))
