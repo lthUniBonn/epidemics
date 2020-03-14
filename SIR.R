@@ -5,8 +5,12 @@ source('modules.R')
 #startTime <- proc.time()
 #---------- Parameters to be set ----------------
 profile <- profvis({
-set.seed(1)
+#set.seed(1)
 
+#mit diesen Parametern zeigt die ausbreitung wieder einen klaren richtungs-bias  
+# das ist erst passiert wenn bondOccProb nicht 1 ist
+  
+  
 immunity <- 0.5 #ratio of immune people 
 bondOccProb <- 1
 avgRecoveryTime <- 3
@@ -23,11 +27,12 @@ sNot <- TRUE
 #observables
 #plotting
 plotIt <- TRUE
+plotAccumulated <- FALSE
 plotEvery <- 10
 
 #clusters
 checkCluster <- TRUE
-clusterEvery <- 1
+clusterEvery <- 10
 
 count <- 0
 auswertungsVector <- array(0, dim=c(1000,8), dimnames = list(c(),c("time","largestCluster", "numberCluster","numberInfected","largeOverTotal","largeOverRest","accInfections", "R0")))
@@ -167,6 +172,15 @@ while (TRUE) {
     visibleLattice[which(infectionTime != 0)] <- 1
     plot(which(visibleLattice==1, arr.ind = TRUE)[,1], which(visibleLattice==1, arr.ind = TRUE)[,2],xlim = c(0,sqrt(N)), ylim = c(0,sqrt(N)))
     #plot(visibleLattice)
+  }
+  if((x %% plotEvery == 0) && (plotAccumulated == TRUE)){
+    visibleLattice <- array(0, dim= c(sqrt(N),sqrt(N)))
+    visibleLattice[which(sDistribution  != initialsDistribution)] <- 1
+    plot(which(visibleLattice==1, arr.ind = TRUE)[,1], which(visibleLattice==1, arr.ind = TRUE)[,2],xlim = c(0,sqrt(N)), ylim = c(0,sqrt(N)),type ="p", pch = '.', pty = "s")
+    # par(new=TRUE)
+    # visibleLattice[which(infected == TRUE)] <- 1
+    # plot(which(visibleLattice==1, arr.ind = TRUE)[,1], which(visibleLattice==1, arr.ind = TRUE)[,2],xlim = c(0,sqrt(N)), ylim = c(0,sqrt(N)),type ="p", pch = '.',col = 'red', pty = "s")
+    # #plot(visibleLattice)
   }
 
   if ((x %% clusterEvery == 0) && (checkCluster == TRUE)){
