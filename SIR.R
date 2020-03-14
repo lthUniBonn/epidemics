@@ -5,11 +5,11 @@ source('modules.R')
 #startTime <- proc.time()
 #---------- Parameters to be set ----------------
 profile <- profvis({
-set.seed(1)
+#set.seed(1)
 
-immunity <- 0.5 #ratio of immune people 
-bondOccProb <- 1
-avgRecoveryTime <- 3
+immunity <- 0.3 #ratio of immune people 
+bondOccProb <- 0.9
+avgRecoveryTime <- 4
 
 #network
 N = 100**2 # number of people
@@ -22,9 +22,9 @@ sNot <- TRUE
 
 #observables
 #plotting
-plotIt <- TRUE
+plotIt <- FALSE
 plotEvery <- 10
-
+plotAccumulated <- TRUE
 #clusters
 checkCluster <- TRUE
 clusterEvery <- 1
@@ -168,7 +168,15 @@ while (TRUE) {
     plot(which(visibleLattice==1, arr.ind = TRUE)[,1], which(visibleLattice==1, arr.ind = TRUE)[,2],xlim = c(0,sqrt(N)), ylim = c(0,sqrt(N)))
     #plot(visibleLattice)
   }
-
+  if((x %% plotEvery == 0) && (plotAccumulated == TRUE)){
+    visibleLattice <- array(0, dim= c(sqrt(N),sqrt(N)))
+    visibleLattice[which(sDistribution  != initialsDistribution)] <- 1
+    plot(which(visibleLattice==1, arr.ind = TRUE)[,1], which(visibleLattice==1, arr.ind = TRUE)[,2],xlim = c(0,sqrt(N)), ylim = c(0,sqrt(N)),type ="p", pch = '.', pty = "s")
+    # par(new=TRUE)
+    # visibleLattice[which(infected == TRUE)] <- 1
+    # plot(which(visibleLattice==1, arr.ind = TRUE)[,1], which(visibleLattice==1, arr.ind = TRUE)[,2],xlim = c(0,sqrt(N)), ylim = c(0,sqrt(N)),type ="p", pch = '.',col = 'red', pty = "s")
+    # #plot(visibleLattice)
+  }
   if ((x %% clusterEvery == 0) && (checkCluster == TRUE)){
     count <- count +1
     people <- c(1:N)
