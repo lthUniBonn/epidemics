@@ -11,7 +11,7 @@ source('modules.R')
 immunity <- 0 #ratio of immune people 
 bondOccProb <- 0.9
 
-
+params <- paste(c(immunity, bondOccProb, avgRecoveryTime), sep="", collapse="_")
 #!! match recovery with age?? 
 avgRecoveryTime <- 3.55
 sdRecoveryTime <- 1
@@ -120,12 +120,20 @@ while (TRUE) {
         addConnection(infConn[i,1],infConn[i,2])
       }
     }
-    write(x = c(x, weight[which.max(weight)]), file = "data/maxWeight.txt", append = TRUE,sep = "\t")
-    write(x = c(x, length(which(weight!=0))), file = "data/numberCluster.txt", append = TRUE,sep = "\t")
-    write(x = c(x, sum(weight)), file = "data/numberInfected.txt", append = TRUE,sep = "\t")
-    write(x = c(x, weight[which.max(weight)]/sum(weight)), file = "data/largeOverTotal.txt", append = TRUE,sep = "\t")
-    write(x = c(x, (length(which(sDistribution != initialsDistribution))+length(infPeople))/N), file = "data/accInfections.txt", append = TRUE,sep = "\t")
-    write(x = c(x, R0Mean[x]), file = "data/R0Mean.txt", append = TRUE,sep = "\t")
+    if (x == 0){#write headers + overwrite old files to start appending to fresh file
+      write(x = c("#x","maxWeight"), file = paste(c("data/maxWeight_", params, ".txt"),sep="", collapse=""), append = FALSE, sep = "\t", ncolumns = 2)
+      write(x = c("#x","numberCluster"), file = paste(c("data/numberCluster_", params, ".txt"),sep="", collapse=""), append = FALSE, sep = "\t", ncolumns = 2)
+      write(x = c("#x","numberInfected"), file = paste(c("data/numberInfected_", params, ".txt"),sep="", collapse=""), append = FALSE, sep = "\t", ncolumns = 2)
+      write(x = c("#x","largeOverTotal"), file = paste(c("data/largeOverTotal_", params, ".txt"),sep="", collapse=""), append = FALSE, sep = "\t", ncolumns = 2)
+      write(x = c("#x","accInfections"), file = paste(c("data/accInfections_", params, ".txt"),sep="", collapse=""), append = FALSE, sep = "\t", ncolumns = 2)
+      write(x = c("#x","R0Mean"), file = paste(c("data/R0Mean_", params, ".txt"),sep="", collapse=""), append = FALSE, sep = "\t", ncolumns = 2)
+    }
+    write(x = c(x, weight[which.max(weight)]), file = paste(c("data/maxWeight_", params, ".txt"),sep="", collapse=""), append = TRUE,sep = "\t")
+    write(x = c(x, length(which(weight!=0))), file = paste(c("data/numberCluster_", params, ".txt"),sep="", collapse=""), append = TRUE,sep = "\t")
+    write(x = c(x, sum(weight)), file = paste(c("data/numberInfected_", params, ".txt"),sep="", collapse=""), append = TRUE,sep = "\t")
+    write(x = c(x, weight[which.max(weight)]/sum(weight)), file = paste(c("data/largeOverTotal_", params, ".txt"),sep="", collapse=""), append = TRUE,sep = "\t")
+    write(x = c(x, (length(which(sDistribution != initialsDistribution))+length(infPeople))/N), file = paste(c("data/accInfections_", params, ".txt"),sep="", collapse=""), append = TRUE,sep = "\t")
+    if (x != 0){write(x = c(x, R0Mean[x]), file = paste(c("data/R0Mean_", params, ".txt"),sep="", collapse=""), append = TRUE,sep = "\t")}
     # auswertungsVector[count,1] <- x
     # auswertungsVector[count,2] <- weight[which.max(weight)]
     # auswertungsVector[count,3] <- length(which(weight!=0))
@@ -139,14 +147,29 @@ while (TRUE) {
   x <- x + 1
 }
 
-auswertungsVector <- auswertungsVector[c(1:count),]
-plot(auswertungsVector[,1],auswertungsVector[,2], xlab = "T",ylab = "largest Cluster")
-plot(auswertungsVector[,1],auswertungsVector[,3], xlab = "T",ylab = "Number of Clusters")
-plot(auswertungsVector[,1],auswertungsVector[,4], xlab = "T",ylab = "Number Infected")
-plot(auswertungsVector[,1],auswertungsVector[,5], xlab = "T",ylab = "Largest Cluster over Total Infected")
-plot(auswertungsVector[,1],auswertungsVector[,6], xlab = "T",ylab = "Largest Cluster over Smaller Clusters")
-plot(auswertungsVector[,1],auswertungsVector[,7], xlab = "T",ylab = "Attack Rate")
-plot(auswertungsVector[,1],auswertungsVector[,8], xlab = "T",ylab = "R0")
+#read data from file 
+maxWeightDf <- read.table(file = paste(c("data/maxWeight_", params, ".txt"),sep="", collapse=""))
+numberClusterDf <- read.table(file = paste(c("data/numberCluster_", params, ".txt"),sep="", collapse=""))
+numberInfectedDf <- read.table(file = paste(c("data/numberInfected_", params, ".txt"),sep="", collapse=""))
+largeOverTotalDf <- read.table(file = paste(c("data/largeOverTotal_", params, ".txt"),sep="", collapse=""))
+accInfectionsDf <- read.table(file = paste(c("data/accInfections_", params, ".txt"),sep="", collapse=""))
+R0MeanDf <- read.table(file = paste(c("data/R0Mean_", params, ".txt"),sep="", collapse=""))
+
+plot(maxWeightDf[,1], maxWeightDf[,2], xlab = "T",ylab = "largest Cluster")
+plot(numberClusterDf[,1],numberClusterDf[,2], xlab = "T",ylab = "Number of Clusters")
+plot(numberInfectedDf[,1],numberInfectedDf[,2], xlab = "T",ylab = "Number Infected")
+plot(largeOverTotalDf[,1],largeOverTotalDf[,2], xlab = "T",ylab = "Largest Cluster over Total Infected")
+plot(accInfectionsDf[,1],accInfectionsDf[,2], xlab = "T",ylab = "Attack Rate")
+plot(R0MeanDf[,1],R0MeanDf[,2], xlab = "T",ylab = "R0 Mean")
+
+# auswertungsVector <- auswertungsVector[c(1:count),]
+# plot(auswertungsVector[,1],auswertungsVector[,2], xlab = "T",ylab = "largest Cluster")
+# plot(auswertungsVector[,1],auswertungsVector[,3], xlab = "T",ylab = "Number of Clusters")
+# plot(auswertungsVector[,1],auswertungsVector[,4], xlab = "T",ylab = "Number Infected")
+# plot(auswertungsVector[,1],auswertungsVector[,5], xlab = "T",ylab = "Largest Cluster over Total Infected")
+# plot(auswertungsVector[,1],auswertungsVector[,6], xlab = "T",ylab = "Largest Cluster over Smaller Clusters")
+# plot(auswertungsVector[,1],auswertungsVector[,7], xlab = "T",ylab = "Attack Rate")
+# plot(auswertungsVector[,1],auswertungsVector[,8], xlab = "T",ylab = "R0")
 
 #endTime <- proc.time()
 #runTime <- endTime-startTime
@@ -159,7 +182,10 @@ plot(auswertungsVector[,1],auswertungsVector[,8], xlab = "T",ylab = "R0")
 #observed that for large (>100) lattices the boundaries are basically irrelevant for the largest cluster size
 
 
-# auswertungsvektor in file + auslesen zum plotten + filename mit params?
+
+# ausführen für verschiedene susc / bond prob / recovery times 
+# recovery time vom alter abhängig
+# vaccination function nach sDist erstellung (nur für nicht alte / babies vaccination?)
 
 
 
