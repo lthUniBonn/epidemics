@@ -5,7 +5,7 @@ source('modules.R')
 #startTime <- proc.time()
 #---------- Parameters to be set ----------------
 profile <- profvis({
-#set.seed(3)
+set.seed(3)
 
 immunity <- 0.3 #ratio of immune people 
 bondOccProb <- 0.99
@@ -92,7 +92,12 @@ timesteps <- function(){
                                               #will hier ^  ein xor
   # schmeisse alle raus wo beide sites infiziert sind
   
-  infConn <- possConn[which(xor(possConn[,1] %in% infPeople, possConn[,2] %in% infPeople)),c(1,2,3)]
+  #infConn <- possConn[which(xor(possConn[,1] %in% infPeople, possConn[,2] %in% infPeople)),c(1,2,3)]
+  
+  a <- possConn[,1] %in% infPeople
+  b <- possConn[,2] %in% infPeople
+
+  infConn <- possConn[which(xor(a, b)),c(1,2,3)]
   
   infBondProb <- infConn[,3]
   possiblyInf1 <- infConn[,1]
