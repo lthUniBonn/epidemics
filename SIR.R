@@ -120,14 +120,20 @@ while (TRUE) {
         addConnection(infConn[i,1],infConn[i,2])
       }
     }
-    auswertungsVector[count,1] <- x
-    auswertungsVector[count,2] <- weight[which.max(weight)]
-    auswertungsVector[count,3] <- length(which(weight!=0))
-    auswertungsVector[count,4] <- sum(weight)
-    auswertungsVector[count,5] <- weight[which.max(weight)]/sum(weight)
-    auswertungsVector[count,6] <- weight[which.max(weight)]/sum(weight[-which.max(weight)]) #! is this right?
-    auswertungsVector[count,7] <- (length(which(sDistribution != initialsDistribution))+length(infPeople))/N
-    auswertungsVector[count,8] <- R0
+    write(x = c(x, weight[which.max(weight)]), file = "data/maxWeight.txt", append = TRUE,sep = "\t")
+    write(x = c(x, length(which(weight!=0))), file = "data/numberCluster.txt", append = TRUE,sep = "\t")
+    write(x = c(x, sum(weight)), file = "data/numberInfected.txt", append = TRUE,sep = "\t")
+    write(x = c(x, weight[which.max(weight)]/sum(weight)), file = "data/largeOverTotal.txt", append = TRUE,sep = "\t")
+    write(x = c(x, (length(which(sDistribution != initialsDistribution))+length(infPeople))/N), file = "data/accInfections.txt", append = TRUE,sep = "\t")
+    write(x = c(x, R0Mean[x]), file = "data/R0Mean.txt", append = TRUE,sep = "\t")
+    # auswertungsVector[count,1] <- x
+    # auswertungsVector[count,2] <- weight[which.max(weight)]
+    # auswertungsVector[count,3] <- length(which(weight!=0))
+    # auswertungsVector[count,4] <- sum(weight)
+    # auswertungsVector[count,5] <- weight[which.max(weight)]/sum(weight)
+    # auswertungsVector[count,6] <- weight[which.max(weight)]/sum(weight[-which.max(weight)]) #! is this right?
+    # auswertungsVector[count,7] <- (length(which(sDistribution != initialsDistribution))+length(infPeople))/N
+    # auswertungsVector[count,8] <- R0
   }
   
   x <- x + 1
@@ -153,7 +159,7 @@ plot(auswertungsVector[,1],auswertungsVector[,8], xlab = "T",ylab = "R0")
 #observed that for large (>100) lattices the boundaries are basically irrelevant for the largest cluster size
 
 
-# auswertungsvektor in file 
+# auswertungsvektor in file + auslesen zum plotten + filename mit params?
 
 
 
