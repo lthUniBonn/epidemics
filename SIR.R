@@ -9,7 +9,7 @@ source('modules.R')
 #set.seed(1)
 
 immunity <- 0 #ratio of immune people 
-bondOccProb <- 0.8
+bondOccProb <- 0.9
 
 
 #!! match recovery with age?? 
@@ -57,7 +57,7 @@ if(periodicBoundaries){# these are the possible connections in 2D lattice
 #set Infection status
 infected <- logical(length = N)
 infectionTime <- numeric(length=N)
-
+recovered <- logical(length=N)
 #set susceptibility distribution in population
 if(sBool){
   sDistribution <- sample(c(0,1), replace=TRUE, size=N,prob = c(immunity,1-immunity))

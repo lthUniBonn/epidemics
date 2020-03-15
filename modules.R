@@ -66,18 +66,18 @@ timesteps <- function(){
   
   infected[newlyInf1] <<- TRUE
   infected[newlyInf2] <<- TRUE
-  totalInfected <- length(which(infected == TRUE))
-  
+  totalInfected <- length(which(infected == TRUE)) #newly infected (including recovering)
   infected[recPeople] <<- FALSE
+  
   #increase infection time 
   infectionTime[infected] <<- infectionTime[infected] + 1
   
   R0 <- (totalInfected-primaryInfected)/primaryInfected
   #statistical participation in disease spread for this timestep
   
+  recovered[recPeople] <<- 1 #only take R0 measurement of recovered (for a total disease cycle and not partial timesteps)
   R0OverInfectiousPeriod[infPeople] <<- R0OverInfectiousPeriod[infPeople] + R0
-  R0Mean[x] <<- mean(R0OverInfectiousPeriod[which(R0OverInfectiousPeriod!=0)])#!! check!! 
-  
+  R0Mean[x] <<- mean(R0OverInfectiousPeriod[which((R0OverInfectiousPeriod!=0) & (recovered == 1))])#!! check!! 
   return(R0)
 }
 
