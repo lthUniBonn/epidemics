@@ -10,10 +10,10 @@ source('modules.R')
 
 immunity <- 0 #ratio of immune people 
 bondOccProb <- 0.9
-
-params <- paste(c(immunity, bondOccProb, avgRecoveryTime), sep="", collapse="_")
-#!! match recovery with age?? 
 avgRecoveryTime <- 3.55
+params <- paste(c(immunity, bondOccProb, avgRecoveryTime), sep="", collapse="_") #!! maybe it is better to put the full parameter list into the file itself?, including the distribution parameters, nShort etc?
+#!! match recovery with age?? 
+
 sdRecoveryTime <- 1
 
 sAgeDist <- c(1, 0.7, 0.5, 0.7, 0.8, 1)/3.5 #susceptibility depending on age
@@ -148,6 +148,7 @@ while (TRUE) {
 }
 
 #read data from file 
+#!! this data can only be read if the params are set correctly, is this intented?
 maxWeightDf <- read.table(file = paste(c("data/maxWeight_", params, ".txt"),sep="", collapse=""))
 numberClusterDf <- read.table(file = paste(c("data/numberCluster_", params, ".txt"),sep="", collapse=""))
 numberInfectedDf <- read.table(file = paste(c("data/numberInfected_", params, ".txt"),sep="", collapse=""))
