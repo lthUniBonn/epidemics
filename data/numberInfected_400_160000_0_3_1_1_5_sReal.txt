@@ -1,0 +1,3 @@
+#x	numberInfected
+0	3
+10	136031

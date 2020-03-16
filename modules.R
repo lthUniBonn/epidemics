@@ -28,20 +28,20 @@ timesteps <- function(){
   # only get bonds where exactly one site is infected
   a <- possConn[,1] %in% infPeople
   b <- possConn[,2] %in% infPeople
-  infConn <- possConn[which(xor(a, b)),c(1,2,3)]
+  infConn <- possConn[which(xor(a, b)),c(1,2)]
   
   # split infConn for convenience
-  infBondProb <- infConn[,3]
+  #infBondProb <- infConn[,3]
   possiblyInf1 <- infConn[,1]
   possiblyInf2 <- infConn[,2]
   
   # test for bond probability
-  bondCheck <- runif(n = nrow(infConn))
-  possiblyInf1 <- possiblyInf1[which(infBondProb >= bondCheck)]
-  possiblyInf2 <- possiblyInf2[which(infBondProb >= bondCheck)]
+  #bondCheck <- runif(n = nrow(infConn))
+  #possiblyInf1 <- possiblyInf1[which(infBondProb >= bondCheck)]
+  #possiblyInf2 <- possiblyInf2[which(infBondProb >= bondCheck)]
   
-  susc1 <- sDistribution[possiblyInf1]
-  susc2 <- sDistribution[possiblyInf2]
+  susc1 <- sDistribution[possiblyInf1]/sDistFactor
+  susc2 <- sDistribution[possiblyInf2]/sDistFactor
   
   # test for susceptibility
   newlyInf1 <- possiblyInf1[which(susc1 >= runif(n = length(possiblyInf1)))] 
@@ -77,7 +77,9 @@ timesteps <- function(){
   
   recovered[recPeople] <<- 1 #only take R0 measurement of recovered (for a total disease cycle and not partial timesteps)
   R0OverInfectiousPeriod[infPeople] <<- R0OverInfectiousPeriod[infPeople] + R0
-  R0Mean[x] <<- mean(R0OverInfectiousPeriod[which((R0OverInfectiousPeriod!=0) & (recovered == 1))])#!! check!! 
+  if(sum(recovered)>=2){
+    R0Mean[x] <<- mean(R0OverInfectiousPeriod[which((R0OverInfectiousPeriod!=0) & (recovered == 1))])#!! check!! 
+  }
   return(R0)
 }
 
@@ -100,19 +102,23 @@ findConn <- function(){
       counter <- counter + 1
       possConn[counter,1] <<- lattice[i,j]  
       possConn[counter,2] <<- lattice [i+1,j]
+      #possConn[counter,3] <<- transProb(1,0)
       counter <- counter +1 
       possConn[counter,1] <<- lattice[i,j] 
       possConn[counter,2] <<- lattice [i,j+1]
+      #possConn[counter,3] <<- transProb(0,1)
     }
     counter <- counter + 1
     possConn[counter,1] <<- lattice[sqrt(N),j]  
     possConn[counter,2] <<- lattice [sqrt(N),j+1] 
+    #possConn[counter,3] <<- transProb(0,1)
     
   }
   for (i in c(1:(sqrt(N)-1))){
     counter <- counter + 1
     possConn[counter,1] <<- lattice[i,sqrt(N)]  
     possConn[counter,2] <<- lattice [i+1,sqrt(N)]
+    #possConn[counter,3] <<- transProb(1,0)
   }
   
   if(periodicBoundaries){
@@ -120,11 +126,13 @@ findConn <- function(){
       counter <- counter + 1
       possConn[counter,1] <<- lattice[1,i]
       possConn[counter,2] <<- lattice[sqrt(N),i]
+      #possConn[counter,3] <<- transProb(1,0)
     }
     for(i in c(1:sqrt(N))){
       counter <- counter + 1
       possConn[counter,1] <<- lattice[i,1]
       possConn[counter,2] <<- lattice[i,sqrt(N)]
+      #possConn[counter,3] <<- transProb(0,1)
     }
   }
   if(nShort != 0){   
@@ -147,6 +155,7 @@ findConn <- function(){
         for (i in c(0:(nShort-1))){
           possConn[counter + i,1] <<- lattice[fromRow[i+1],fromCol[i+1]]
           possConn[counter + i,2] <<- lattice[toRow[i+1],toCol[i+1]]
+          #possConn[counter + i,3] <<- transProb((fromRow[i+1]-toRow[i+1]), (fromCol[i+1]-toCol[i+1]))
           
           # not left < right with shortcuts #!!
         }
@@ -155,12 +164,20 @@ findConn <- function(){
       }
     }
   }
-  possConn[,3] <<- mapply(FUN = transProb, possConn[,1], possConn[,2])
+  
 }
 
-#!! change later // get bond occupation probability  
+
 transProb <- function(x,y){ #this function determines the likelihood of transmission along the connection from x to y
-  return(bondOccProb) 
+  if(abs(x) > sqrt(N)/2){
+    x <- sqrt(N) - abs(x)
+  }
+  if(abs(y) > sqrt(N)/2){
+    y <- sqrt(N) - abs(y) 
+  }
+  dist <- sqrt(x**2 + y**2)
+  prob <- 1/dist**bondOccPow*0.5
+  return(prob) 
 }
 
 

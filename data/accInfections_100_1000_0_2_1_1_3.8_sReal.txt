@@ -1,0 +1,2 @@
+#x	accInfections
+0	1e-04

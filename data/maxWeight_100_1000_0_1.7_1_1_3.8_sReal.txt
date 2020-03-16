@@ -1,0 +1,3 @@
+#x	maxWeight
+0	2
+10	2

@@ -8,29 +8,42 @@ source('modules.R')
 
 #set.seed(1)
 
-immunity <- 0 #ratio of immune people 
-bondOccProb <- 0.9
-avgRecoveryTime <- 3.55
-params <- paste(c(immunity, bondOccProb, avgRecoveryTime), sep="", collapse="_") #!! maybe it is better to put the full parameter list into the file itself?, including the distribution parameters, nShort etc?
-#!! match recovery with age?? 
 
+immunity <- 0 #ratio of immune people 
+avgRecoveryTime <- 3
 sdRecoveryTime <- 1
 
-sAgeDist <- c(1, 0.7, 0.5, 0.7, 0.8, 1)/3.5 #susceptibility depending on age
-#!! bond prob dep on age dist
+
+sAgeDist0 <- c(1, 0.7, 0.5, 0.7, 0.8, 1)
+sAgeDist1 <- c(1, 0.7, 0.7, 0.7, 0.8, 1)
+sAgeDistArray <- rbind(sAgeDist0,sAgeDist1) #susceptibility depending on age
+i <- 1
+sAgeDist <-  sAgeDistArray[i,]
+sDistFactor <- 5 # social distancing factor
+
+#!! bond prob abh von dist 
+
+
 #network
 N = 400**2 # number of people
-nShort <- 0 # how many shortcuts are created // not impossibly many, could lead to ~inf loop #!!
-periodicBoundaries <- TRUE #if FALSE the opposing edges of the lattice are connected (periodic)
+nShort <- N/100 # how many shortcuts are created // not impossibly many, could lead to ~inf loop #!!
+periodicBoundaries <- TRUE
 
-sBool <- FALSE # if True the susceptibility is 1 or 0 // other poss like gaussian with age etc
-sFixed <- FALSE
-sNot <- FALSE
-sReal <- TRUE
+tmp <- c(F,F,F,T)
+tmpNames <- c("sBool", "sFixed", "sNot", "sReal")
+sBool <- tmp[1] # if True the susceptibility is 1 or 0 // other poss like gaussian with age etc
+sFixed <- tmp[2]
+sNot <- tmp[3]
+sReal <- tmp[4]
+
+#parameters displayed in filename
+params <- paste(c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, i, sDistFactor, tmpNames[tmp]), sep="", collapse="_") 
+
+
 #observables
    #plotting
 plotIt <- FALSE
-plotEvery <- 100
+plotEvery <- 10
 plotAccumulated <- TRUE
    #clusters
 checkCluster <- TRUE
@@ -50,9 +63,9 @@ R0Mean <- numeric(10000)
 lattice <- array(data=c(1:N), dim = c(sqrt(N),sqrt(N)))
 
 if(periodicBoundaries){# these are the possible connections in 2D lattice
-  possConn <- array(0,dim=c((2*N+nShort),3)) 
+  possConn <- array(0,dim=c((2*N+nShort),2)) 
 } else {
-  possConn <- array(0,dim=c((2*N-2*sqrt(N)+nShort),3))
+  possConn <- array(0,dim=c((2*N-2*sqrt(N)+nShort),2))
 }
 #set Infection status
 infected <- logical(length = N)
@@ -67,13 +80,12 @@ if(sFixed){
 }
 if(sNot){
   sDistribution <- sample(c(0.25,0.5,0.75,1), replace=TRUE, size=N,prob = c((1-immunity)/8,  (1-immunity)/2, (1-immunity)/4, (1-immunity)/8))
-#!! implement a scaling for the susc  // age
 }
 if(sReal){
   ageDistribution <- sample(c(3, 20,40,60,80, 100), replace=TRUE, size=N,prob = c(3, 15, 25, 28, 22, 7))
   sDistribution <- unlist(lapply(ageDistribution,FUN = sAge))
 }
-
+sDistribution <- sDistribution
 
 
 
@@ -85,7 +97,7 @@ initialsDistribution <- sDistribution
 #find all possible connections and their bond probability
 findConn()
 nCon <- nrow(possConn)
-
+R0calc <- (3+2*nShort/N)*weighted.mean(x = sAgeDist/sDistFactor, w = c(3, 15, 25, 28, 22, 7))*avgRecoveryTime
 # infect Patient 0
 patientZero()
 
@@ -105,6 +117,11 @@ while (TRUE) {
     plot(which(visibleLattice==2, arr.ind = TRUE)[,1], which(visibleLattice==2, arr.ind = TRUE)[,2],xlim = c(0,sqrt(N)), ylim = c(0,sqrt(N)),type ="p", pch = '*',col = 'red', pty = "s")
   }
   # evaluation of disease parameters
+  
+  if (x %in% c(1:(3*sdRecoveryTime+2*avgRecoveryTime)) & sum(recovered)>=2){
+    write(x = c(x, R0Mean[x]), file = paste(c("data/R0Mean_", params, ".txt"),sep="", collapse=""), append = TRUE,sep = "\t")
+    }
+  
   if ((x %% clusterEvery == 0) && (checkCluster == TRUE)){
     count <- count +1
     people <- c(1:N)
@@ -133,7 +150,7 @@ while (TRUE) {
     write(x = c(x, sum(weight)), file = paste(c("data/numberInfected_", params, ".txt"),sep="", collapse=""), append = TRUE,sep = "\t")
     write(x = c(x, weight[which.max(weight)]/sum(weight)), file = paste(c("data/largeOverTotal_", params, ".txt"),sep="", collapse=""), append = TRUE,sep = "\t")
     write(x = c(x, (length(which(sDistribution != initialsDistribution))+length(infPeople))/N), file = paste(c("data/accInfections_", params, ".txt"),sep="", collapse=""), append = TRUE,sep = "\t")
-    if (x != 0){write(x = c(x, R0Mean[x]), file = paste(c("data/R0Mean_", params, ".txt"),sep="", collapse=""), append = TRUE,sep = "\t")}
+    
     # auswertungsVector[count,1] <- x
     # auswertungsVector[count,2] <- weight[which.max(weight)]
     # auswertungsVector[count,3] <- length(which(weight!=0))
@@ -148,7 +165,6 @@ while (TRUE) {
 }
 
 #read data from file 
-#!! this data can only be read if the params are set correctly, is this intented?
 maxWeightDf <- read.table(file = paste(c("data/maxWeight_", params, ".txt"),sep="", collapse=""))
 numberClusterDf <- read.table(file = paste(c("data/numberCluster_", params, ".txt"),sep="", collapse=""))
 numberInfectedDf <- read.table(file = paste(c("data/numberInfected_", params, ".txt"),sep="", collapse=""))
@@ -162,6 +178,7 @@ plot(numberInfectedDf[,1],numberInfectedDf[,2], xlab = "T",ylab = "Number Infect
 plot(largeOverTotalDf[,1],largeOverTotalDf[,2], xlab = "T",ylab = "Largest Cluster over Total Infected")
 plot(accInfectionsDf[,1],accInfectionsDf[,2], xlab = "T",ylab = "Attack Rate")
 plot(R0MeanDf[,1],R0MeanDf[,2], xlab = "T",ylab = "R0 Mean")
+#!! maybe add a line for R0calc and lines for its variances
 
 # auswertungsVector <- auswertungsVector[c(1:count),]
 # plot(auswertungsVector[,1],auswertungsVector[,2], xlab = "T",ylab = "largest Cluster")
@@ -182,11 +199,36 @@ plot(R0MeanDf[,1],R0MeanDf[,2], xlab = "T",ylab = "R0 Mean")
 #-----------------------------------------------------------------------------------
 #observed that for large (>100) lattices the boundaries are basically irrelevant for the largest cluster size
 
+#population definieren (2-3) (different sDistFactor --> FLATTEN THE CURVE)
+# verschieden viele nShort N=400**2 [N/100, N/50, N/10 ] [example: 0, boolsche susc]
+  # berechne R0 erwartet | #!![3 + 1*p(nShort)] (3+2*nShort/N) Verbindungen pP | p(spread) = E(s*sDistFactor) | R0 = (3+2*n...)*p(spread)*trec = (3.2*weighted.mean(x = sAgeDist/sDistFactor, w = c(3, 15, 25, 28, 22, 7))*3.55)
+  # R0 erwartet >>1 <<1 =1 [] 
+# in file schreiben? 
+
+# ausf√ºhren f√ºr verschiedene kofigs (susc / bond prob / recovery times) || param variation -> errors?? test
+# verschiedene susc (verteilung/faktor), powerBond, recTime | jeweils mehrmals laufen lassen -> statistische auswertung
+# auswerten! (neues programm) -define epidemic outbreak - errors!! ( stat analysis)
+# !! laufzeit absch‰tzen!!
+
+# -> aussuchen von 3-4 krankheiten mit verschiedenen besonderheiten (aussterben, starke verbreitung...)
+
+#mit ausghesuchten krankehtien -> vaccination analyse
+# vaccination offset
+# immunity von 0 bis 0.9 rel kleinschrittig durchsim
+# social Distancing can be changed during epidemic (time delay with seed to compare?)
+# erst groﬂschrittig und dann bei  evtl. kippunkt  
+#auswert: R != R0
+
+#fﬂr andere pop testen --> unterschiede/gleich? --> statistische fehler der aussagen prﬂfen/abschﬂtzen
 
 
-# ausf√ºhren f√ºr verschiedene susc / bond prob / recovery times 
 # recovery time vom alter abh√§ngig
 # vaccination function nach sDist erstellung (nur f√ºr nicht alte / babies vaccination?)
-
-
+# try to find a function  which describes R0 as a function of the parameters set
+# bond prob dep on age dist
+# nBonds <- numeric(N)
+# for(i in c(1:N)){
+#   nBonds[i] <- length(which(possConn == i))
+# }
+# print(mean(nBonds))
 
