@@ -1,0 +1,180 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% TEMPLATE für PROSEMINAR PRÄSENTATION SS 2017 SOERGEL%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[ngerman,twocolumn]{revtex4-1}
+
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage[ansinew]{inputenc} %Umlaute (unter Windows)
+% \usepackage[latin1]{inputenc} %Umlaute (unter Linux)
+\usepackage[
+	colorlinks=true,
+	urlcolor=blue,
+	linkcolor=black
+]{hyperref}
+
+\begin{document}
+\title{Regenbogen}
+\author{Lavinia Thimm}
+\email{s6lathim@uni-bonn.de}
+
+\begin{abstract}
+\noindent Das Phänomen Regenbogen ist in seiner Gesamtheit nur wenigen wirklich Bekannt und Bewusst. Viele sehen am Himmel nur Teile der eigentlich komplexen Erscheinung, da sie nicht wissen, wonach sie suchen sollen.  Im Folgenden wird daher auf die grundlegende Entstehung von Regenbogen und den damit verbundenen Auffälligkeiten sowie auf vermeintlich "reflektierte" Regenbogen eingegangen. In einem kurzen Ausblick wird außerdem ein Teil des Phänomens angesprochen, welcher physikalisch noch nicht vollkommen erklärt ist, der sogenannte Zwillingsregenbogen.
+% ist es auch ok, weniger als 150 Wörter zu haben?
+
+% sollen hier noch tatsächliche Informationen rein?
+% Referenz zu abb 1 - Was man alles erkennen kann
+
+\end{abstract}
+
+\maketitle
+
+Neben Regenbogen finden sich am Himmel noch andere atmosphärische Farbphänomene wie zum Beispiel Polarlichter, Halos und Irisierende Wolken. Die am häufigsten auftretenden Phänomene in der Natur sind Halos und Regenbogen. Ein genaues Verständnis dieser Phänomene ist hilfreich, um auch Besonderheiten der Erscheinungen am Himmel entdecken zu können. Deshalb wird im Folgenden auf die in FIG.\ref{fig:Aspekte} angedeuteten Aspekte des Regenbogens eingegangen:\\
+\noindent Entstehung von Haupt- und Nebenregenbogen (a,b), ihrer Farbreihenfolge und Alexanders dunklem Band (c) sowie die Entstehung überzähliger (d) und "gespiegelter" (e) Regenbogen. 
+%Labels und Referenzen zum jeweiligen Thema im Text 
+
+\begin{figure}[bbb]
+ \includegraphics[width=7cm]{figs/main_bericht.png}
+ \caption{Foto eines Regenbogens\cite{Foto-RB}, in dem die verschiedenen beobachtbaren Aspekte des Regenbogens angezeigt sind: \\a -~Hauptregenbogen mit Farbe Rot außen und Blau innen; \\b -~Nebenregenbogen mit Farbe Rot innen und Blau außen; \\c -~Alexanders dunkles Band ist der dunkle Bereich zwischen Haupt- und Nebenregenbogen; \\d -~überzählige Regenbogen (eng. supernumeraries) sind violette und grüne Streifen, die auf die eigentlichen Farben im Regenbogen folgen; \\e -~vermeintlich "gespiegelter" Regenbogen}
+\label{fig:Aspekte}
+\end{figure}
+
+
+Die erste physikalische Betrachtung des Regenbogens wurde im Jahr 1637 von René Descartes mit seiner geometrischen Optik angestellt, siehe FIG. \ref{fig:Descartes}. Die Abbildung zeigt, dass zur Beobachtung von Regenbogen die Sonne im Rücken des Beobachters liegt und sein Blick auf eine Regenwand gerichtet sein muss. Außerdem ist zu erkennen, dass verschiedene Regenbogen abhängig von der Anzahl der Reflexionen im Tropfen und dem Eintrittsort erzeugt werden können. Der in FIG.\ref{fig:Aspekte} gezeigte Hauptregenbogen (a) entsteht laut Descartes nach einer Reflexion im Tropfen, während der Nebenregenbogen nach 2 Reflexionen im Tropfen entsteht. Eine äquivalente Bezeichnung für Hauptregenbogen ist "Bogen erster Ordnung", für Nebenregenbogen "Bogen zweiter Ordnung", wobei die Ordnung die Anzahl Reflexionen im Tropfen widerspiegelt. 
+% \\
+%\noindent Die Regenbogen treten immer unter bestimmten Ablenkwinkeln auf, für Hauptregenbogen  
+% Bild neben desvates mit verbindung sonne beobachter?
+%  gammas ansprechen? 
+
+\begin{figure}[bbb]
+ \includegraphics[width=7cm]{figs/Descartes_Rainbow_beschr.png}
+ \caption{Original strahlenoptische Behandlung des Regenbogens nach {\it René Descartes (1673)}. Die Brechung und Reflexion der Sonnenstrahlen in einem Tropfen einer Regenwand sowie das Erreichen des Beobachters sind für Haupt- und Nebenregenbogen dargestellt. {\it Beschriftungen in blauer Farbe eingefügt} }
+\label{fig:Descartes}
+\end{figure}
+%evtl noch strahlengang schemata einfügen
+
+Entsprechend erster und zweiter Ordnung gibt es auch Bögen höherer Ordnungen, deren Strahlengang durch einfaches Hinzufügen weiterer Reflexionen im Descartes'schen Bild gewonnen wird. Dabei findet man, dass Regenbogen dritter und vierter Ordnung nur mit Blick in Richtung Sonne beobachtet werden können. Dies erschwert die Beobachtung sehr, da mit jeder Reflexion ein Teil des Lichtes aus dem Tropfen heraus gebrochen wird und damit die Intensität immer weiter abnimmt. Diese schwache Licht wird dann von dem direkten Licht der Sonne überstrahlt. Die Beobachtung von Regenbogen dritter und vierter Ordnung gelang das erste Mal im Jahr 2011 mit Hilfe besonderer Kameras und Computerbearbeitung.\cite{atoptics}
+%\noindent Die Regenbogen fünfter und sechster Ordnung erscheinen wieder in Blickrichtung Regenwand, werden allerdings stark von Haupt- und Nebenregenbogen überstrahlt. Ein Foto von einem Regenbogen fünfter Ordnung wurde im Jahr 2012 das erste Mal aufgenommen, da ein Teil des Regenbogens in Alexanders dunklem Band, siehe FIG.\ref{fig:Aspekte}(c), zu erkennen war.\cite{atoptics}   
+%quellen einfügen!
+
+Die strahlenoptische Berechnung des Regenbogens kann durch einfache Winkelbetrachtung in verschiedenen Dreiecken, siehe FIG.\ref{fig:Berechnung} durchgeführt werden \cite{Biehler}. 
+Mit der Verbindung von Eintritts- und Austrittspunkt entstehen zwei Dreiecke sodass 
+$\gamma\ =\ \chi\ -\ 2\alpha$ und damit $\epsilon\ =\ 180°\ -\ \chi\ +\ 2\alpha$.
+Aus den kohärenten inneren Dreiecken folgt $\chi\ =\ 4\beta$.
+Damit folgt für den Ablenkwinkel $\epsilon\ = \ 180°\ -\ 4\beta\ +\ 2\alpha$.
+Ebenfalls ist $\sin\alpha = x/R$ und mit dem Brechungsgesetz folgt auch $\sin\beta = x/(Rn)$, wenn wir annehmen, dass der Brechungsindex von Luft $n_{\text{Luft}}\approx 1$ und der Brechungsindex von Wasser $n_{\text{Wasser}} = n$.
+Wir erhalten:
+\begin{equation*}
+\epsilon = 180° - 4\arcsin{x/(Rn)} + 2\arcsin{x/R}
+\end{equation*}
+
+
+%Abbildung?
+
+% gammas von hrb nrb 
+%minimum der Ablenkung erklären - warum wichtig
+%eintrittslunkt nrb -x
+% alexanders dunkles band
+% Beobachtung 5. Ordnung in ADB
+\begin{figure}[h]
+ \includegraphics[width=7cm]{figs/Zin_konstruktion_bericht.png}
+ \caption{Darstellung zur Berechnung des Ablenkwinkels $\epsilon$ für den Hauptregenbogen (eine Reflexion im Tropfen). Dargestellt ist der Eintrittswinkel $\alpha$ in Rot, der Brechungswinkel $\beta$ in Blau, Abstand Auftreffpunkt zu Einfallsachse $x$ und Tropfenradius $R$. Reflexionsgesetz $\alpha = \alpha\text{'}$ bedeutet, dass im Tropfen alle blauen Winkel $\beta$ entsprechen. Brechungsgesetz ergibt dann, dass der Austrittswinkel aus dem Tropfen $\alpha$ entspricht. Unten links ist der Strahlenverlauf noch einmal ohne Hilfs-Dreiecke abgebildet.}
+%zu lang?!?!
+\label{fig:Berechnung}
+\end{figure}
+Analog kann die Berechnung ebenfalls für höhere Ordnungen angestellt werden. Für Haupt- und Nebenregenbogen ist das Ergebnis in FIG.\ref{fig:Plot} aufgetragen. Die Extrema der Ablenkungsfunktionen bedeuten, dass bei geringer Variation des Auftreffpunktes, der Ablenkwinkel unverändert bleibt. Dadurch entsteht an den Ablenkwinkeln der Extrema ein Intensitätsmaximum des abgelenkten Lichtes, welche als Regenbogen beobachtet werden. Für den Hauptregenbogen liegt dieses bei $\epsilon \approx 138\text{°}$ und damit ergibt sich ein $\gamma \approx 42°$ und für Nebenregenbogen liegt es bei $\epsilon \approx 129°$, also $\gamma \approx 51°$. 42° für den Haupt- und 51° für den Nebenregenbogen entsprechen den beobachteten Werten für diese Bögen. 
+
+\noindent Auffällig ist ein Winkelbereich in den kein Licht abgelenkt wird. Er erscheint dunkler und wird daher nach seinem Entdecker "Alexanders dunkles Band" genannt, siehe FIG.\ref{fig:Aspekte}(c).\cite{Schlegel}
+  
+\begin{figure}[t]
+ \includegraphics[width=7cm]{figs/Winkelverteilung_komplett_nr.png}
+ \caption{Ablenkwinkel abhängig vom normierten Eintrittspunkt $|x|/R$ für Hauptregenbogen (violett) und Nebenregenbogen (türkis). ({\it Siehe FIG.\ref{fig:Berechnung} zur Variablendefinition}).  Eintrittspunkt $x$ beim Nebenregenbogen negativ (Schema unten rechts). Daher wird der Betrag $|x|/R$ aufgetragen. {\it $n\approx 1.3309$ für $\lambda \approx 700\,\text{nm}$} }
+\label{fig:Plot}
+\end{figure}
+
+
+Nachdem nun die allgemeine Entstehung von Haupt- und Nebenregenbogen nachvollzogen wurde, soll kurz die Entstehung der Farbreihenfolge betrachtet werden, siehe FIG.\ref{fig:Farbreihenfolge}: Links ist zu erkennen, dass auf Grund von Dispersion das blaue Licht stärker gebrochen wird als das Rote. Damit ergibt sich für den Hauptregenbogen $\gamma_{\text{rot}} > \gamma_{\text{blau}}$. Auf der rechten Seite ist zu erkennen, dass rotes Licht von höheren Tropfen und blaues Licht von niedrigeren Tropfen der Regenwand gebrochen werden muss, um das Auge des Beobachters zu erreichen. Dadurch entsteht die bekannte Farbreihenfolge "Rot außen, Blau innen", siehe FIG.\ref{fig:Aspekte}(a). In der linken Abbildung ist ebenfalls die Reflexion der Farben für zwei Reflexionen dargestellt. Die weitere Reflexion sorgt für eine Umkehr der Farbreihenfolge, sodass beim Nebenregenbogen gilt "Blau außen, Rot innen".
+
+\begin{figure}[bbb]
+ \includegraphics[width=7cm]{figs/Farbreihenfolge_bericht.png}
+ \caption{Entstehung der Farbreihenfolge des Regenbogens - links: dispersive Brechung und Reflexion von Rot und Blau, für eine Reflexion: $\gamma_{\text{rot}} > \gamma_{\text{blau}}$; rechts: Zusammenhang zwischen beobachtetem Ablenkwinkel $\gamma$ und beobachteter Höhe}
+\label{fig:Farbreihenfolge}
+\end{figure}
+
+
+Die in FIG.\ref{fig:Aspekte}(d) angedeuteten überzähligen Regenbogen lassen sich mit der Descartes'schen geometrischen Optik nicht mehr erklären, daher auch der Name. Anders jedoch wenn man das Licht als Wellenfront betrachtet, die durch unterschiedliche Auftreffpunkte auf den Tropfen unterschiedliche Wege im Tropfen zurücklegt. Der dadurch entstehende Gangunterschied kann nach Austritt aus dem Tropfen zu Interferenzerscheinungen führen. Die für die verschiedenen Farben entstehenden Hauptmaxima sind für niedrigere Wellenlängen zu höheren Ablenkwinkeln verschoben und führen daher wie gehabt zu den beobachteten Hauptfarben im Regenbogen, während die Nebenmaxima die überzähligen Regenbogen bilden.\cite{Vollmer, Wikipedia-RB} 
+% bild überzählige Bögen?? hilft eigentlich nicht wirklich
+
+Als Letztes werden noch die oft fehlinterpretierten "reflektierten" Regenbogen besprochen. Grundsätzlich ist der Ansatz wichtig, dass ein Regenbogen kein real existierendes physikalisches Objekt ist, und sich somit nicht spiegeln kann. Es gibt zwei Möglichkeiten, einen Regenbogen zu "spiegeln", die zu verschiedenen Ergebnissen führen, siehe FIG.\ref{fig:refl}:
+\begin{enumerate}
+\item Die Sonne spiegelt sich in einer Wasserfläche. Diese fiktive Sonne erzeugt Regenbogen höher als die normal erzeugten Regenbogen, FIG.\ref{fig:refl}(links). 
+\item {\it Andere} Regentropfen brechen das Licht so, dass es nach einer Reflexion auf einer Wasseroberfläche beim Beobachter ankommt, FIG.\ref{fig:refl}(rechts). \cite{Volkmer}
+\end{enumerate}  
+\begin{figure}[h]
+ \includegraphics[width=7cm]{figs/refl.png}
+ \caption{Reflektierte Regenbogen\cite{Foto-RB-Mirror} - links: Entstanden durch eine fiktive Sonne; rechts: entstanden durch Reflexion von bereits gebrochenem Licht (aus anderen Regentropfen als denen, die den eigentlichen Regenbogen erzeugen)}
+\label{fig:refl}
+\end{figure}
+
+%Als Halos werden Lichtersscheinungen wie Kreise, helle Punkte und Bögen um die Sonne herum bezeichnet. Sie entstehen durch die Brechung von Licht an Eiskristallen. Die häufigsten Halos sind 22°-Halos (helle Ringe im Winkel von 22° um die Sonne) und Nebensonnen (horizontal im Winkel von 22° um die Sonne erscheinende helle Punkte). Diese lassen sich leicht identifizieren, indem am ausgestreckten Arm der Daumen der gespreizten Hand über der Sonne liegt und am kleinen Finger nach hellen Erscheinungen gesucht wird. Die gespreizte Hand deckt dann einen Winkel von etwa 20° ab und eignet sich damit gut als Identifizierungshilfe für 22°-Halos und Nebensonnen.\cite{atoptics, Wikipedia-Halo}\\
+
+%\hline
+
+Zusammenfassend werden Regenbogen mit menschlichem Auge in Richtung eines Regenvorhangs mit der Sonne im Rücken beobachtet. Die Entstehung von Haupt- und Nebenregenbogen kann mit Hilfe der geometrischen Optik erklärt werden. Sie ergibt einen beobachteten Ablenkwinkel von 42° für den Haupt- und 51° für den Nebenregenbogen. Der Bereich dazwischen ist dunkler und wird "Alexanders dunkles Band" genannt. Die Farbreihenfolge wird aus dem Zusammenspiel von Dispersion und verschieden hohen Regentropfen erreicht. Überzählige Bögen können allerdings nicht mehr durch geometrische Optik erklärt werden, sie entstehen als Nebenmaxima von Interferenzerscheinungen. 
+
+Mit diesem Wissen können Sie nun einmal ganz genau auf den nächsten Regenbogen achten und werden bestimmt einiges mehr an ihm entdecken als vorher.\\
+\noindent Das Thema Regenbogen ist allerdings noch längst nicht vollständig erklärt. Es werden zum Beispiel sogenannte Zwillingsregenbogen beobachtet, siehe FIG.\ref{fig:zwilling}(links), die mit den aktuellen Modellen nicht sicher erklärt werden können. Es können jedoch numerische Modelle aufgestellt werden, die der Lösung näher kommen. Ein Modell beschreibt zum Beispiel zwei Regenwolken, eine mit kleinen, sphärischen und eine mit großen, durch den Luftwiderstand abgeflachten Regentropfen. Die Simulation einer solchen Situation ergibt einen Zwillingsregenbogen, siehe FIG.\ref{fig:zwilling}(rechts). Das bedeutet, dass das Phänomen zwar noch nicht komplett erklärt ist, ein Ansatz aber nicht-sphärische Regentropfen sein könnten.
+\begin{figure}[h]
+ \includegraphics[width=7cm]{figs/twin.png}
+ \caption{Zwillingsregenbogen\cite{UCSD,atoptics} - links: Aufnahme eines Zwillingsregenbogens, Hauptregenbogen ist in zwei Teile gespalten, Nebenregenbogen ist unverändert;\\ rechts: numerische Simulation aus großen und kleinen Tropfen}
+\label{fig:zwilling}
+\end{figure}
+
+
+
+%, siehe FIG.\ref{fig:Halo}.
+% BIld??
+
+% deutsche Anführungszeichen?
+% Bildquelle 1. bild + refl + ...
+\begin{thebibliography}{}
+
+\bibitem{Biehler}
+H.\, Biehler, {\it Atmosphärische Farbphänomene - Die Theorie und ihre Anwendung in der Schule}
+(\url{http://www.physik.uni-mainz.de/Lehramt/Lehramt/Vortraege/Anleitung/Heike_Biehler_StEx.pdf})
+
+\bibitem{Volkmer}
+P.\, Volkmer, {\it Phänomen Regenbogen}
+(\url{http://pegasus-wolfenbuettel.de/pegasus/phocadownload/V03_Regenbogen.pdf})
+
+\bibitem{atoptics}
+L.\, Cowley, {\it Atmospheric Optics}
+(\url{https://www.atoptics.co.uk/})
+
+\bibitem{Schlegel}
+K.\, Schlegel, {\it Vom Regenbogen zum Polarlicht}
+
+\bibitem{Vollmer}
+M.\, Vollmer, {\it Lichtspiele in der Luft - Atmosphärische Optik für Einsteiger}
+
+\bibitem{Wikipedia-RB}
+Wikipedia.de $\rightarrow$ Regenbogen (10.11.2017)
+% ob das so offiziell ist weiss ich nicht, aber es soll hier mal so ok sein.
+
+\bibitem{Foto-RB}
+Nicholas from Pennsylvania, USA
+
+\bibitem{Foto-RB-Mirror}
+Terry L Anderson, mundoo ({\it wikimedia-commons})
+
+\bibitem{UCSD}
+Jacobs School of Engineering/UCSD
+
+\end{thebibliography}
+
+\end{document} 
+%\vspace{1cm}
+%\bibitem{Daumont10}
+%C. J. M. Daumont, S. Farokhipoor, A. Ferri, J. C. Wojde, J. Iniguez, B. J. Kooi, and B. Noheda, Phys. Rev. B {\bf 81}, 144115 (2010).
+
