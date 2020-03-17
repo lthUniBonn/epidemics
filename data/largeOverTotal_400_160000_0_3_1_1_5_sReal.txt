@@ -1,3 +1,0 @@
-#x	largeOverTotal
-0	1
-10	0.9998383

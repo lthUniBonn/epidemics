@@ -1,5 +1,0 @@
-#x	numberCluster
-0	1
-10	4
-20	6
-30	2

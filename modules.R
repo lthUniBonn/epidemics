@@ -19,8 +19,8 @@ timesteps <- function(){
   # find infected people
   infPeople <- which(infected==TRUE)
   if (length(infPeople) == 0){
-    print("no more infected")
-    return(NA)
+    #("no more infected")
+    return(TRUE)
   }
   
   
@@ -77,10 +77,43 @@ timesteps <- function(){
   
   recovered[recPeople] <<- 1 #only take R0 measurement of recovered (for a total disease cycle and not partial timesteps)
   R0OverInfectiousPeriod[infPeople] <<- R0OverInfectiousPeriod[infPeople] + R0
-  if(sum(recovered)>=2){
-    R0Mean[x] <<- mean(R0OverInfectiousPeriod[which((R0OverInfectiousPeriod!=0) & (recovered == 1))])#!! check!! 
+ 
+  if(anyNA(evalR0[statRun,])){
+    if (sum(recovered)>=checkR0Here){
+      R0Mean <<- mean(R0OverInfectiousPeriod[which((R0OverInfectiousPeriod!=0) & (recovered == 1))])#!! check!! 
+      R0Sd <<- sd(R0OverInfectiousPeriod[which((R0OverInfectiousPeriod!=0) & (recovered == 1))])
+    }
+    
   }
-  return(R0)
+  if(anyNA(evalR02[statRun,])){
+    if (sum(recovered)>=2){
+      R0Mean2 <<- mean(R0OverInfectiousPeriod[which((R0OverInfectiousPeriod!=0) & (recovered == 1))])#!! check!! 
+      R0Sd2 <<- sd(R0OverInfectiousPeriod[which((R0OverInfectiousPeriod!=0) & (recovered == 1))])
+    }
+    
+  }
+  if(anyNA(evalR03[statRun,])){
+    if (sum(recovered)>=3){
+      R0Mean3 <<- mean(R0OverInfectiousPeriod[which((R0OverInfectiousPeriod!=0) & (recovered == 1))])#!! check!! 
+      R0Sd3 <<- sd(R0OverInfectiousPeriod[which((R0OverInfectiousPeriod!=0) & (recovered == 1))])
+    }
+    
+  }
+  if(anyNA(evalR04[statRun,])){
+    if (sum(recovered)>=4){
+      R0Mean4 <<- mean(R0OverInfectiousPeriod[which((R0OverInfectiousPeriod!=0) & (recovered == 1))])#!! check!! 
+      R0Sd4 <<- sd(R0OverInfectiousPeriod[which((R0OverInfectiousPeriod!=0) & (recovered == 1))])
+    }
+    
+  }
+  if(anyNA(evalR07[statRun,])){
+    if (sum(recovered)>=7){
+      R0Mean7 <<- mean(R0OverInfectiousPeriod[which((R0OverInfectiousPeriod!=0) & (recovered == 1))])#!! check!! 
+      R0Sd7 <<- sd(R0OverInfectiousPeriod[which((R0OverInfectiousPeriod!=0) & (recovered == 1))])
+    }
+    
+  }
+  return(FALSE)
 }
 
 sAge <- function(age){
@@ -89,7 +122,7 @@ sAge <- function(age){
   else if (age <= 40){return(sAgeDist[3])}
   else if (age <= 60){return(sAgeDist[4])}
   else if (age <= 80){return(sAgeDist[5])}
-  else if (age <= 100){return(sAgeDist[5])}
+  else if (age <= 100){return(sAgeDist[6])}
 }
 
 # find possible connections in 2d case next neighbor

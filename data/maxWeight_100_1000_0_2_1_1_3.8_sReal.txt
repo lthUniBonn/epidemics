@@ -1,2 +1,0 @@
-#x	maxWeight
-0	1

@@ -1,5 +1,0 @@
-#x	numberInfected
-0	2
-10	21
-20	11
-30	3

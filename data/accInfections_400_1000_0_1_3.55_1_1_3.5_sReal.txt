@@ -1,3 +1,0 @@
-#x	accInfections
-0	6.25e-06
-10	1.875e-05
