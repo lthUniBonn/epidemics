@@ -1,0 +1,5 @@
+#x	numberCluster
+0	1
+10	6
+20	3
+30	1

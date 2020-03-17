@@ -1,0 +1,4 @@
+#x	largeOverTotal
+0	1
+10	0.75
+20	1
