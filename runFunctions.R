@@ -102,7 +102,7 @@ writeEval <- function(writeThis, writeThisR0, params){
   
   for(obs in obsNames[-1]){
     writeThisObs <- array(NA, dim= c(10000, nStatRun+1))
-    writeThisObs[,1] <- seq(0,100000-1,clusterEvery)
+    writeThisObs[,1] <- seq(0,10000*clusterEvery-1,clusterEvery)
     writeThisObs[,c(2:(nStatRun+1))] <- writeThis[,c(1:(nStatRun)),obs] 
     
     isNa <- is.na(writeThisObs[,2])
@@ -111,9 +111,9 @@ writeEval <- function(writeThis, writeThisR0, params){
     }
     
     writeThisObs <- writeThisObs[c(1:which(isNa)[1]-1), c(1:(nStatRun+1))]
-    write.table(x = writeThisObs, file =paste(c("data/", obs,"_", params, ".txt"),sep="", collapse=""), append = FALSE,sep = "\t",row.names = FALSE, col.names = FALSE)
+    write.table(x = writeThisObs, file =paste(c(path, obs,"_", params, ".txt"),sep="", collapse=""), append = FALSE,sep = "\t",row.names = FALSE, col.names = FALSE)
   }
   
   
-  write.table(x = writeThisR0, file = paste(c("data/R0Mean_", params, ".txt"),sep="", collapse=""), append = FALSE,sep = "\t",row.names = FALSE, col.names = FALSE)
+  write.table(x = writeThisR0, file = paste(c(path, "R0Mean_", params, ".txt"),sep="", collapse=""), append = FALSE,sep = "\t",row.names = FALSE, col.names = FALSE)
 }
