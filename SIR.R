@@ -56,7 +56,7 @@ ageDistribution <- sample(c(3, 20,40,60,80, 100), replace=TRUE, size=N,prob = c(
 
 
 #vaccination #!!
-immunity <- 0 #ratio of immune people 
+immunity <- 0.3 #ratio of immune people 
 
 #recovery
 avgRecoveryTimeVec <- c(4)
