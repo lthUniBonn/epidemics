@@ -17,9 +17,9 @@ path <- "data/"
    #plotting
 plotIt <- FALSE
 plotEvery <- 10
-plotAccumulated <- TRUE
+plotAccumulated <- FALSE
    #clusters
-checkCluster <- FALSE
+checkCluster <- TRUE
 clusterEvery <- 5
 
 
