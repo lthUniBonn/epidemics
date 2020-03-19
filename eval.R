@@ -20,7 +20,7 @@ for (idx in c(1:length(evalTheseIdx))){
 #plotting / evaluation
 a <- c(1,2)
 comp <- T
-#meanPlot(evalThisNames[a[1]], evalThisParams[,a[1]], dfList[[a[1]]], compare = comp, evalThisNames[a[2]], evalThisParams[,a[2]], dfList[[a[2]]])
+meanPlot(evalThisNames[a[1]], evalThisParams[,a[1]], dfList[[a[1]]], compare = comp, evalThisNames[a[2]], evalThisParams[,a[2]], dfList[[a[2]]])
 
 
 
@@ -70,7 +70,6 @@ findObsvsParams <- function(obs='numberInfected', parIdx=3, params){
   #read files into list of data frames 
   dfList <- list(length=ncol(parList))
   for(idx in c(1:ncol(parList))){
-    print(idx)
     readParams <- paste(c(parList[1,idx], parList[2,idx], parList[3,idx], parList[4,idx], parList[5,idx], parList[6,idx], parList[7,idx], sChoiceNames[sChoice]), sep="", collapse="_") 
     df <- read.table(file = paste(c("data/", obs, "_", readParams, ".txt"),sep="", collapse=""))
     dfList[[idx]] <- df
