@@ -17,9 +17,9 @@ path <- "data/"
    #plotting
 plotIt <- FALSE
 plotEvery <- 10
-plotAccumulated <- FALSE
+plotAccumulated <- TRUE
    #clusters
-checkCluster <- TRUE
+checkCluster <- FALSE
 clusterEvery <- 5
 
 
@@ -101,7 +101,7 @@ weight <- numeric(N)
 
 x <- 0
 
-timeGauge <- nrow(sAgeDistArray)*length(sdRecoveryTimeVec)*length(avgRecoveryTimeVec)*length(sDistFactorVec)*nStatRun
+timeGauge <- length(immunity)*nrow(sAgeDistArray)*length(sdRecoveryTimeVec)*length(avgRecoveryTimeVec)*length(sDistFactorVec)*nStatRun
 runTime <- 0
 
 obsNames <- c("x","maxWeight", "numberCluster", "numberInfected", "largeOverTotal","accInfections", "R0Mean")
@@ -109,24 +109,25 @@ obsNames <- c("x","maxWeight", "numberCluster", "numberInfected", "largeOverTota
 
 nPar <- 1
 nParConfigs <- timeGauge/nStatRun
-paramConfigs <- array(data=NA, dim=c(nParConfigs,4))
-for(i in c(1:nrow(sAgeDistArray))){
-  for(sdRecoveryTime in sdRecoveryTimeVec){
-    for(avgRecoveryTime in avgRecoveryTimeVec){ 
-      for(sDistFactor in sDistFactorVec){
-          paramConfigs[nPar,] <- c(i,sdRecoveryTime,avgRecoveryTime, sDistFactor) 
-          nPar <- nPar + 1
-        }
+paramConfigs <- array(data=NA, dim=c(nParConfigs,5))
+for(imm in immunity){  
+  for(i in c(1:nrow(sAgeDistArray))){
+    for(sdRecoveryTime in sdRecoveryTimeVec){
+      for(avgRecoveryTime in avgRecoveryTimeVec){ 
+        for(sDistFactor in sDistFactorVec){
+            paramConfigs[nPar,] <- c( i,sdRecoveryTime,avgRecoveryTime, sDistFactor, imm) 
+            nPar <- nPar + 1
+          }
+      }
     }
   }
 }
-
 for (parConf in c(1:nParConfigs)){
   i <- paramConfigs[parConf,1]
   sdRecoveryTime <- paramConfigs[parConf, 2]
   avgRecoveryTime <- paramConfigs[parConf, 3]
   sDistFactor <- paramConfigs[parConf, 4]
-  
+  immunity <- paramConfigs[parConf, 5]
     
   sAgeDist <- sAgeDistArray[i,]
   #set susceptibility distribution in population
