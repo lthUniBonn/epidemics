@@ -31,7 +31,7 @@ meanPlot <- function(name,params,df, compare = FALSE, name2, params2, df2){
     
   } else {
     xlim <- c(0,df[which.max(df[,1]),1]) 
-    ylim <- c(0,max(thisObsMean))
+    ylim <- c(0,max(thisObsMean)+max(thisObsSd, na.rm = T))
   }
   
   

@@ -56,7 +56,7 @@ ageDistribution <- sample(c(3, 20,40,60,80, 100), replace=TRUE, size=N,prob = c(
 
 
 #vaccination #!!
-immunity <- 0.3 #ratio of immune people 
+immunity <- seq(0,1, 0.05) #ratio of immune people 
 
 #recovery
 avgRecoveryTimeVec <- c(4)
@@ -75,7 +75,7 @@ sAgeDist1 <- c(1, 0.7, 0.7, 0.7, 0.8, 1)
 sAgeDist2 <- c(2, 2, 2, 2, 2, 2)
 sAgeDistArray <- rbind(sAgeDist0)#,sAgeDist1,sAgeDist2) #susceptibility depending on age
 #transmissibility
-sDistFactorVec <- seq(1,20, 0.1) # social distancing factor
+sDistFactorVec <- c(3) # social distancing factor
 
 
 
