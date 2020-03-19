@@ -56,8 +56,7 @@ findObsvsParams <- function(obs='numberInfected', parIdx=3, params){
   # find all files with obs 
   parList <- array(as.numeric(fileNames[c(2:8),]),dim=c(7,length(list.files("data"))))
   obsList <- fileNames[1,]
-  parList <- paramList[,which(nameList == obs)]
-  #obsList <- nameList[which(nameList == obs)]
+  parList <- paramList[,which(obsList == obs)]
   notParIdxVec <- c(1:7)
   notParIdxVec <- notParIdxVec[-which(notParIdxVec == parIdx)]
 
@@ -67,7 +66,7 @@ findObsvsParams <- function(obs='numberInfected', parIdx=3, params){
     fixedParListCheck <- fixedParListCheck & (parList[idx,]==params[idx])
   }
   parList <- array(parList[,which(fixedParListCheck==TRUE)], dim = c(7, length(which(fixedParListCheck==TRUE))))
-  
+  print(parList)
   #read files into list of data frames 
   dfList <- list(length=ncol(parList))
   for(idx in c(1:ncol(parList))){
@@ -81,29 +80,53 @@ findObsvsParams <- function(obs='numberInfected', parIdx=3, params){
   
   return(list(parList, dfList))
 }
-evalMax <- function(dfList){
+evalMax <- function(dfList, obs){
   maxVal <- numeric(length(dfList))
   maxSd <- numeric(length(dfList))
   x <- 0
+  if( obs == 'accInfections'){
+    for (df in dfList){
+      x <- x + 1
+      lastVal <- apply(X = df[,c(2:ncol(df))],MARGIN = 2, FUN = max, na.rm =TRUE)
+      thisObsMean <- mean(lastVal)#rowMeans(df[,c(2:ncol(df))], na.rm = TRUE)
+      thisObsSd <- sd(lastVal)#apply(X = df[,c(2:ncol(df))],MARGIN = 1, FUN = sd, na.rm =TRUE)
+      if (anyNA(thisObsSd))(View(df[,c(2:ncol(df))]))
+      maxVal[x] <- max(thisObsMean)
+      maxSd[x] <- thisObsSd[which.max(thisObsMean)]
+    }  
+  }
+  else if(obs == 'largeOverTotal'){
+    for (df in dfList){
+      x <- x + 1
+      thisObsMean <- rowMeans(df[,c(2:ncol(df))], na.rm = TRUE)
+      thisObsSd <- apply(X = df[,c(2:ncol(df))],MARGIN = 1, FUN = sd, na.rm =TRUE)
+      if (anyNA(thisObsSd))(View(df[,c(2:ncol(df))]))
+      maxVal[x] <- max(thisObsMean)
+      maxSd[x] <- thisObsSd[which.max(thisObsMean)]
+    }
+  }
+  else{
   for (df in dfList){
     x <- x + 1
     thisObsMean <- rowMeans(df[,c(2:ncol(df))], na.rm = TRUE)
     thisObsSd <- apply(X = df[,c(2:ncol(df))],MARGIN = 1, FUN = sd, na.rm =TRUE)
+    if (anyNA(thisObsSd))(View(df[,c(2:ncol(df))]))
     maxVal[x] <- max(thisObsMean)
     maxSd[x] <- thisObsSd[which.max(thisObsMean)]
   }
-  
+  }
   return(array(data=c(maxVal, maxSd), dim=c(length(dfList),2)))
 }
 
 plotObsvsParam <- function(){
   
 }
+#param names accInfections
 parIdx <- 3
-tmpList <- findObsvsParams(obs='accInfected',parIdx = parIdx, params = paramList[,1])[]
+tmpList <- findObsvsParams(obs='accInfections',parIdx = parIdx, params = paramList[,1])[]
 dfList <- tmpList[[2]]
 parList <- tmpList[[1]]
-maxVal <- evalMax(dfList)
+maxVal <- evalMax(dfList, obs = 'accInfections')
 parVal <- parList[parIdx,]
 
 plot(x = parVal, y = maxVal[,1])
