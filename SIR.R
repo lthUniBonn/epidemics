@@ -56,7 +56,7 @@ ageDistribution <- sample(c(3, 20,40,60,80, 100), replace=TRUE, size=N,prob = c(
 
 
 #vaccination #!!
-immunity <- 0 #ratio of immune people 
+immunity <- 0.3 #ratio of immune people 
 
 #recovery
 avgRecoveryTimeVec <- c(4)
@@ -184,7 +184,7 @@ for (parConf in c(1:nParConfigs)){
 # ausf√ºhren f√ºr verschiedene kofigs (susc / bond prob / recovery times) || param variation -> errors?? test
 # verschiedene susc (verteilung/faktor), powerBond, recTime | jeweils mehrmals laufen lassen -> statistische auswertung
 # auswerten! (neues programm) -define epidemic outbreak - errors!! ( stat analysis)
-# !! laufzeit absch‰tzen!!
+# !! laufzeit absch?tzen!!
 
 # -> aussuchen von 3-4 krankheiten mit verschiedenen besonderheiten (aussterben, starke verbreitung...)
 
@@ -192,10 +192,10 @@ for (parConf in c(1:nParConfigs)){
 # vaccination offset
 # immunity von 0 bis 0.9 rel kleinschrittig durchsim
 # social Distancing can be changed during epidemic (time delay with seed to compare?)
-# erst groﬂschrittig und dann bei  evtl. kippunkt  
+# erst gro?schrittig und dann bei  evtl. kippunkt  
 #auswert: R != R0
 
-#fﬂr andere pop testen --> unterschiede/gleich? --> statistische fehler der aussagen prﬂfen/abschﬂtzen
+#f?r andere pop testen --> unterschiede/gleich? --> statistische fehler der aussagen pr?fen/absch?tzen
 
 
 # recovery time vom alter abh√§ngig
