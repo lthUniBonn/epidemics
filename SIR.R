@@ -17,9 +17,9 @@ path <- "data/"
    #plotting
 plotIt <- FALSE
 plotEvery <- 10
-plotAccumulated <- TRUE
+plotAccumulated <- FALSE
    #clusters
-checkCluster <- FALSE
+checkCluster <- TRUE
 clusterEvery <- 5
 
 
@@ -56,7 +56,7 @@ ageDistribution <- sample(c(3, 20,40,60,80, 100), replace=TRUE, size=N,prob = c(
 
 
 #vaccination #!!
-immunity <- seq(0,1, 0.05) #ratio of immune people 
+immunity <- seq(0.2,0.3, 0.005) #ratio of immune people 
 
 #recovery
 avgRecoveryTimeVec <- c(4)
