@@ -14,6 +14,7 @@ sFixed <- sChoice[2]
 sNot <- sChoice[3]
 sReal <- sChoice[4]
 
+epidemicThreshold <- N*0.02
 #params <- paste(c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, i, sDistFactor, sChoiceNames[sChoice]), sep="", collapse="_") 
 
 

@@ -1,5 +1,7 @@
 source('evalModules.R')
 
+
+
 #get the existing filenames
 fileNames <- array(unlist(strsplit(list.files("data")[], "_")), dim=c(9,length(list.files("data"))))
 paramList <- array(as.numeric(fileNames[c(2:8),]),dim=c(7,length(list.files("data"))))
@@ -66,7 +68,6 @@ findObsvsParams <- function(obs='numberInfected', parIdx=3, params){
     fixedParListCheck <- fixedParListCheck & (parList[idx,]==params[idx])
   }
   parList <- array(parList[,which(fixedParListCheck==TRUE)], dim = c(7, length(which(fixedParListCheck==TRUE))))
-  print(parList)
   #read files into list of data frames 
   dfList <- list(length=ncol(parList))
   for(idx in c(1:ncol(parList))){
@@ -99,7 +100,6 @@ evalMax <- function(dfList, obs){
       x <- x + 1
       thisObsMean <- rowMeans(df[,c(2:ncol(df))], na.rm = TRUE)
       thisObsSd <- apply(X = df[,c(2:ncol(df))],MARGIN = 1, FUN = sd, na.rm =TRUE)
-      if (anyNA(thisObsSd))(View(df[,c(2:ncol(df))]))
       maxVal[x] <- max(thisObsMean)
       maxSd[x] <- thisObsSd[which.max(thisObsMean)]
     }
@@ -122,7 +122,7 @@ plotObsvsParam <- function(){
 }
 #param names accInfections
 parIdx <- 3
-tmpList <- findObsvsParams(obs='accInfections',parIdx = parIdx, params = paramList[,1])[]
+tmpList <- findObsvsParams(obs='accInfections',parIdx = parIdx, params = paramList[,5])[]
 dfList <- tmpList[[2]]
 parList <- tmpList[[1]]
 maxVal <- evalMax(dfList, obs = 'accInfections')
@@ -133,7 +133,22 @@ arrows(parVal, maxVal[,1]-maxVal[,2], parVal, maxVal[,1]+maxVal[,2], length=0.05
 R0Params <- which(nameList == "R02Mean")
 
 
-#define major epidemic
+#define major epidemic: over 100 people infected = 100/160000
+
+#plot prob of outbreak:
+outbreakProb <- function(dfList){
+  p <- numeric(length(dfList))
+  x <- 0
+  for (df in dfList){
+    x <- x + 1
+    lastVal <- apply(X = df[,c(2:ncol(df))],MARGIN = 2, FUN = max, na.rm =TRUE)
+    p[x] <- length(which(lastVal>epidemicThreshold))/(ncol(df)-1)
+    
+  } 
+  return(p)
+}
+a <- outbreakProb(dfList)
+plot(parVal, a)
 #function plot observable against selected parameter
 
 #choose some params 

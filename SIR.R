@@ -3,7 +3,7 @@ library('plot.matrix')
 source('modules.R')
 source('runFunctions.R')
 
-#profile <- profvis({
+profile <- profvis({
 
 #set.seed(1)
 
@@ -11,7 +11,7 @@ source('runFunctions.R')
 
 
 #-----------------------------run params 
-path <- "data/"
+path <- "dataStd/"
 
 #observables
    #plotting
@@ -23,7 +23,7 @@ checkCluster <- TRUE
 clusterEvery <- 5
 
 
-nStatRun <- 50 # how many times is the same thing done (statistical simulation check)
+nStatRun <- 1000 # how many times is the same thing done (statistical simulation check)
 checkR0Here <- 10 # after how many recoveries is R0 evaluated 
 
 #-----------------------------lattice 
@@ -56,7 +56,7 @@ ageDistribution <- sample(c(3, 20,40,60,80, 100), replace=TRUE, size=N,prob = c(
 
 
 #vaccination #!!
-immunity <- seq(0.2,0.3, 0.005) #ratio of immune people 
+immunity <- c(0.2) #ratio of immune people 
 
 #recovery
 avgRecoveryTimeVec <- c(4)
@@ -171,7 +171,7 @@ for (parConf in c(1:nParConfigs)){
   write.table(x = evalR07, file = paste(c(path, "R07Mean_", params, ".txt"),sep="", collapse=""), append = FALSE,sep = "\t",row.names = FALSE, col.names = FALSE)
 }  
 
-#})
+})
 
 #-----------------------------------------------------------------------------------
 #observed that for large (>100) lattices the boundaries are basically irrelevant for the largest cluster size
