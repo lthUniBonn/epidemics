@@ -1,10 +1,10 @@
 source('evalModules.R')
-
-
+library("ggplot2")
+path <- "data"
 
 #get the existing filenames
-fileNames <- array(unlist(strsplit(list.files("data")[], "_")), dim=c(9,length(list.files("data"))))
-paramList <- array(as.numeric(fileNames[c(2:8),]),dim=c(7,length(list.files("data"))))
+fileNames <- array(unlist(strsplit(list.files(path)[], "_")), dim=c(9,length(list.files(path))))
+paramList <- array(as.numeric(fileNames[c(2:8),]),dim=c(7,length(list.files(path))))
 nameList <- fileNames[1,]
 
 #read all specified files
@@ -14,15 +14,22 @@ evalThisNames <- nameList[evalTheseIdx]
 dfList <- list(length=length(evalTheseIdx))
 for (idx in c(1:length(evalTheseIdx))){
   params <- paste(c(evalThisParams[1,idx], evalThisParams[2,idx], evalThisParams[3,idx], evalThisParams[4,idx], evalThisParams[5,idx], evalThisParams[6,idx], evalThisParams[7,idx], sChoiceNames[sChoice]), sep="", collapse="_") 
-  df <- read.table(file = paste(c("data/", evalThisNames[idx], "_", params, ".txt"),sep="", collapse=""))
+  df <- read.table(file = paste(c(path,"/", evalThisNames[idx], "_", params, ".txt"),sep="", collapse=""))
   dfList[[idx]] <- df
 }
 
 
 #plotting / evaluation
 a <- c(1,2)
-comp <- T
-meanPlot(evalThisNames[a[1]], evalThisParams[,a[1]], dfList[[a[1]]], compare = comp, evalThisNames[a[2]], evalThisParams[,a[2]], dfList[[a[2]]])
+comp <- F
+params <- fixedParams
+obs <- 'accInfections'
+
+
+df <- read.table(paste(c(path,"/",obs, '_',paste(params, sep="", collapse="_"), '.txt'), sep="", collapse="")) 
+
+meanPlot('numberInfected', params, df, compare = comp)
+#meanPlot(evalThisNames[a[1]], evalThisParams[,a[1]], dfList[[a[1]]], compare = comp, evalThisNames[a[2]], evalThisParams[,a[2]], dfList[[a[2]]])
 
 
 
@@ -30,7 +37,7 @@ meanPlot(evalThisNames[a[1]], evalThisParams[,a[1]], dfList[[a[1]]], compare = c
 
 evalR0 <- function(R0Choice = "", params){
   #!! check params immunity <- params[1]
-  R0MeanDf <- read.table(file = paste(c("data/R0",R0Choice,"Mean_", params, ".txt"),sep="", collapse=""))
+  R0MeanDf <- read.table(file = paste(c(path,"/","R0",R0Choice,"Mean_", params, ".txt"),sep="", collapse=""))
   # how to treat 0 standard deviation values
   R0MeanDf <- R0MeanDf[-which((R0MeanDf[,2]==0),arr.ind = TRUE),]
   R0Mean <- sum(R0MeanDf[,1]*(R0MeanDf[,2]**(-2)),na.rm = TRUE)/sum(R0MeanDf[,2]**(-2),na.rm = TRUE)
@@ -53,26 +60,42 @@ evalR0 <- function(R0Choice = "", params){
   
 }
 
-findObsvsParams <- function(obs='numberInfected', parIdx=3, params){
+findObsvsParams <- function(obs='numberInfected', parIdx=3, params, checkSpecific=c()){
   #browser()
   # find all files with obs 
-  parList <- array(as.numeric(fileNames[c(2:8),]),dim=c(7,length(list.files("data"))))
+  parList <- array(as.numeric(fileNames[c(2:8),]),dim=c(7,length(list.files(path))))
   obsList <- fileNames[1,]
   parList <- paramList[,which(obsList == obs)]
-  notParIdxVec <- c(1:7)
-  notParIdxVec <- notParIdxVec[-which(notParIdxVec == parIdx)]
-
-  #select param config, all but one fixed
-  fixedParListCheck <- rep(TRUE, ncol(parList))
-  for (idx in notParIdxVec){
-    fixedParListCheck <- fixedParListCheck & (parList[idx,]==params[idx])
+  #browser()
+  
+  if (length(checkSpecific) == 0){
+    notParIdxVec <- c(1:7)
+    notParIdxVec <- notParIdxVec[-which(notParIdxVec == parIdx)]
+    
+    #select param config, all but one fixed
+    fixedParListCheck <- rep(TRUE, ncol(parList))
+    for (idx in notParIdxVec){
+      fixedParListCheck <- fixedParListCheck & (parList[idx,]==params[idx])
+    }
+    parList <- array(parList[,which(fixedParListCheck==TRUE)], dim = c(7, length(which(fixedParListCheck==TRUE))))
   }
-  parList <- array(parList[,which(fixedParListCheck==TRUE)], dim = c(7, length(which(fixedParListCheck==TRUE))))
+  else {
+    notParIdxVec <- c(1:7)
+    notParIdxVec <- notParIdxVec[-which(notParIdxVec == parIdx)]
+    #select param config, all but one fixed
+    fixedParListCheck <- rep(TRUE, ncol(parList))
+    for (idx in notParIdxVec){
+      fixedParListCheck <- fixedParListCheck & (parList[idx,]==params[idx])
+    }
+    fixedParListCheck <- fixedParListCheck & (parList[parIdx,] %in% checkSpecific)
+    print(length(which(fixedParListCheck == TRUE)))
+    parList <- array(parList[,which(fixedParListCheck==TRUE)], dim = c(7, length(which(fixedParListCheck==TRUE))))
+  }
   #read files into list of data frames 
   dfList <- list(length=ncol(parList))
   for(idx in c(1:ncol(parList))){
     readParams <- paste(c(parList[1,idx], parList[2,idx], parList[3,idx], parList[4,idx], parList[5,idx], parList[6,idx], parList[7,idx], sChoiceNames[sChoice]), sep="", collapse="_") 
-    df <- read.table(file = paste(c("data/", obs, "_", readParams, ".txt"),sep="", collapse=""))
+    df <- read.table(file = paste(c(path,"/", obs, "_", readParams, ".txt"),sep="", collapse=""))
     dfList[[idx]] <- df
   }
   
@@ -136,19 +159,51 @@ R0Params <- which(nameList == "R02Mean")
 #define major epidemic: over 100 people infected = 100/160000
 
 #plot prob of outbreak:
-outbreakProb <- function(dfList){
+outbreakProb <- function(dfList, prob=T){
   p <- numeric(length(dfList))
-  x <- 0
-  for (df in dfList){
-    x <- x + 1
+  lastValMean <- numeric(length(dfList))
+  #x <- 0
+  for (dfIdx in c(1:length(dfList))){
+    #x <- x + 1
+    #print(df)
+    df <- dfList[[dfIdx]]
+    x <- dfIdx
     lastVal <- apply(X = df[,c(2:ncol(df))],MARGIN = 2, FUN = max, na.rm =TRUE)
+    lastValMean[x] <- mean(lastVal)
     p[x] <- length(which(lastVal>epidemicThreshold))/(ncol(df)-1)
     
   } 
-  return(p)
+  if(prob){
+    return(p)
+  } else { return(lastValMean)}
 }
-a <- outbreakProb(dfList)
-plot(parVal, a)
+
+
+checkThisImmunity <- unique(c(seq(0,0.7,0.1)))#,seq(0,0.9,0.1)))
+checkThisSDistFac <- unique(c(seq(1,10,1)))#,seq(1,10,1)))
+
+
+p <- expand.grid(immunities = checkThisImmunity, sDistFactors = checkThisSDistFac)
+p$prob <- NA
+counter <- 0
+for(x in c(1:length(checkThisImmunity))){
+  # sqrt(N) nShort immunity avgRecTime sdRecTime sAgeDist  sDistFactor sChoice
+  params <-  c(sqrt(N), nShort, checkThisImmunity[x], avgRecoveryTime, sdRecoveryTime, i, sDistFactor, sChoiceNames[sChoice])
+  #find files
+  tmpList <- findObsvsParams(obs='accInfections',parIdx = 7, params = params, checkSpecific= checkThisSDistFac)[]
+  dfList <- tmpList[[2]]
+  parList <- tmpList[[1]]#save not ordered! 
+  outbreakP <- outbreakProb(dfList, T)
+  for (idx in c(1:ncol(parList))){  
+    counter <- counter + 1
+    p[(p$sDistFactors == parList[7,idx])&(p$immunities == checkThisImmunity[x]),]$prob <- outbreakP[idx]
+  }
+}
+
+ggplot(data = as.data.frame(p), mapping = aes(x=sDistFactors, y=immunities  )) + geom_tile(aes(fill = prob)) 
+
+#plot(a, ylab = "immunity", xlab = "social distancing")
+
 #function plot observable against selected parameter
 
 #choose some params 

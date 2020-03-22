@@ -3,27 +3,27 @@ library('plot.matrix')
 source('modules.R')
 source('runFunctions.R')
 
-profile <- profvis({
+#profile <- profvis({
 
-#set.seed(1)
+set.seed(1)
 
 
 
 
 #-----------------------------run params 
-path <- "dataStd/"
+path <- "data/"
 
 #observables
    #plotting
 plotIt <- FALSE
 plotEvery <- 10
-plotAccumulated <- FALSE
+plotAccumulated <- F
    #clusters
 checkCluster <- TRUE
 clusterEvery <- 5
 
 
-nStatRun <- 1000 # how many times is the same thing done (statistical simulation check)
+nStatRun <- 2 # how many times is the same thing done (statistical simulation check)
 checkR0Here <- 10 # after how many recoveries is R0 evaluated 
 
 #-----------------------------lattice 
@@ -56,11 +56,11 @@ ageDistribution <- sample(c(3, 20,40,60,80, 100), replace=TRUE, size=N,prob = c(
 
 
 #vaccination #!!
-immunity <- c(0.2) #ratio of immune people 
+immunity <- seq(0,0.7,0.1) #ratio of immune people 
 
 #recovery
-avgRecoveryTimeVec <- c(4)
-sdRecoveryTimeVec <- c(1)
+avgRecoveryTimeVec <- c(6)
+sdRecoveryTimeVec <- c(2)
 
 #susceptibility
 sChoice <- c(F,F,F,T)
@@ -70,12 +70,11 @@ sFixed <- sChoice[2]
 sNot <- sChoice[3]
 sReal <- sChoice[4]
 
-sAgeDist0 <- c(1, 0.7, 0.5, 0.7, 0.8, 1)
-sAgeDist1 <- c(1, 0.7, 0.7, 0.7, 0.8, 1)
-sAgeDist2 <- c(2, 2, 2, 2, 2, 2)
-sAgeDistArray <- rbind(sAgeDist0)#,sAgeDist1,sAgeDist2) #susceptibility depending on age
+sAgeDist1 <- c(0.7, 0.7, 0.7, 0.7, 0.7, 0.7)
+sAgeDist2 <- c(0.9, 0.6, 0.4, 0.6, 0.8, 0.9)
+sAgeDistArray <- rbind(sAgeDist1) #susceptibility depending on age
 #transmissibility
-sDistFactorVec <- c(3) # social distancing factor
+sDistFactorVec <- seq(1,10,1) # social distancing factor
 
 
 
@@ -171,7 +170,7 @@ for (parConf in c(1:nParConfigs)){
   write.table(x = evalR07, file = paste(c(path, "R07Mean_", params, ".txt"),sep="", collapse=""), append = FALSE,sep = "\t",row.names = FALSE, col.names = FALSE)
 }  
 
-})
+#})
 
 #-----------------------------------------------------------------------------------
 #observed that for large (>100) lattices the boundaries are basically irrelevant for the largest cluster size

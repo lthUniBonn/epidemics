@@ -109,8 +109,14 @@ writeEval <- function(writeThis, writeThisR0, params){
     for(s in c(2:(nStatRun))){
       isNa <- isNa & is.na(writeThisObs[,s+1])
     }
+  
+    writeThisObs <- writeThisObs[c(1:(which(isNa)[1]-1)), c(1:(nStatRun+1))]
     
-    writeThisObs <- writeThisObs[c(1:which(isNa)[1]-1), c(1:(nStatRun+1))]
+    if(is.vector(writeThisObs)){
+      writeThisObs <-t(writeThisObs)
+    }
+
+    
     write.table(x = writeThisObs, file =paste(c(path, obs,"_", params, ".txt"),sep="", collapse=""), append = FALSE,sep = "\t",row.names = FALSE, col.names = FALSE)
   }
   

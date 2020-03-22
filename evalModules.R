@@ -1,10 +1,10 @@
 N <- 400**2
 nShort <- N/100
 immunity <- 0
-avgRecoveryTime <- 4
-sdRecoveryTime <- 1
+avgRecoveryTime <- 6
+sdRecoveryTime <- 2
 i <- 1
-sAgeDist0 <- c(1, 0.7, 0.5, 0.7, 0.8, 1)
+sAgeDist0 <- c(0.7, 0.7, 0.7, 0.7, 0.7, 0.7)
 sAgeDist <- sAgeDist0
 sDistFactor <- 3
 sChoice <- c(F,F,F,T)
@@ -14,7 +14,8 @@ sFixed <- sChoice[2]
 sNot <- sChoice[3]
 sReal <- sChoice[4]
 
-epidemicThreshold <- N*0.02
+fixedParams <- c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, i, sDistFactor, sChoiceNames[sChoice])
+epidemicThreshold <- 0.02
 #params <- paste(c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, i, sDistFactor, sChoiceNames[sChoice]), sep="", collapse="_") 
 
 
@@ -44,8 +45,8 @@ meanPlot <- function(name,params,df, compare = FALSE, name2, params2, df2){
   
   plot(df[,1], thisObsMean, xlab = "T",ylab = name, col = 'black',, xlim = xlim, ylim = ylim)
   arrows(df[,1], thisObsMean-thisObsSd, df[,1], thisObsMean+thisObsSd, length=0.05, angle=90, code=3)
-  mtext(text = paste("N:", params[1]**2,"  nShort:", params[2], "  immunity:", params[3],"  recoveryTime:", params[4],"+-", params[5],"  suscDist:", params[6],"  suscFactor:", params[7], sep = " "),side = 3)
+  mtext(text = paste("sqrt(N):", params[1],"  nShort:", params[2], "  immunity:", params[3],"  recoveryTime:", params[4],"+-", params[5],"  suscDist:", params[6],"  suscFactor:", params[7], sep = " "),side = 3)
   if(compare == TRUE){
-    mtext(text = paste("N:", params2[1]**2,"  nShort:", params2[2], "  immunity:", params2[3],"  recoveryTime:", params2[4],"+-", params2[5],"  suscDist:", params2[6],"  suscFactor:", params2[7], sep = " "),side = 3,col = 'red',line = 1)
+    mtext(text = paste("sqrt(N):", params2[1],"  nShort:", params2[2], "  immunity:", params2[3],"  recoveryTime:", params2[4],"+-", params2[5],"  suscDist:", params2[6],"  suscFactor:", params2[7], sep = " "),side = 3,col = 'red',line = 1)
   }
 }
