@@ -11,7 +11,7 @@ set.seed(1)
 
 
 #-----------------------------run params 
-path <- "data/"
+path <- "LukaLaptop/"
 
 #observables
    #plotting
