@@ -23,7 +23,7 @@ checkCluster <- TRUE
 clusterEvery <- 5
 
 
-nStatRun <- 2 # how many times is the same thing done (statistical simulation check)
+nStatRun <- 100 # how many times is the same thing done (statistical simulation check)
 checkR0Here <- 10 # after how many recoveries is R0 evaluated 
 
 #-----------------------------lattice 
@@ -56,7 +56,11 @@ ageDistribution <- sample(c(3, 20,40,60,80, 100), replace=TRUE, size=N,prob = c(
 
 
 #vaccination #!!
-immunity <- seq(0,0.7,0.1) #ratio of immune people 
+immunity <- c(#seq(0,0.1,0.02)
+              seq(0.12,0.24,0.02)
+              #seq(0.26,0.38,0.02)
+              #seq(0.4,0.5,0.02)
+              ) #ratio of immune people 
 
 #recovery
 avgRecoveryTimeVec <- c(6)
@@ -72,9 +76,9 @@ sReal <- sChoice[4]
 
 sAgeDist1 <- c(0.7, 0.7, 0.7, 0.7, 0.7, 0.7)
 sAgeDist2 <- c(0.9, 0.6, 0.4, 0.6, 0.8, 0.9)
-sAgeDistArray <- rbind(sAgeDist1) #susceptibility depending on age
+sAgeDistArray <- rbind(sAgeDist1, sAgeDist2) #susceptibility depending on age
 #transmissibility
-sDistFactorVec <- seq(1,10,1) # social distancing factor
+sDistFactorVec <- seq(1,7,0.2) # social distancing factor
 
 
 

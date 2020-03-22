@@ -193,7 +193,7 @@ for(x in c(1:length(checkThisImmunity))){
   tmpList <- findObsvsParams(obs='accInfections',parIdx = 7, params = params, checkSpecific= checkThisSDistFac)[]
   dfList <- tmpList[[2]]
   parList <- tmpList[[1]]#save not ordered! 
-  outbreakP <- outbreakProb(dfList, T)
+  outbreakP <- outbreakProb(dfList, F)
   for (idx in c(1:ncol(parList))){  
     counter <- counter + 1
     p[(p$sDistFactors == parList[7,idx])&(p$immunities == checkThisImmunity[x]),]$prob <- outbreakP[idx]
