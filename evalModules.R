@@ -1,22 +1,3 @@
-N <- 400**2
-nShort <- N/100
-immunity <- 0
-avgRecoveryTime <- 6
-sdRecoveryTime <- 2
-i <- 1
-sAgeDist0 <- c(0.7, 0.7, 0.7, 0.7, 0.7, 0.7)
-sAgeDist <- sAgeDist0
-sDistFactor <- 3
-sChoice <- c(F,F,F,T)
-sChoiceNames <- c("sBool", "sFixed", "sNot", "sReal")
-sBool <- sChoice[1] # if True the susceptibility is 1 or 0 // other poss like gaussian with age etc
-sFixed <- sChoice[2]
-sNot <- sChoice[3]
-sReal <- sChoice[4]
-
-fixedParams <- c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, i, sDistFactor, sChoiceNames[sChoice])
-epidemicThreshold <- 0.02
-#params <- paste(c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, i, sDistFactor, sChoiceNames[sChoice]), sep="", collapse="_") 
 
 
 meanPlot <- function(name,params,df, compare = FALSE, name2, params2, df2){

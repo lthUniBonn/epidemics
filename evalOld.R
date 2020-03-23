@@ -2,40 +2,10 @@ source('evalModules.R')
 library("ggplot2")
 
 path <- "data"
-
 #get the existing filenames
 fileNames <- array(unlist(strsplit(list.files(path)[], "_")), dim=c(9,length(list.files(path))))
 paramList <- array(as.numeric(fileNames[c(2:8),]),dim=c(7,length(list.files(path))))
 nameList <- fileNames[1,]
-
-#define basic parameters
-N <- 400**2
-nShort <- N/100
-avgRecoveryTime <- 6
-sdRecoveryTime <- 2
-sChoice <- 'sReal'
-
-ageDistIdx <- 1
-sAgeDist1 <- c(0.7, 0.7, 0.7, 0.7, 0.7, 0.7)
-sAgeDist2 <- c(0.9, 0.6, 0.4, 0.6, 0.8, 0.9)
-sAgeDistArray <- rbind(sAgeDist1, sAgeDist2) #susceptibility depending on age
-
-
-sDistFactor <- 3
-immunity <- 0
-
-fixedParams <- c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, ageDistIdx, sDistFactor, sChoice)
-#params <- paste(c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, ageDistIdx, sDistFactor, sChoice), sep="", collapse="_") 
-
-
-epidemicThreshold <- 0.02
-
-
-
-
-
-
-
 
 readAllObs <- function(obs='numberInfected', nStat = 100){
   #read all specified files
@@ -45,7 +15,7 @@ readAllObs <- function(obs='numberInfected', nStat = 100){
   dfList <- list()
   usedIdx <- c()
   for (idx in c(1:length(evalTheseIdx))){
-    params <- paste(c(evalThisParams[1,idx], evalThisParams[2,idx], evalThisParams[3,idx], evalThisParams[4,idx], evalThisParams[5,idx], evalThisParams[6,idx], evalThisParams[7,idx], sChoice), sep="", collapse="_") 
+    params <- paste(c(evalThisParams[1,idx], evalThisParams[2,idx], evalThisParams[3,idx], evalThisParams[4,idx], evalThisParams[5,idx], evalThisParams[6,idx], evalThisParams[7,idx], sChoiceNames[sChoice]), sep="", collapse="_") 
     df <- read.table(file = paste(c(path,"/", evalThisNames[idx], "_", params, ".txt"),sep="", collapse=""))
     if(ncol(df) == (nStat +1)){
       dfList <- append(dfList, list(df))
@@ -55,7 +25,7 @@ readAllObs <- function(obs='numberInfected', nStat = 100){
   }
   return(list(usedParams, dfList))
 }
-a <- readAllObs(nStat=50)
+#a <- readAllObs(nStat=50)
 
 
 #plotting mean vs x 
@@ -133,7 +103,7 @@ findObsvsParams <- function(obs='numberInfected', parIdx=3, params, checkSpecifi
   #read files into list of data frames 
   dfList <- list(length=ncol(parList))
   for(idx in c(1:ncol(parList))){
-    readParams <- paste(c(parList[1,idx], parList[2,idx], parList[3,idx], parList[4,idx], parList[5,idx], parList[6,idx], parList[7,idx], sChoice), sep="", collapse="_") 
+    readParams <- paste(c(parList[1,idx], parList[2,idx], parList[3,idx], parList[4,idx], parList[5,idx], parList[6,idx], parList[7,idx], sChoiceNames[sChoice]), sep="", collapse="_") 
     df <- read.table(file = paste(c(path,"/", obs, "_", readParams, ".txt"),sep="", collapse=""))
     dfList[[idx]] <- df
   }
@@ -227,7 +197,7 @@ p$prob <- NA
 counter <- 0
 for(x in c(1:length(checkThisImmunity))){
   # sqrt(N) nShort immunity avgRecTime sdRecTime sAgeDist  sDistFactor sChoice
-  params <-  c(sqrt(N), nShort, checkThisImmunity[x], avgRecoveryTime, sdRecoveryTime, i, sDistFactor, sChoice)
+  params <-  c(sqrt(N), nShort, checkThisImmunity[x], avgRecoveryTime, sdRecoveryTime, i, sDistFactor, sChoiceNames[sChoice])
   #find files
   tmpList <- findObsvsParams(obs='accInfections',parIdx = 7, params = params, checkSpecific= checkThisSDistFac)[]
   dfList <- tmpList[[2]]
