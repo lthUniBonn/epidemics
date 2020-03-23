@@ -27,6 +27,9 @@ fixedParams <- c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, age
 
 epidemicThreshold <- 0.02
 #-------------------------------------------------------------------------------
+#eval max vs immunity / social distancing 
+#obs vs param
+
 
 #heatmap of immunity and sDistFactor | p(ME) or accInfections
 #R0calc vs R0 measured 

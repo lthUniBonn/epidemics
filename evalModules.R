@@ -1,12 +1,80 @@
-bootstrap <- function(vec, nSample=50){
+bootstrap <- function(vec, nSample=50, FUN=mean){
   means <- numeric(length=nSample)
   vec <- vec[which(is.na(vec)==FALSE)]
   for(i in c(1:nSample)){
-    means[i] <- mean(sample(vec, length(vec), replace=TRUE))
+    means[i] <- FUN(sample(vec, length(vec), replace=TRUE))
   }
   err <- sd(means) 
   return(err)
 }
+
+outbreakProbability <- function(lastVal){
+  return(length(which(lastVal>epidemicThreshold))/length(lastVal))
+}
+
+
+outbreakMeasure <- function(dfList, prob=T){
+  p <- numeric(length(dfList))
+  pErr <- numeric(length(dfList))
+  lastValMean <- numeric(length(dfList))
+  lastValErr <- numeric(length(dfList))
+  for (dfIdx in c(1:length(dfList))){
+    df <- dfList[[dfIdx]]
+    x <- dfIdx
+    lastVal <- apply(X = df[,c(2:ncol(df))],MARGIN = 2, FUN = max, na.rm =TRUE)
+    lastValMean[x] <- mean(lastVal)
+    lastValErr[x] <- bootstrap(lastVal)
+    p[x] <- outbreakProbability(lastVal)
+    pErr[x] <- bootstrap(lastVal, FUN = outbreakProbability)
+  } 
+  if(prob){
+    return(list(p,pErr))
+  } else { return(list(lastValMean, lastValErr))}
+}
+
+
+findObsvsParams <- function(obs='numberInfected', parIdx=3, params, checkSpecific=c()){
+  #all files
+  fileNames <- array(unlist(strsplit(list.files(path)[], "_")), dim=c(9,length(list.files(path))))
+  paramList <- array(as.numeric(fileNames[c(2:8),]),dim=c(7,length(list.files(path))))
+  # find all files with obs 
+  parList <- array(as.numeric(fileNames[c(2:8),]),dim=c(7,length(list.files(path))))
+  obsList <- fileNames[1,]
+  parList <- paramList[,which(obsList == obs)]
+  
+  if (length(checkSpecific) == 0){
+    notParIdxVec <- c(1:7)
+    notParIdxVec <- notParIdxVec[-which(notParIdxVec == parIdx)]
+    
+    #select param config, all but one fixed
+    fixedParListCheck <- rep(TRUE, ncol(parList))
+    for (idx in notParIdxVec){
+      fixedParListCheck <- fixedParListCheck & (parList[idx,]==params[idx])
+    }
+    parList <- array(parList[,which(fixedParListCheck==TRUE)], dim = c(7, length(which(fixedParListCheck==TRUE))))
+  }
+  else {
+    notParIdxVec <- c(1:7)
+    notParIdxVec <- notParIdxVec[-which(notParIdxVec == parIdx)]
+    #select param config, all but one fixed
+    fixedParListCheck <- rep(TRUE, ncol(parList))
+    for (idx in notParIdxVec){
+      fixedParListCheck <- fixedParListCheck & (parList[idx,]==params[idx])
+    }
+    fixedParListCheck <- fixedParListCheck & (parList[parIdx,] %in% checkSpecific)
+    parList <- array(parList[,which(fixedParListCheck==TRUE)], dim = c(7, length(which(fixedParListCheck==TRUE))))
+  }
+  #read files into list of data frames 
+  dfList <- list(length=ncol(parList))
+  for(idx in c(1:ncol(parList))){
+    readParams <- paste(c(parList[1,idx], parList[2,idx], parList[3,idx], parList[4,idx], parList[5,idx], parList[6,idx], parList[7,idx], sChoice), sep="", collapse="_") 
+    df <- read.table(file = paste(c(path,"/", obs, "_", readParams, ".txt"),sep="", collapse=""))
+    dfList[[idx]] <- df
+  }
+  return(list(parList, dfList))
+}
+
+
 
 meanPlot <- function(name,params,df, compare = FALSE, name2, params2, df2){
   thisObsMean <- rowMeans(df[,c(2:ncol(df))], na.rm = TRUE)
