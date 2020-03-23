@@ -27,6 +27,8 @@ fixedParams <- c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, age
 
 epidemicThreshold <- 0.02
 #-------------------------------------------------------------------------------
+#plot obs vs var
+
 
 #heatmap of immunity and sDistFactor | p(ME) or accInfections
 #R0calc vs R0 measured 
