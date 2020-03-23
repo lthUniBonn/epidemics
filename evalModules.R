@@ -1,3 +1,7 @@
+parNames <- c('sqrt(N)',  'number of shortcuts', 'immunisation quota', 'avgerage recovery time', 'recovery time deviation', 'type of age distribution', 'social distancing factor', 'choice of susceptibility distribution')
+
+
+
 bootstrap <- function(vec, nSample=50, FUN=mean){
   means <- numeric(length=nSample)
   vec <- vec[which(is.na(vec)==FALSE)]
