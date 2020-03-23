@@ -11,7 +11,7 @@ set.seed(1)
 
 
 #-----------------------------run params 
-path <- "LaviBlackie/"
+path <- "LukaLaptop/"
 
 #observables
    #plotting
@@ -63,12 +63,13 @@ immunity <- c(#c(0)
               #c(0.08)
               #c(0.1)
               #c(0.12)
-              c(0.14)
+              #c(0.14)
               # bis hier Blackie running
               #c(0.16)
               #c(0.18)
               #c(0.2)
-              #c(0.22)
+              c(0.22)
+              #bis hier laptop
               #c(0.24)
               #c(0.26)
               #c(0.28)
