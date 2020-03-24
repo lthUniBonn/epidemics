@@ -11,7 +11,9 @@ set.seed(1)
 
 
 #-----------------------------run params 
-path <- "LukaLaptop/"
+
+path <- "LukaPC/"
+
 
 #observables
    #plotting
@@ -56,6 +58,7 @@ ageDistribution <- sample(c(3, 20,40,60,80, 100), replace=TRUE, size=N,prob = c(
 
 
 #vaccination #!!
+
 immunity <- c(#c(0)
               #c(0.02)
               #c(0.04)
@@ -65,27 +68,27 @@ immunity <- c(#c(0)
               #c(0.12)
               #c(0.14)
               # bis hier Blackie running
-              #c(0.16)
-              #c(0.18)
-              #c(0.2)
-              c(0.22)
-              #bis hier laptop
-              #c(0.24)
-              #c(0.26)
-              #c(0.28)
-              #c(0.3)
+              #c(0.16)# Luka laptop
+              #c(0.18)# Luka laptop
+              #c(0.2)#  Luka laptop
+              #c(0.22)# Luka laptop
+              #c(0.24)#VM
+              #c(0.26)#VM
+              #c(0.28)#VM
+              #c(0.3)#VM
               #weitere 8?
-              #c(0.32)
-              #c(0.34)
-              #c(0.36)
-              #c(0.38)
-              #c(0.4)
-              #c(0.42)
-              #c(0.44)
-              #c(0.46)
+              #c(0.32)#VM
+              #c(0.32)#VM  
+              #c(0.34)#VM
+              #c(0.36)#VM
+              #c(0.38)#VM
+              #c(0.4)#VM
+              #c(0.42)#VM
+              #c(0.44)#VM
+              c(0.46)
               #weitergehee 8?
-              #c(0.48)
-              #c(0.5)
+              #c(0.48),#Luka PC
+              #c(0.5)#Luka PC
               #------
               #seq(0,0.04,0.02)
               #seq(0.06,0.1,0.02)
@@ -95,6 +98,7 @@ immunity <- c(#c(0)
               #seq(0.32,0.36,0.02)
               #seq(0.38,0.42,0.02)
               #seq(0.44,0.5,0.02)
+
               ) #ratio of immune people 
 
 #recovery
