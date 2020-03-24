@@ -11,7 +11,9 @@ set.seed(1)
 
 
 #-----------------------------run params 
+
 path <- "LukaPC/"
+
 
 #observables
    #plotting
@@ -75,17 +77,18 @@ immunity <- c(#c(0)
               #c(0.28)#VM
               #c(0.3)#VM
               #weitere 8?
+              #c(0.32)#VM
               #c(0.32)#VM  
               #c(0.34)#VM
-              #c(0.36)
-              #c(0.38)
-              #c(0.4)
-              #c(0.42)
-              #c(0.44)
-              #c(0.46)
+              #c(0.36)#VM
+              #c(0.38)#VM
+              #c(0.4)#VM
+              #c(0.42)#VM
+              #c(0.44)#VM
+              c(0.46)
               #weitergehee 8?
-              #c(0.48)
-              #c(0.5)
+              #c(0.48),#Luka PC
+              #c(0.5)#Luka PC
               #------
               #seq(0,0.04,0.02)
               #seq(0.06,0.1,0.02)
