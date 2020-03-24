@@ -29,8 +29,7 @@ epidemicThreshold <- 0.02
 #-------------------------------------------------------------------------------
 #heatmap of immunity and sDistFactor | p(ME) or accInfections
 checkThisImmunity <-seq(0,0.5,0.02)
-checkThisSDistFac <- seq(1,7,0.2)
-
+checkThisSDistFac <-round(seq(1,7,0.2),1)#need to round to compare seq[8] == 2.4 to TRUE
 p <- expand.grid(immunities = checkThisImmunity, sDistFactors = checkThisSDistFac)
 p$prob <- NA
 counter <- 0

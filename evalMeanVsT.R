@@ -1,13 +1,13 @@
 source('evalModules.R')
 library("ggplot2")
 
-path <- "data"
+path <- "longRun"
 
 #define basic parameters of the evaluated simulation
 N <- 400**2
 nShort <- N/100
-avgRecoveryTime <- 4#6
-sdRecoveryTime <- 1#2
+avgRecoveryTime <- 6
+sdRecoveryTime <- 2
 sChoice <- 'sReal'
 
 ageDistIdx <- 1
@@ -16,8 +16,8 @@ ageDistIdx <- 1
 #sAgeDistArray <- rbind(sAgeDist1, sAgeDist2) #susceptibility depending on age
 
 
-sDistFactor <- 1.1#3
-immunity <- 0.1
+sDistFactor <- 1#3
+immunity <- 0
 
 fixedParams <- c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, ageDistIdx, sDistFactor, sChoice)
 #params <- paste(c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, ageDistIdx, sDistFactor, sChoice), sep="", collapse="_") 
@@ -27,7 +27,7 @@ epidemicThreshold <- 0.02
 #-------------------------------------------------------------------------------
 
 #plot means of obs vs t
-obs <- 'accInfections' # 'accInfections'
+obs <- 'numberInfected' # 'accInfections'
 comp <- T
 params <- fixedParams 
 df <- read.table(paste(c(path,"/",obs, '_',paste(params, sep="", collapse="_"), '.txt'), sep="", collapse="")) 

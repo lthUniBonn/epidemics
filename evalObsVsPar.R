@@ -1,7 +1,7 @@
 source('evalModules.R')
 library("ggplot2")
 
-path <- "data"
+path <- "longRun"
 
 
 
@@ -18,8 +18,8 @@ ageDistIdx <- 1
 #sAgeDistArray <- rbind(sAgeDist1, sAgeDist2) #susceptibility depending on age
 
 
-sDistFactor <- 3
-immunity <- 0
+sDistFactor <- 2
+immunity <- 0.3
 
 fixedParams <- c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, ageDistIdx, sDistFactor, sChoice)
 #params <- paste(c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, ageDistIdx, sDistFactor, sChoice), sep="", collapse="_") 
@@ -76,11 +76,11 @@ evalObs <- function(dfList, obs){
   return(list(maxVal, maxErr))
 }
 
-parIdx <- 7
+parIdx <- 3
 
 #evaluate observable to plot -> y
-ylab <- 'total infected'
-obs <- c('accInfections','accInfections')
+#ylab <- 'total infected'
+#obs <- c('accInfections','accInfections')
 
 
 #ylab <- 'maximal concurrently infected'

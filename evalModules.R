@@ -2,7 +2,7 @@ parNames <- c('sqrt(N)',  'number of shortcuts', 'immunisation quota', 'avgerage
 
 
 
-bootstrap <- function(vec, nSample=50, FUN=mean){
+bootstrap <- function(vec, nSample=1000, FUN=mean){
   means <- numeric(length=nSample)
   vec <- vec[which(is.na(vec)==FALSE)]
   for(i in c(1:nSample)){
@@ -45,7 +45,6 @@ findObsvsParams <- function(obs='numberInfected', parIdx=3, params, checkSpecifi
   parList <- array(as.numeric(fileNames[c(2:8),]),dim=c(7,length(list.files(path))))
   obsList <- fileNames[1,]
   parList <- paramList[,which(obsList == obs)]
-  
   if (length(checkSpecific) == 0){
     notParIdxVec <- c(1:7)
     notParIdxVec <- notParIdxVec[-which(notParIdxVec == parIdx)]
@@ -56,8 +55,7 @@ findObsvsParams <- function(obs='numberInfected', parIdx=3, params, checkSpecifi
       fixedParListCheck <- fixedParListCheck & (parList[idx,]==params[idx])
     }
     parList <- array(parList[,which(fixedParListCheck==TRUE)], dim = c(7, length(which(fixedParListCheck==TRUE))))
-  }
-  else {
+  } else {
     notParIdxVec <- c(1:7)
     notParIdxVec <- notParIdxVec[-which(notParIdxVec == parIdx)]
     #select param config, all but one fixed
@@ -65,16 +63,23 @@ findObsvsParams <- function(obs='numberInfected', parIdx=3, params, checkSpecifi
     for (idx in notParIdxVec){
       fixedParListCheck <- fixedParListCheck & (parList[idx,]==params[idx])
     }
-    fixedParListCheck <- fixedParListCheck & (parList[parIdx,] %in% checkSpecific)
     parList <- array(parList[,which(fixedParListCheck==TRUE)], dim = c(7, length(which(fixedParListCheck==TRUE))))
+    specCheck <- rep(FALSE, ncol(parList))
+    
+    for (specIdx in c(1:length(checkSpecific))){
+      specCheck[which(parList[parIdx,] == checkSpecific[specIdx])] <- TRUE
+    }
+    #fixedParListCheck <- fixedParListCheck & specCheck
+    parList <- array(parList[,which(specCheck==TRUE)], dim = c(7, length(which(specCheck==TRUE))))
   }
   #read files into list of data frames 
-  dfList <- list(length=ncol(parList))
+  dfList <- list()
   for(idx in c(1:ncol(parList))){
     readParams <- paste(c(parList[1,idx], parList[2,idx], parList[3,idx], parList[4,idx], parList[5,idx], parList[6,idx], parList[7,idx], sChoice), sep="", collapse="_") 
     df <- read.table(file = paste(c(path,"/", obs, "_", readParams, ".txt"),sep="", collapse=""))
     dfList[[idx]] <- df
   }
+
   return(list(parList, dfList))
 }
 
@@ -97,12 +102,12 @@ meanPlot <- function(name,params,df, compare = FALSE, name2, params2, df2){
   
   
   if(compare == TRUE){
-    plot(df2[,1], thisObsMean2, xlab = "T",ylab = name, col = 'red', xlim = xlim, ylim = ylim)
+    plot(df2[,1], thisObsMean2, xlab = "T",ylab = name, col = 'red', xlim = c(0,50), ylim = c(0,1000))
     arrows(df2[,1], thisObsMean2-thisObsErr2, df2[,1], thisObsMean2+thisObsErr2, length=0.05, angle=90, code=3,col = 'red')
     par(new = TRUE)  
   }
   
-  plot(df[,1], thisObsMean, xlab = "T",ylab = name, col = 'black', xlim = xlim, ylim = ylim)
+  plot(df[,1], thisObsMean, xlab = "T",ylab = name, col = 'black', xlim = c(0,50), ylim = c(0,1000))
   arrows(df[,1], thisObsMean-thisObsErr, df[,1], thisObsMean+thisObsErr, length=0.05, angle=90, code=3)
   mtext(text = paste("sqrt(N):", params[1],"  nShort:", params[2], "  immunity:", params[3],"  recoveryTime:", params[4],"+-", params[5],"  suscDist:", params[6],"  suscFactor:", params[7], sep = " "),side = 3)
   if(compare == TRUE){
