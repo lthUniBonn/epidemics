@@ -1,50 +1,109 @@
-N <- 400**2
-nShort <- N/100
-immunity <- 0
-avgRecoveryTime <- 6
-sdRecoveryTime <- 2
-i <- 1
-sAgeDist0 <- c(0.7, 0.7, 0.7, 0.7, 0.7, 0.7)
-sAgeDist <- sAgeDist0
-sDistFactor <- 3
-sChoice <- c(F,F,F,T)
-sChoiceNames <- c("sBool", "sFixed", "sNot", "sReal")
-sBool <- sChoice[1] # if True the susceptibility is 1 or 0 // other poss like gaussian with age etc
-sFixed <- sChoice[2]
-sNot <- sChoice[3]
-sReal <- sChoice[4]
+parNames <- c('sqrt(N)',  'number of shortcuts', 'immunisation quota', 'avgerage recovery time', 'recovery time deviation', 'type of age distribution', 'social distancing factor', 'choice of susceptibility distribution')
 
-fixedParams <- c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, i, sDistFactor, sChoiceNames[sChoice])
-epidemicThreshold <- 0.02
-#params <- paste(c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, i, sDistFactor, sChoiceNames[sChoice]), sep="", collapse="_") 
+
+
+bootstrap <- function(vec, nSample=50, FUN=mean){
+  means <- numeric(length=nSample)
+  vec <- vec[which(is.na(vec)==FALSE)]
+  for(i in c(1:nSample)){
+    means[i] <- FUN(sample(vec, length(vec), replace=TRUE))
+  }
+  err <- sd(means) 
+  return(err)
+}
+
+outbreakProbability <- function(lastVal){
+  return(length(which(lastVal>epidemicThreshold))/length(lastVal))
+}
+
+
+outbreakMeasure <- function(dfList, prob=T){
+  p <- numeric(length(dfList))
+  pErr <- numeric(length(dfList))
+  lastValMean <- numeric(length(dfList))
+  lastValErr <- numeric(length(dfList))
+  for (dfIdx in c(1:length(dfList))){
+    df <- dfList[[dfIdx]]
+    x <- dfIdx
+    lastVal <- apply(X = df[,c(2:ncol(df))],MARGIN = 2, FUN = max, na.rm =TRUE)
+    lastValMean[x] <- mean(lastVal)
+    lastValErr[x] <- bootstrap(lastVal)
+    p[x] <- outbreakProbability(lastVal)
+    pErr[x] <- bootstrap(lastVal, FUN = outbreakProbability)
+  } 
+  if(prob){
+    return(list(p,pErr))
+  } else { return(list(lastValMean, lastValErr))}
+}
+
+
+findObsvsParams <- function(obs='numberInfected', parIdx=3, params, checkSpecific=c()){
+  #all files
+  fileNames <- array(unlist(strsplit(list.files(path)[], "_")), dim=c(9,length(list.files(path))))
+  paramList <- array(as.numeric(fileNames[c(2:8),]),dim=c(7,length(list.files(path))))
+  # find all files with obs 
+  parList <- array(as.numeric(fileNames[c(2:8),]),dim=c(7,length(list.files(path))))
+  obsList <- fileNames[1,]
+  parList <- paramList[,which(obsList == obs)]
+  
+  if (length(checkSpecific) == 0){
+    notParIdxVec <- c(1:7)
+    notParIdxVec <- notParIdxVec[-which(notParIdxVec == parIdx)]
+    
+    #select param config, all but one fixed
+    fixedParListCheck <- rep(TRUE, ncol(parList))
+    for (idx in notParIdxVec){
+      fixedParListCheck <- fixedParListCheck & (parList[idx,]==params[idx])
+    }
+    parList <- array(parList[,which(fixedParListCheck==TRUE)], dim = c(7, length(which(fixedParListCheck==TRUE))))
+  }
+  else {
+    notParIdxVec <- c(1:7)
+    notParIdxVec <- notParIdxVec[-which(notParIdxVec == parIdx)]
+    #select param config, all but one fixed
+    fixedParListCheck <- rep(TRUE, ncol(parList))
+    for (idx in notParIdxVec){
+      fixedParListCheck <- fixedParListCheck & (parList[idx,]==params[idx])
+    }
+    fixedParListCheck <- fixedParListCheck & (parList[parIdx,] %in% checkSpecific)
+    parList <- array(parList[,which(fixedParListCheck==TRUE)], dim = c(7, length(which(fixedParListCheck==TRUE))))
+  }
+  #read files into list of data frames 
+  dfList <- list(length=ncol(parList))
+  for(idx in c(1:ncol(parList))){
+    readParams <- paste(c(parList[1,idx], parList[2,idx], parList[3,idx], parList[4,idx], parList[5,idx], parList[6,idx], parList[7,idx], sChoice), sep="", collapse="_") 
+    df <- read.table(file = paste(c(path,"/", obs, "_", readParams, ".txt"),sep="", collapse=""))
+    dfList[[idx]] <- df
+  }
+  return(list(parList, dfList))
+}
+
 
 
 meanPlot <- function(name,params,df, compare = FALSE, name2, params2, df2){
   thisObsMean <- rowMeans(df[,c(2:ncol(df))], na.rm = TRUE)
-  thisObsSd <- apply(X = df[,c(2:ncol(df))],MARGIN = 1, FUN = sd, na.rm =TRUE)
+  thisObsErr <- apply(X = df[,c(2:ncol(df))],MARGIN = 1, FUN = bootstrap)
   
   if(compare==TRUE){
     thisObsMean2 <- rowMeans(df2[,c(2:ncol(df2))], na.rm = TRUE)
-    thisObsSd2 <- apply(X = df2[,c(2:ncol(df2))],MARGIN = 1, FUN = sd, na.rm =TRUE)
+    thisObsErr2 <- apply(X = df2[,c(2:ncol(df2))],MARGIN = 1, FUN = bootstrap)
     xlim <- c(0,max(df[which.max(df[,1]),1], df2[which.max(df2[,1]),1]))
-    print(max(thisObsSd))
-    print(max(thisObsSd2))
-    ylim <- c(0,max(max(thisObsMean, na.rm = T)+max(thisObsSd, na.rm = T),(max(thisObsMean2, na.rm = T)+max(thisObsSd2, na.rm = T))))
+    ylim <- c(0,max(max(thisObsMean, na.rm = T)+max(thisObsErr, na.rm = T),(max(thisObsMean2, na.rm = T)+max(thisObsErr2, na.rm = T))))
     
   } else {
     xlim <- c(0,df[which.max(df[,1]),1]) 
-    ylim <- c(0,max(thisObsMean)+max(thisObsSd, na.rm = T))
+    ylim <- c(0,max(thisObsMean)+max(thisObsErr, na.rm = T))
   }
   
   
   if(compare == TRUE){
     plot(df2[,1], thisObsMean2, xlab = "T",ylab = name, col = 'red', xlim = xlim, ylim = ylim)
-    arrows(df2[,1], thisObsMean2-thisObsSd2, df2[,1], thisObsMean2+thisObsSd2, length=0.05, angle=90, code=3,col = 'red')
+    arrows(df2[,1], thisObsMean2-thisObsErr2, df2[,1], thisObsMean2+thisObsErr2, length=0.05, angle=90, code=3,col = 'red')
     par(new = TRUE)  
   }
   
-  plot(df[,1], thisObsMean, xlab = "T",ylab = name, col = 'black',, xlim = xlim, ylim = ylim)
-  arrows(df[,1], thisObsMean-thisObsSd, df[,1], thisObsMean+thisObsSd, length=0.05, angle=90, code=3)
+  plot(df[,1], thisObsMean, xlab = "T",ylab = name, col = 'black', xlim = xlim, ylim = ylim)
+  arrows(df[,1], thisObsMean-thisObsErr, df[,1], thisObsMean+thisObsErr, length=0.05, angle=90, code=3)
   mtext(text = paste("sqrt(N):", params[1],"  nShort:", params[2], "  immunity:", params[3],"  recoveryTime:", params[4],"+-", params[5],"  suscDist:", params[6],"  suscFactor:", params[7], sep = " "),side = 3)
   if(compare == TRUE){
     mtext(text = paste("sqrt(N):", params2[1],"  nShort:", params2[2], "  immunity:", params2[3],"  recoveryTime:", params2[4],"+-", params2[5],"  suscDist:", params2[6],"  suscFactor:", params2[7], sep = " "),side = 3,col = 'red',line = 1)
