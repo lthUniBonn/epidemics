@@ -1,7 +1,7 @@
 source('evalModules.R')
 library("ggplot2")
 
-path <- "data"
+path <- "longRun"
 
 
 
@@ -28,8 +28,8 @@ fixedParams <- c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, age
 epidemicThreshold <- 0.02
 #-------------------------------------------------------------------------------
 #heatmap of immunity and sDistFactor | p(ME) or accInfections
-checkThisImmunity <- unique(c(seq(0,0.7,0.1)))#,seq(0,0.9,0.1)))
-checkThisSDistFac <- unique(c(seq(1,10,1)))#,seq(1,10,1)))
+checkThisImmunity <-seq(0,0.5,0.02)
+checkThisSDistFac <- seq(1,7,0.2)
 
 p <- expand.grid(immunities = checkThisImmunity, sDistFactors = checkThisSDistFac)
 p$prob <- NA
