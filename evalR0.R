@@ -36,16 +36,13 @@ calcR0 <- function(nInf0, nInf1, dt=1){
     R0 <- fractChange**(1/dt)
     return(R0)
   }
-  #calculate error with gaussian prop? 
 }
 
 calcR0File <- function(params){
   #get file numberInfected
   nInfDf <- read.table(file = paste(c(path,"/","numberInfected","_", params, ".txt"),sep="", collapse=""))
   R0Df <- array(NA, dim=c(nrow(nInfDf)-1, ncol(nInfDf)-1))
-  #nInfDf[c(1:(nrow(nInfDf)-1)),]
-  #R0Df[,c(2:ncol(R0Df))] <- NA
-  
+
   #get dt values (only take the first, is the same anyways)
   dt <- nInfDf[2,1]
   for (runIdx in c(1:(ncol(R0Df)))){ 
@@ -55,7 +52,7 @@ calcR0File <- function(params){
     nInf0 <- nInf[c(1:(length(nInf)-1))]
     nInf1 <- nInf[c(2:length(nInf))]
     #calcR0
-    R0Df[c(1:length(nInf0)),runIdx] <- mapply(calcR0, nInf0, nInf1, dt=5) 
+    R0Df[c(1:length(nInf0)),runIdx] <- mapply(calcR0, nInf0, nInf1, dt=dt) 
   }
   #average runs for each timestep
   R0MeanDf <- nInfDf[c(1:nrow(R0Df)),c(1,2,3)]#time mean err 
@@ -94,4 +91,4 @@ evalR0 <- function(R0Choice = "", params){
   
 }
 
-evalR0(R0Choice = "2",params=params)
+#evalR0(R0Choice = "2",params=params)
