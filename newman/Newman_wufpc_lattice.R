@@ -16,14 +16,14 @@ library('profvis')
 library('Brobdingnag')
 #startTime <- proc.time()
 #profile <- profvis({
-N = 100**2 # number of people
+N = 200**2 # number of people
 lattice <- array(data=c(1:N), dim = c(sqrt(N),sqrt(N)))
 
 #set.seed(1)
 
 merges <- 0 # how many connections were already made
 dof <- N*(N+1)/2 # degrees of freedom in symmetric matrix
-possConn <- array(0,dim=c(dof,2)) # these are the possible connections
+possConn <- array(0,dim=c((2*N-2*sqrt(N)+nShort),3)) # these are the possible connections
 
 topIndices <- seq(1, N-sqrt(N)+1, by = sqrt(N))
 botIndices <- seq(sqrt(N), N, by = sqrt(N))
