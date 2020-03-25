@@ -18,8 +18,8 @@ sAgeDist2 <- c(0.9, 0.6, 0.4, 0.6, 0.8, 0.9)
 sAgeDistArray <- rbind(sAgeDist1, sAgeDist2) #susceptibility depending on age
 sAgeDist <- sAgeDistArray[ageDistIdx,]
 
-sDistFactor <- 1
-immunity <- 0
+sDistFactor <- 3
+immunity <- 0.4
 
 fixedParams <- c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, ageDistIdx, sDistFactor, sChoice)
 params <- paste(c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, ageDistIdx, sDistFactor, sChoice), sep="", collapse="_") 
@@ -45,15 +45,23 @@ calcR0File <- function(params){
 
   #get dt values (only take the first, is the same anyways)
   dt <- nInfDf[2,1]
+  runCounter <- 0
   for (runIdx in c(1:(ncol(R0Df)))){ 
     nInf <- nInfDf[,runIdx+1]
     if (anyNA(nInf)){nInf <- nInf[c(1:(which(is.na(nInf)==TRUE)[1]-1))]}
+    if (length(nInf)==1){next()}#ignore runs that die out in the first timestep
+    runCounter <- runCounter + 1
     #define steps from 0 to 1
     nInf0 <- nInf[c(1:(length(nInf)-1))]
     nInf1 <- nInf[c(2:length(nInf))]
     #calcR0
-    R0Df[c(1:length(nInf0)),runIdx] <- mapply(calcR0, nInf0, nInf1, dt=dt) 
+    print(nInf0)
+    print(nInf1)
+    print(runIdx)
+    R0Df[c(1:length(nInf0)),runCounter] <- mapply(calcR0, nInf0, nInf1, dt=dt) 
   }
+  if (anyNA(R0Df)){R0Df <- R0Df[,c(1:(which(is.na(R0Df[1,])==TRUE)[1]-1))]}
+  
   #average runs for each timestep
   R0MeanDf <- nInfDf[c(1:nrow(R0Df)),c(1,2,3)]#time mean err 
   R0MeanDf[,2] <- rowMeans(R0Df, na.rm = TRUE)
