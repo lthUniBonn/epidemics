@@ -70,6 +70,7 @@ calcR0File <- function(params){
 }
 
 R0MeanDf <- calcR0File(params = params)
+plot(R0MeanDf[,c(1,2)])
 
 #----------------------------------------
 
