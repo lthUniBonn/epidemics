@@ -59,7 +59,7 @@ ageDistribution <- sample(c(3, 20,40,60,80, 100), replace=TRUE, size=N,prob = c(
 
 #vaccination #!!
 
-immunity <- c(c(0)
+immunity <- c(#c(0)
               #c(0.02)
               #c(0.04)
               #c(0.06)
@@ -70,7 +70,7 @@ immunity <- c(c(0)
 
               #c(0.16)
               #c(0.18)
-              #c(0.2)
+              c(0.2)
   #---
               #c(0.22)
 
