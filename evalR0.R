@@ -18,8 +18,8 @@ sAgeDist2 <- c(0.9, 0.6, 0.4, 0.6, 0.8, 0.9)
 sAgeDistArray <- rbind(sAgeDist1, sAgeDist2) #susceptibility depending on age
 sAgeDist <- sAgeDistArray[ageDistIdx,]
 
-sDistFactor <- 3
-immunity <- 0.4
+sDistFactor <- 5
+immunity <- 0.5
 
 fixedParams <- c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, ageDistIdx, sDistFactor, sChoice)
 params <- paste(c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, ageDistIdx, sDistFactor, sChoice), sep="", collapse="_") 
@@ -41,6 +41,7 @@ calcR0 <- function(nInf0, nInf1, dt=1){
 calcR0File <- function(params){
   #get file numberInfected
   nInfDf <- read.table(file = paste(c(path,"/","numberInfected","_", params, ".txt"),sep="", collapse=""))
+  nInfDf <- nInfDf[seq(1,nrow(nInfDf),2), ]
   R0Df <- array(NA, dim=c(nrow(nInfDf)-1, ncol(nInfDf)-1))
 
   #get dt values (only take the first, is the same anyways)
@@ -48,29 +49,45 @@ calcR0File <- function(params){
   runCounter <- 0
   for (runIdx in c(1:(ncol(R0Df)))){ 
     nInf <- nInfDf[,runIdx+1]
-    if (anyNA(nInf)){nInf <- nInf[c(1:(which(is.na(nInf)==TRUE)[1]-1))]}
+    if (anyNA(nInf)){
+      whichNA <- which(is.na(nInf)==TRUE)[1]
+      if (nInf[whichNA-1] != 0) {
+        nInf[whichNA] <- 0
+        nInf <- nInf[c(1:whichNA)]
+      }
+      else{
+        nInf <- nInf[c(1:(which(is.na(nInf)==TRUE)[1]-1))]
+      }
+    }
     if (length(nInf)==1){next()}#ignore runs that die out in the first timestep
     runCounter <- runCounter + 1
     #define steps from 0 to 1
     nInf0 <- nInf[c(1:(length(nInf)-1))]
     nInf1 <- nInf[c(2:length(nInf))]
     #calcR0
-    print(nInf0)
-    print(nInf1)
-    print(runIdx)
     R0Df[c(1:length(nInf0)),runCounter] <- mapply(calcR0, nInf0, nInf1, dt=dt) 
   }
-  if (anyNA(R0Df)){R0Df <- R0Df[,c(1:(which(is.na(R0Df[1,])==TRUE)[1]-1))]}
+  if (anyNA(R0Df[1,])){R0Df <- R0Df[,c(1:(which(is.na(R0Df[1,])==TRUE)[1]-1))]}
   
   #average runs for each timestep
-  R0MeanDf <- nInfDf[c(1:nrow(R0Df)),c(1,2,3)]#time mean err 
+  R0MeanDf <- nInfDf[c(1:nrow(R0Df)),c(1,2,3,4)]#time mean err usedRuns
+  R0MeanDf[,1] <- R0MeanDf[,1]+dt/2 #shift time to middle of step for better visualization
   R0MeanDf[,2] <- rowMeans(R0Df, na.rm = TRUE)
   R0MeanDf[,3] <- apply(X=R0Df, MARGIN = 1, FUN=bootstrap)
+  
+  for(i in c(1:nrow(R0MeanDf))){
+    R0MeanDf[i,4] <- length(which(is.na(R0Df[i,])==FALSE))/(ncol(nInfDf)-1)
+  }
   return(R0MeanDf)
 }
 
 R0MeanDf <- calcR0File(params = params)
-plot(R0MeanDf[,c(1,2)])
+ylim = c(0,2)
+plot(R0MeanDf[,c(1,2)], ylim = ylim)
+arrows(R0MeanDf[,1], R0MeanDf[,2]-R0MeanDf[,3], R0MeanDf[,1], R0MeanDf[,2]+R0MeanDf[,3], length=0.05, angle=90, code=3)
+mtext(text = paste("sqrt(N):", fixedParams[1],"  nShort:", fixedParams[2], "  immunity:", fixedParams[3],"  recoveryTime:", fixedParams[4],"+-", fixedParams[5],"  suscDist:", fixedParams[6],"  suscFactor:", fixedParams[7], sep = " "),side = 3)
+par(new = TRUE)
+plot(R0MeanDf[,c(1,4)], ylim = ylim, col='red')
 
 #----------------------------------------
 
