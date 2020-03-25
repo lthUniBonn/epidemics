@@ -27,6 +27,46 @@ params <- paste(c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, ag
 epidemicThreshold <- 0.02
 
 #--------------
+calcR0 <- function(nInf0, nInf1, dt=1){
+  if ((nInf0 == 0) | (dt == 0)){
+    stop()
+  }
+  else {
+    fractChange <- nInf1/nInf0#1 angesteckt, 1 recovered: fractChange = 1 -->  R0 = 1 sollte stimmen! (nInf1-nInf0)/nInf0#???
+    R0 <- fractChange**(1/dt)
+    return(R0)
+  }
+  #calculate error with gaussian prop? 
+}
+
+calcR0File <- function(params){
+  #get file numberInfected
+  nInfDf <- read.table(file = paste(c(path,"/","numberInfected","_", params, ".txt"),sep="", collapse=""))
+  R0Df <- array(NA, dim=c(nrow(nInfDf)-1, ncol(nInfDf)-1))
+  #nInfDf[c(1:(nrow(nInfDf)-1)),]
+  #R0Df[,c(2:ncol(R0Df))] <- NA
+  
+  #get dt values (only take the first, is the same anyways)
+  dt <- nInfDf[2,1]
+  for (runIdx in c(1:(ncol(R0Df)))){ 
+    nInf <- nInfDf[,runIdx+1]
+    if (anyNA(nInf)){nInf <- nInf[c(1:(which(is.na(nInf)==TRUE)[1]-1))]}
+    #define steps from 0 to 1
+    nInf0 <- nInf[c(1:(length(nInf)-1))]
+    nInf1 <- nInf[c(2:length(nInf))]
+    #calcR0
+    R0Df[c(1:length(nInf0)),runIdx] <- mapply(calcR0, nInf0, nInf1, dt=5) 
+  }
+  #average runs for each timestep
+  R0MeanDf <- nInfDf[c(1:nrow(R0Df)),c(1,2,3)]#time mean err 
+  R0MeanDf[,2] <- rowMeans(R0Df, na.rm = TRUE)
+  R0MeanDf[,3] <- apply(X=R0Df, MARGIN = 1, FUN=bootstrap)
+  return(R0MeanDf)
+}
+
+R0MeanDf <- calcR0File(params = params)
+
+#----------------------------------------
 
 evalR0 <- function(R0Choice = "", params){
   #!! check params immunity <- params[1]
