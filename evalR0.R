@@ -94,4 +94,4 @@ evalR0 <- function(R0Choice = "", params){
   
 }
 
-evalR0(R0Choice = "2",params=params)
+#evalR0(R0Choice = "2",params=params)

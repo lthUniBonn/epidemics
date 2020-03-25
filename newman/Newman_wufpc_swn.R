@@ -19,17 +19,17 @@ library('plot.matrix')
 library('gmp')
 library('profvis')
 library('Brobdingnag')
-
+source('evalModules.R')
 #startTime <- proc.time()
 #---------- Parameters to be set ----------------
 profile <- profvis({
 N = 100**2 # number of people
 immunity <- 0
 nShort <- 0 # how many shortcuts are created
-pFrom <- 0.47 # which canonical Q(p) are created
-pTo <- 0.53
+pFrom <- 0 # which canonical Q(p) are created
+pTo <- 1
 nProb <- 200 # how many datapoints are calculated in the above range
-nTest <- 1 # how many times is the same thing done
+nTest <- 100 # how many times is the same thing done
 checkLargestCluster <- FALSE
 openBoundaries <- TRUE # if FALSE the opposing edges of the lattice are connected (periodic)
 sBool <- TRUE # if True the susceptibility is 1 or 0
@@ -172,16 +172,21 @@ isPercolating <- function(){ # this does not work for lattices with boundary con
 
 erf <- function(x,a,b) (pnorm(a*(x-b) * sqrt(2)))
 
-canonical <- function(micObs){#find p from n
+canonical <- function(micObs, micObsErr= 0){#find p from n
   # does this still work when shortcuts are introduced? question is wether it makes a difference that upper bound of n rises but p stays the same
   # I think this is okay, but need to talk about it
   canObs <- numeric(nProb)
+  canObsErr <- numeric(nProb)
   i <- 0
   for (p in c(1:nProb)){ 
     i <- i+1
     canObs[i] <- sum(binoms[,i]*micObs)
+    if(length(micObsErr) != 0){
+      canObsErr[i] <- sqrt(sum((binoms[,i]*micObsErr)**2))  
+    }
+    
   }
-  return(canObs)
+  return(list(canObs, canObsErr))
 }
 
 initializeBinoms <- function(){
@@ -276,9 +281,18 @@ if(checkLargestCluster){
   lines(y=erf(x,summary(ourFit)$coefficients[1], summary(ourFit)$coefficients[2]), x = x)
 }
 
-percolProb <- data.frame( x= seq(pFrom, pTo, (pTo-pFrom)/(nProb-1)), y=canonical(percolTest))
-ourFit <- nls(y ~ erf(x,a,b), data = percolProb, start=list(a=50, b=0.5))
+percolTestMean <- rowMeans(percolTest)
+percolTestErr <- apply(X=percolTest, MARGIN = 1, FUN=bootstrap)
+y <- canonical(percolTestMean, percolTestErr)
+ydata <- y[[1]]
+yErr <- y[[2]]
+yWeights <- yErr^-2
+#yWeights[which(yWeights ==Inf)] <- 0
+xdata <- seq(pFrom, pTo, (pTo-pFrom)/(nProb-1))
+percolProb <- data.frame( x=xdata , y=ydata)
+ourFit <- nls(y ~ erf(x,a,b), data = percolProb, start=list(a=0.5, b=0.5), weights = yWeights)
 plot(percolProb)
+arrows(x, ydata-yErr, x, ydata+yErr, length=0.05, angle=90, code=3)
 lines(y=erf(x,summary(ourFit)$coefficients[1], summary(ourFit)$coefficients[2]), x = x)
 summary(ourFit)
 #endTime <- proc.time()
