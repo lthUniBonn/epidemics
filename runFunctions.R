@@ -101,8 +101,8 @@ simulationRun <- function(statRun){
 writeEval <- function(writeThis, params){#writeThisR0, params){
   
   for(obs in obsNames[-1]){
-    writeThisObs <- array(NA, dim= c(10000, nStatRun+1))
-    writeThisObs[,1] <- seq(0,10000*clusterEvery-1,clusterEvery)
+    writeThisObs <- array(NA, dim= c(20000, nStatRun+1))
+    writeThisObs[,1] <- seq(0,20000*clusterEvery-1,clusterEvery)
     writeThisObs[,c(2:(nStatRun+1))] <- writeThis[,c(1:(nStatRun)),obs] 
     
     isNa <- is.na(writeThisObs[,2])
