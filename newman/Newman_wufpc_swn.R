@@ -22,17 +22,16 @@ library('Brobdingnag')
 
 #startTime <- proc.time()
 #---------- Parameters to be set ----------------
-#profile <- profvis({
+profile <- profvis({
 N = 100**2 # number of people
-immunity <- 0.4
-nShort <- 100 # how many shortcuts are created
-pFrom <- 0 # which canonical Q(p) are created
-pTo <- 1
-nProb <- 40 # how many datapoints are calculated in the above range
-nTest <- 10 # how many times is the same thing done
-checkPercolation <- FALSE
-checkLargestCluster <- TRUE
-openBoundaries <- FALSE # if FALSE the opposing edges of the lattice are connected (periodic)
+immunity <- 0
+nShort <- 0 # how many shortcuts are created
+pFrom <- 0.47 # which canonical Q(p) are created
+pTo <- 0.53
+nProb <- 200 # how many datapoints are calculated in the above range
+nTest <- 1 # how many times is the same thing done
+checkLargestCluster <- FALSE
+openBoundaries <- TRUE # if FALSE the opposing edges of the lattice are connected (periodic)
 sBool <- TRUE # if True the susceptibility is 1 or 0
 #observed that for large (>100) lattices the boundaries are basically irrelevant for the largest cluster size
 
@@ -44,13 +43,15 @@ lattice <- array(data=c(1:N), dim = c(sqrt(N),sqrt(N),3),dimnames = list(c(),c()
 
 merges <- 0 # how many connections were already made
 if(!openBoundaries){
-  possConn <- array(0,dim=c((2*N+nShort),3)) # these are the possible connections
+  possConn <- array(0,dim=c((2*N+nShort),2)) # these are the possible connections
 } else {
-  possConn <- array(0,dim=c((2*N-2*sqrt(N)+nShort),3))
+  possConn <- array(0,dim=c((2*N-2*sqrt(N)+nShort),2))
 }
 
-
-
+leftIndices <- c(1:sqrt(N))
+rightIndices <- c((N-sqrt(N)+1):N)
+topIndices <- seq(1, N-sqrt(N)+1, sqrt(N))
+botIndices <- seq(sqrt(N), N, sqrt(N))
 #--------------functions-------------------------
 # find possible connections in 2d case
 findConn <- function(){
@@ -61,23 +62,19 @@ findConn <- function(){
       counter <- counter + 1
       possConn[counter,1] <<- lattice[i,j,1]  
       possConn[counter,2] <<- lattice [i+1,j,1]
-      possConn[counter,3] <<- transProb(lattice[i,j,3],lattice [i+1,j,3])
       counter <- counter +1 
       possConn[counter,1] <<- lattice[i,j,1] 
       possConn[counter,2] <<- lattice [i,j+1,1]
-      possConn[counter,3] <<- transProb(lattice[i,j,3],lattice [i,j+1,3])
     }
     #poss con add C(lattice[i,j], lattice [i+1,j]) to the bottom and to the right
     counter <- counter + 1
     possConn[counter,1] <<- lattice[sqrt(N),j,1]  
     possConn[counter,2] <<- lattice [sqrt(N),j+1,1] 
-    possConn[counter,3] <<- transProb(lattice[sqrt(N),j,3],lattice [sqrt(N),j+1,3])
   }
   for (i in c(1:(sqrt(N)-1))){
     counter <- counter + 1
     possConn[counter,1] <<- lattice[i,sqrt(N),1]  
     possConn[counter,2] <<- lattice [i+1,sqrt(N),1]
-    possConn[counter,3] <<- transProb(lattice[i,sqrt(N),3],lattice[i+1,sqrt(N),3])
   }
   
   if(!openBoundaries){
@@ -85,13 +82,11 @@ findConn <- function(){
       counter <- counter + 1
       possConn[counter,1] <<- lattice[1,i,1]
       possConn[counter,2] <<- lattice[sqrt(N),i,1]
-      possConn[counter,3] <<- transProb(lattice[1,i,3],lattice[sqrt(N),i,3])
     }
     for(i in c(1:sqrt(N))){
       counter <- counter + 1
       possConn[counter,1] <<- lattice[i,1,1]
       possConn[counter,2] <<- lattice[i,sqrt(N),1]
-      possConn[counter,3] <<- transProb(lattice[i,1,3],lattice[i,sqrt(N),3])
     }
   }
   
@@ -208,7 +203,6 @@ lattice[,,3] <- sDistribution # set a uniform suceptibility
 
 findConn()#find all possible connections and their likelihoods
 #remove the impossible connections
-possConn <- possConn[-which(possConn[,3]==0),]
 nCon <- nrow(possConn)
 binoms <- array(0, dim=c(nCon,nProb))
 percolTest <- array(0, dim = c(nCon,nTest))
@@ -222,7 +216,7 @@ for (a in c(1:nTest)){
   people <- c(1:N)
   weight <- rep(1,N)
   maxWeight <- 1
-  connections <- possConn[sample(nCon,nCon,replace=FALSE,prob = possConn[,3]),c(1,2)] #choose bonds which will be occupied gradually
+  connections <- possConn[sample(nCon,nCon,replace=FALSE),c(1,2)] #choose bonds which will be occupied gradually
   for(x in c(1:nCon)){ 
      if(checkLargestCluster){ # this if is really just for comfort, can remove it if it takes too long
        newWeight <- addConnection(connections[x,2], connections[x,1])
@@ -238,10 +232,10 @@ for (a in c(1:nTest)){
     #does not make sense to check for percolation if shprtcuts are introduced, od does it?
     #certainly not when closed boundary conditions are present
     # if boundary conditions are turned on this needs changing as well
-    # if(isPercolating()){
-    #   percolTest[c(x:nCon),a] <- percolTest[c(x:nCon),a] + 1
-    #   break
-    # }
+    if(isPercolating()){
+      percolTest[c(x:nCon),a] <- percolTest[c(x:nCon),a] + 1
+      break
+    }
     # if(checkLargestClusterwarnings()){ # this if is really just for comfort, can remove it if it takes too long
     #   largestWeight[x,a] <- weight[which.max(weight)] # this is sligthly faster than max(weight)
     # }
@@ -276,18 +270,20 @@ if(checkLargestCluster){
   text(x = pFrom, y = 1, labels = paste("N:", N,"  nShort:", nShort, "  nTest:", nTest, "do not trust errorbars yet",sep = " "),pos = 4)
   abline(h=1-immunity)
   
-  #ourFit <- nls(y ~ erf(x,a,b), data = largestCluster, start=list(a=50, b=0.4))
+  ourFit <- nls(y ~ erf(x,a,b), data = largestCluster, start=list(a=50, b=0.4))
   # this ignores the known errors #??
-  #x <- seq(0.2,1,by=0.001)
-  #lines(y=erf(x,summary(ourFit)$coefficients[1], summary(ourFit)$coefficients[2]), x = x)
+  x <- seq(0.2,1,by=0.001)
+  lines(y=erf(x,summary(ourFit)$coefficients[1], summary(ourFit)$coefficients[2]), x = x)
 }
 
-#percolProb <- data.frame( x= seq(pFrom, pTo, (pTo-pFrom)/(nProb-1)), y=canonical(percolTest))
-#plot(percolProb)
-
+percolProb <- data.frame( x= seq(pFrom, pTo, (pTo-pFrom)/(nProb-1)), y=canonical(percolTest))
+ourFit <- nls(y ~ erf(x,a,b), data = percolProb, start=list(a=50, b=0.5))
+plot(percolProb)
+lines(y=erf(x,summary(ourFit)$coefficients[1], summary(ourFit)$coefficients[2]), x = x)
+summary(ourFit)
 #endTime <- proc.time()
 #runTime <- endTime-startTime
 #write(x = c(N, runTime[1]), file = "timesNewman.txt", append = TRUE,sep = "\t")
 
 
-#})
+})
