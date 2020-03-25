@@ -1,16 +1,16 @@
 simulationRun <- function(statRun){
   sDistribution <<- initialsDistribution 
-  R0OverInfectiousPeriod <<- numeric(length=N)
-  R0Mean <<- numeric()
-  R0Sd <<- numeric()
-  R0Mean2 <<- numeric()
-  R0Sd2 <<- numeric()
-  R0Mean3 <<- numeric()
-  R0Sd3 <<- numeric()
-  R0Mean4<<- numeric()
-  R0Sd4 <<- numeric()
-  R0Mean7 <<- numeric()
-  R0Sd7 <<- numeric()
+  # R0OverInfectiousPeriod <<- numeric(length=N)
+  # R0Mean <<- numeric()
+  # R0Sd <<- numeric()
+  # R0Mean2 <<- numeric()
+  # R0Sd2 <<- numeric()
+  # R0Mean3 <<- numeric()
+  # R0Sd3 <<- numeric()
+  # R0Mean4<<- numeric()
+  # R0Sd4 <<- numeric()
+  # R0Mean7 <<- numeric()
+  # R0Sd7 <<- numeric()
   #set Infection status
   infected <<- logical(length = N)
   infectionTime <<- numeric(length=N)
@@ -64,41 +64,41 @@ simulationRun <- function(statRun){
       evalArray[count,statRun, 'accInfections'] <<- (length(which(sDistribution != initialsDistribution))+length(infPeople))/N
       
     }
-    if(anyNA(evalR0[statRun,])){
-      if (sum(recovered)>=checkR0Here){
-        evalR0[statRun, 1] <<- R0Mean
-        evalR0[statRun, 2] <<- R0Sd
-      }
-    }
-    if(anyNA(evalR02[statRun,])){
-      if (sum(recovered)>=2){
-        evalR02[statRun, 1] <<- R0Mean2
-        evalR02[statRun, 2] <<- R0Sd2
-      }
-    }
-    if(anyNA(evalR03[statRun,])){
-      if (sum(recovered)>=3){
-        evalR03[statRun, 1] <<- R0Mean3
-        evalR03[statRun, 2] <<- R0Sd3
-      }
-    }
-    if(anyNA(evalR04[statRun,])){
-      if (sum(recovered)>=4){
-        evalR04[statRun, 1] <<- R0Mean4
-        evalR04[statRun, 2] <<- R0Sd4
-      }
-    }
-    if(anyNA(evalR07[statRun,])){
-      if (sum(recovered)>=7){
-        evalR07[statRun, 1] <<- R0Mean7
-        evalR07[statRun, 2] <<- R0Sd7
-      }
-    }
+    # if(anyNA(evalR0[statRun,])){
+    #   if (sum(recovered)>=checkR0Here){
+    #     evalR0[statRun, 1] <<- R0Mean
+    #     evalR0[statRun, 2] <<- R0Sd
+    #   }
+    # }
+    # if(anyNA(evalR02[statRun,])){
+    #   if (sum(recovered)>=2){
+    #     evalR02[statRun, 1] <<- R0Mean2
+    #     evalR02[statRun, 2] <<- R0Sd2
+    #   }
+    # }
+    # if(anyNA(evalR03[statRun,])){
+    #   if (sum(recovered)>=3){
+    #     evalR03[statRun, 1] <<- R0Mean3
+    #     evalR03[statRun, 2] <<- R0Sd3
+    #   }
+    # }
+    # if(anyNA(evalR04[statRun,])){
+    #   if (sum(recovered)>=4){
+    #     evalR04[statRun, 1] <<- R0Mean4
+    #     evalR04[statRun, 2] <<- R0Sd4
+    #   }
+    # }
+    # if(anyNA(evalR07[statRun,])){
+    #   if (sum(recovered)>=7){
+    #     evalR07[statRun, 1] <<- R0Mean7
+    #     evalR07[statRun, 2] <<- R0Sd7
+    #   }
+    # }
     x <<- x + 1
   }
 }
 
-writeEval <- function(writeThis, writeThisR0, params){
+writeEval <- function(writeThis, params){#writeThisR0, params){
   
   for(obs in obsNames[-1]){
     writeThisObs <- array(NA, dim= c(10000, nStatRun+1))
@@ -121,5 +121,5 @@ writeEval <- function(writeThis, writeThisR0, params){
   }
   
   
-  write.table(x = writeThisR0, file = paste(c(path, "R0Mean_", params, ".txt"),sep="", collapse=""), append = FALSE,sep = "\t",row.names = FALSE, col.names = FALSE)
+  #write.table(x = writeThisR0, file = paste(c(path, "R0Mean_", params, ".txt"),sep="", collapse=""), append = FALSE,sep = "\t",row.names = FALSE, col.names = FALSE)
 }
