@@ -102,12 +102,12 @@ meanPlot <- function(name,params,df, compare = FALSE, name2, params2, df2){
   
   
   if(compare == TRUE){
-    plot(df2[,1], thisObsMean2, xlab = "T",ylab = name, col = 'red', xlim = c(0,50), ylim = c(0,1000))
+    plot(df2[,1], thisObsMean2, xlab = "T",ylab = name, col = 'red', xlim = xlim, ylim = ylim)
     arrows(df2[,1], thisObsMean2-thisObsErr2, df2[,1], thisObsMean2+thisObsErr2, length=0.05, angle=90, code=3,col = 'red')
     par(new = TRUE)  
   }
   
-  plot(df[,1], thisObsMean, xlab = "T",ylab = name, col = 'black', xlim = c(0,50), ylim = c(0,1000))
+  plot(df[,1], thisObsMean, xlab = "T",ylab = name, col = 'black', xlim = xlim, ylim =ylim)
   arrows(df[,1], thisObsMean-thisObsErr, df[,1], thisObsMean+thisObsErr, length=0.05, angle=90, code=3)
   mtext(text = paste("sqrt(N):", params[1],"  nShort:", params[2], "  immunity:", params[3],"  recoveryTime:", params[4],"+-", params[5],"  suscDist:", params[6],"  suscFactor:", params[7], sep = " "),side = 3)
   if(compare == TRUE){
