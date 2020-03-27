@@ -1,6 +1,6 @@
 source('evalModules.R')
 library("ggplot2")
-
+library("viridis")
 path <- "longRun"
 
 
@@ -46,7 +46,17 @@ for(x in c(1:length(checkThisImmunity))){
   }
 }
 
-ggplot(data = as.data.frame(p), mapping = aes(x=sDistFactors, y=immunities  )) + geom_tile(aes(fill = prob)) 
 
+m <- ggplot(as.data.frame(p), aes(sDistFactors, immunities, fill= prob), ) + 
+  geom_tile() +
+  scale_fill_gradient2(low = 'white', mid = 'green', high = 'black', midpoint = 0.5, limits=c(0,1)) +
+  theme(panel.background = element_blank(), plot.background = element_blank()) +
+  labs(x='social distancing D',y= 'immunity') +
+  theme(axis.title.x = element_text(color = "black", size = 14, face = "bold"),
+        axis.title.y = element_text(color = "black", size = 14, face = "bold"),
+        legend.position = c(0.7,0.6)) +
+  labs(fill='P(ME)')
+  #guides(fill=guide_legend(title="P(ME)"))
+print(m)
 
 
