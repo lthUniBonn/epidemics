@@ -35,6 +35,6 @@ if (comp){
   params2 <- params
   params2[7] <- 3
   df2 <- read.table(paste(c(path,"/",obs, '_',paste(params2, sep="", collapse="_"), '.txt'), sep="", collapse="")) 
-  meanPlot('Infected I(t)', params, df, compare = comp, name2 = obs, params2, df2)
+  meanPlot('I(t)', params, df, compare = comp, name2 = obs, params2, df2)
 } else{meanPlot(obs, params, df, compare = comp)}
   

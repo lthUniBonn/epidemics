@@ -23,7 +23,7 @@ immunity <- 0
 
 fixedParams <- c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, ageDistIdx, sDistFactor, sChoice)
 #params <- paste(c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, ageDistIdx, sDistFactor, sChoice), sep="", collapse="_") 
-
+prob = F
 
 epidemicThreshold <- 0.02
 #-------------------------------------------------------------------------------
@@ -39,7 +39,7 @@ for(x in c(1:length(checkThisImmunity))){
   tmpList <- findObsvsParams(obs='accInfections',parIdx = 7, params = params, checkSpecific= checkThisSDistFac)[]
   dfList <- tmpList[[2]]
   parList <- tmpList[[1]] 
-  outbreakP <- outbreakMeasure(dfList, prob = FALSE)[[1]]
+  outbreakP <- outbreakMeasure(dfList, prob = prob)[[1]]
   for (idx in c(1:ncol(parList))){  
     counter <- counter + 1
     p[(p$sDistFactors == parList[7,idx])&(p$immunities == checkThisImmunity[x]),]$prob <- outbreakP[idx]
@@ -51,11 +51,20 @@ m <- ggplot(as.data.frame(p), aes(sDistFactors, immunities, fill= prob), ) +
   geom_tile() +
   scale_fill_gradient2(low = 'white', mid = 'green', high = 'black', midpoint = 0.5, limits=c(0,1)) +
   theme(panel.background = element_blank(), plot.background = element_blank()) +
-  labs(x='social distancing D',y= 'immunity') +
+  labs(x='D',y= 'R') +
   theme(axis.title.x = element_text(color = "black", size = 14, face = "bold"),
         axis.title.y = element_text(color = "black", size = 14, face = "bold"),
-        legend.position = c(0.7,0.6)) +
-  labs(fill='P(ME)')
+        axis.text = element_text(size = 14),
+        legend.position = c(0.7,0.6),
+        legend.text =  element_text(size = 14),
+        legend.title = element_text(face = 'bold', size = 20)) 
+  
+if(prob == T){
+  m <- m + labs(fill=expression('P'[ME]))
+} else {
+  m <- m + labs(fill=expression(I[tot]))
+}
+  
   #guides(fill=guide_legend(title="P(ME)"))
 print(m)
 
