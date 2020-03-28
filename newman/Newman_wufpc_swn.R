@@ -23,8 +23,8 @@ library('Brobdingnag')
 source('evalModules.R')
 #startTime <- proc.time()
 #---------- Parameters to be set ----------------
-#profile <- profvis({
-N = 400**2 # number of people
+profile <- profvis({
+N = 100**2 # number of people
 immunity <- 0
 nShort <- 0 # how many shortcuts are created
 pFrom <- 0.45 # which canonical Q(p) are created
@@ -32,6 +32,7 @@ pTo <- 0.55
 nProb <- 50 # how many datapoints are calculated in the above range
 nTest <- 50 # how many times is the same thing done
 checkLargestCluster <- FALSE
+checkEvery <- 10
 openBoundaries <- TRUE # if FALSE the opposing edges of the lattice are connected (periodic)
 sBool <- TRUE # if True the susceptibility is 1 or 0
 #observed that for large (>100) lattices the boundaries are basically irrelevant for the largest cluster size
@@ -212,7 +213,10 @@ findConn()#find all possible connections and their likelihoods
 nCon <- nrow(possConn)
 binoms <- array(0, dim=c(nCon,nProb))
 percolTest <- array(0, dim = c(nCon,nTest))
-largestWeight <- array(0, dim = c(nCon,nTest))
+if(checkLargestCluster){
+  largestWeight <- array(0, dim = c(nCon,nTest))
+}
+
 
 conProb <- numeric(nCon)
 
@@ -283,7 +287,7 @@ if(checkLargestCluster){
 }
 
 percolTestMean <- rowMeans(percolTest)
-percolTestErr <- apply(X=percolTest, MARGIN = 1, FUN=bootstrap)
+percolTestErr <- apply(X=percolTest, MARGIN = 1, FUN=bootstrap, nSample = 50)
 y <- canonical(percolTestMean)
 ydata <- y[[1]]
 xdata <- seq(pFrom, pTo, (pTo-pFrom)/(nProb-1))
@@ -300,4 +304,4 @@ summary(ourFit)
 #write(x = c(N, runTime[1]), file = "timesNewman.txt", append = TRUE,sep = "\t")
 
 
-#})
+})

@@ -12,21 +12,22 @@ set.seed(1)
 
 #-----------------------------run params 
 
-path <- "LukaPC/"
-
+path <- "SmallWorld/"
+figPath <- "figures/Vid"
+figCount <- 1
 
 #observables
-   #plotting
-plotIt <- FALSE
+#plotting
+plotIt <- TRUE
 plotEvery <- 10
-plotAccumulated <- F
-   #clusters
+plotAccumulated <- T
+#clusters
 checkCluster <- TRUE
-clusterEvery <- 5
+clusterEvery <- 1
 
 
-nStatRun <- 100 # how many times is the same thing done (statistical simulation check)
-checkR0Here <- 10 # after how many recoveries is R0 evaluated 
+nStatRun <- 2 # how many times is the same thing done (statistical simulation check)
+#checkR0Here <- 10 # after how many recoveries is R0 evaluated 
 
 #-----------------------------lattice 
 
@@ -59,52 +60,51 @@ ageDistribution <- sample(c(3, 20,40,60,80, 100), replace=TRUE, size=N,prob = c(
 
 #vaccination #!!
 
-immunity <- c(#c(0)
-              #c(0.02)
-              #c(0.04)
-              #c(0.06)
-              #c(0.08)
-              #c(0.1)
-              #c(0.12)
-              #c(0.14)
-
-              #c(0.16)
-              #c(0.18)
-              #c(0.2)
+immunity <- c(c(0.14)
+  #c(0.02)
+  #c(0.04)
+  #c(0.06)
+  #c(0.08)
+  #c(0.1)
+  #c(0.12)
+  #c(0.14)
+  
+  #c(0.16)
+  #c(0.18)
+  #c(0.2)
   #---
-              #c(0.22)
-
-              #c(0.24)
-              #c(0.26)
-              #c(0.28)
-              #c(0.3)
-              #c(0.32, 0.5)
-              #c(0.34)
-              #c(0.36)
-              #c(0.38)
-              #c(0.4)
-              #c(0.42)
+  #c(0.22)
+  
+  #c(0.24)
+  #c(0.26)
+  #c(0.28)
+  #c(0.3)
+  #c(0.32, 0.5)
+  #c(0.34, 0.48)
+  #c(0.36, 0.46)
+  #c(0.38, 0.44)
+  #c(0.4, 0.42)
   #--------------------------------
-
-              #c(0.44)
-              #c(0.46)
-              #c(0.48)
-              #c(0.5)
-              #------
-              #seq(0,0.04,0.02)
-              #seq(0.06,0.1,0.02)
-              #seq(0.12,0.16,0.02)
-              #seq(0.18,0.24,0.02)
-              #seq(0.26,0.30,0.02)
-              #seq(0.32,0.36,0.02)
-              #seq(0.38,0.42,0.02)
-              #seq(0.44,0.5,0.02)
-
-              ) #ratio of immune people 
+  #c(0.42)
+  #c(0.44)
+  #c(0.46)
+  #c(0.48)
+  #c(0.5)
+  #------
+  #seq(0,0.04,0.02)
+  #seq(0.06,0.1,0.02)
+  #seq(0.12,0.16,0.02)
+  #seq(0.18,0.24,0.02)
+  #seq(0.26,0.30,0.02)
+  #seq(0.32,0.36,0.02)
+  #seq(0.38,0.42,0.02)
+  #seq(0.44,0.5,0.02)
+  
+) #ratio of immune people 
 
 #recovery
-avgRecoveryTimeVec <- c(6)
-sdRecoveryTimeVec <- c(2)
+avgRecoveryTimeVec <- c(1)
+sdRecoveryTimeVec <- c(0)
 
 #susceptibility
 sChoice <- c(F,F,F,T)
@@ -114,27 +114,27 @@ sFixed <- sChoice[2]
 sNot <- sChoice[3]
 sReal <- sChoice[4]
 
-sAgeDist1 <- c(0.7, 0.7, 0.7, 0.7, 0.7, 0.7)
+sAgeDist1 <- c(2, 2, 2, 2, 2, 2)
 sAgeDist2 <- c(0.9, 0.6, 0.4, 0.6, 0.8, 0.9)
-sAgeDistArray <- rbind(sAgeDist1, sAgeDist2) #susceptibility depending on age
+sAgeDistArray <- rbind(sAgeDist1)#, sAgeDist2) #susceptibility depending on age
 #transmissibility
-sDistFactorVec <- seq(1,7,0.2) # social distancing factor
+sDistFactorVec <- c(3)#seq(1,7,0.2) # social distancing factor
 
 
 
 #----------------------------- start running
 #set globals
-R0OverInfectiousPeriod <- numeric(length=N)
-R0Mean <- numeric()
-R0Sd <- numeric()
-R0Mean2 <- numeric()
-R0Sd2 <- numeric()
-R0Mean3 <- numeric()
-R0Sd3 <- numeric()
-R0Mean4 <- numeric()
-R0Sd4 <- numeric()
-R0Mean7 <- numeric()
-R0Sd7 <- numeric()
+# R0OverInfectiousPeriod <- numeric(length=N)
+# R0Mean <- numeric()
+# R0Sd <- numeric()
+# R0Mean2 <- numeric()
+# R0Sd2 <- numeric()
+# R0Mean3 <- numeric()
+# R0Sd3 <- numeric()
+# R0Mean4 <- numeric()
+# R0Sd4 <- numeric()
+# R0Mean7 <- numeric()
+# R0Sd7 <- numeric()
 
 infected <- logical(length = N)
 infectionTime <- numeric(length=N)
@@ -147,7 +147,7 @@ x <- 0
 timeGauge <- length(immunity)*nrow(sAgeDistArray)*length(sdRecoveryTimeVec)*length(avgRecoveryTimeVec)*length(sDistFactorVec)*nStatRun
 runTime <- 0
 
-obsNames <- c("x","maxWeight", "numberCluster", "numberInfected", "largeOverTotal","accInfections", "R0Mean")
+obsNames <- c("x","maxWeight", "numberCluster", "numberInfected", "largeOverTotal","accInfections")#, "R0Mean")
 #!! write a list from in which every param is listed, then it is possible to go through the list, stop and continue if something goes wrong
 
 nPar <- 1
@@ -158,9 +158,9 @@ for(imm in immunity){
     for(sdRecoveryTime in sdRecoveryTimeVec){
       for(avgRecoveryTime in avgRecoveryTimeVec){ 
         for(sDistFactor in sDistFactorVec){
-            paramConfigs[nPar,] <- c( i,sdRecoveryTime,avgRecoveryTime, sDistFactor, imm) 
-            nPar <- nPar + 1
-          }
+          paramConfigs[nPar,] <- c( i,sdRecoveryTime,avgRecoveryTime, sDistFactor, imm) 
+          nPar <- nPar + 1
+        }
       }
     }
   }
@@ -171,7 +171,7 @@ for (parConf in c(1:nParConfigs)){
   avgRecoveryTime <- paramConfigs[parConf, 3]
   sDistFactor <- paramConfigs[parConf, 4]
   immunity <- paramConfigs[parConf, 5]
-    
+  
   sAgeDist <- sAgeDistArray[i,]
   #set susceptibility distribution in population
   if(sBool){
@@ -195,24 +195,30 @@ for (parConf in c(1:nParConfigs)){
   params <- paste(c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, i, sDistFactor, sChoiceNames[sChoice]), sep="", collapse="_") 
   print(params)
   
-  R0calc <- (3+2*nShort/N)*weighted.mean(x = sAgeDist/sDistFactor, w = c(3, 15, 25, 28, 22, 7))*avgRecoveryTime
-  evalArray <- array(NA, dim = c(10000,nStatRun,7), dimnames = list(c(),c(),obsNames))
-  evalR0 <- array(NA, dim = c(nStatRun,2), dimnames = list(c(), c("R0Mean", "R0MeanSd"))) 
-  evalR02 <- array(NA, dim = c(nStatRun,2), dimnames = list(c(), c("R0Mean", "R0MeanSd")))
-  evalR03 <- array(NA, dim = c(nStatRun,2), dimnames = list(c(), c("R0Mean", "R0MeanSd")))
-  evalR04 <- array(NA, dim = c(nStatRun,2), dimnames = list(c(), c("R0Mean", "R0MeanSd")))
-  evalR07 <- array(NA, dim = c(nStatRun,2), dimnames = list(c(), c("R0Mean", "R0MeanSd")))
+  #R0calc <- (3+2*nShort/N)*weighted.mean(x = sAgeDist/sDistFactor, w = c(3, 15, 25, 28, 22, 7))*avgRecoveryTime
+  evalArray <- array(NA, dim = c(20000,nStatRun,length(obsNames)), dimnames = list(c(),c(),obsNames))
+  #evalR0 <- array(NA, dim = c(nStatRun,2), dimnames = list(c(), c("R0Mean", "R0MeanSd"))) 
+  #evalR02 <- array(NA, dim = c(nStatRun,2), dimnames = list(c(), c("R0Mean", "R0MeanSd")))
+  #evalR03 <- array(NA, dim = c(nStatRun,2), dimnames = list(c(), c("R0Mean", "R0MeanSd")))
+  #evalR04 <- array(NA, dim = c(nStatRun,2), dimnames = list(c(), c("R0Mean", "R0MeanSd")))
+  #evalR07 <- array(NA, dim = c(nStatRun,2), dimnames = list(c(), c("R0Mean", "R0MeanSd")))
   for(statRun in c(1:nStatRun)){
     simulationRun(statRun)
     runTime <- runTime + 1
     print(paste(c(runTime,timeGauge), sep="", collapse = " / "))
   }
-  writeEval(evalArray, evalR0, params = params)
-  write.table(x = evalR02, file = paste(c(path, "R02Mean_", params, ".txt"),sep="", collapse=""), append = FALSE,sep = "\t",row.names = FALSE, col.names = FALSE)
-  write.table(x = evalR03, file = paste(c(path, "R03Mean_", params, ".txt"),sep="", collapse=""), append = FALSE,sep = "\t",row.names = FALSE, col.names = FALSE)
-  write.table(x = evalR04, file = paste(c(path, "R04Mean_", params, ".txt"),sep="", collapse=""), append = FALSE,sep = "\t",row.names = FALSE, col.names = FALSE)
-  write.table(x = evalR07, file = paste(c(path, "R07Mean_", params, ".txt"),sep="", collapse=""), append = FALSE,sep = "\t",row.names = FALSE, col.names = FALSE)
+  writeEval(evalArray, params=params)#, evalR0, params = params)
+  #write.table(x = evalR02, file = paste(c(path, "R02Mean_", params, ".txt"),sep="", collapse=""), append = FALSE,sep = "\t",row.names = FALSE, col.names = FALSE)
+  #write.table(x = evalR03, file = paste(c(path, "R03Mean_", params, ".txt"),sep="", collapse=""), append = FALSE,sep = "\t",row.names = FALSE, col.names = FALSE)
+  #write.table(x = evalR04, file = paste(c(path, "R04Mean_", params, ".txt"),sep="", collapse=""), append = FALSE,sep = "\t",row.names = FALSE, col.names = FALSE)
+  #write.table(x = evalR07, file = paste(c(path, "R07Mean_", params, ".txt"),sep="", collapse=""), append = FALSE,sep = "\t",row.names = FALSE, col.names = FALSE)
 }  
+
+
+
+a <- read.table("SmallWorld/accInfections_400_1600_0_1_0_1_1_sReal.txt")
+smallProp <- nrow(a)-length(which(is.na(a)==TRUE))/100
+print(smallProp)
 
 #})
 
@@ -221,8 +227,8 @@ for (parConf in c(1:nParConfigs)){
 
 #population definieren (2-3) (different sDistFactor --> FLATTEN THE CURVE)
 # verschieden viele nShort N=400**2 [N/100, N/50, N/10 ] [example: 0, boolsche susc]
-  # berechne R0 erwartet | #!![3 + 1*p(nShort)] (3+2*nShort/N) Verbindungen pP | p(spread) = E(s*sDistFactor) | R0 = (3+2*n...)*p(spread)*trec = (3.2*weighted.mean(x = sAgeDist/sDistFactor, w = c(3, 15, 25, 28, 22, 7))*3.55)
-  # R0 erwartet >>1 <<1 =1 [] 
+# berechne R0 erwartet | #!![3 + 1*p(nShort)] (3+2*nShort/N) Verbindungen pP | p(spread) = E(s*sDistFactor) | R0 = (3+2*n...)*p(spread)*trec = (3.2*weighted.mean(x = sAgeDist/sDistFactor, w = c(3, 15, 25, 28, 22, 7))*3.55)
+# R0 erwartet >>1 <<1 =1 [] 
 # in file schreiben? 
 
 # ausführen für verschiedene kofigs (susc / bond prob / recovery times) || param variation -> errors?? test

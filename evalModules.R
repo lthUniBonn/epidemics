@@ -102,15 +102,22 @@ meanPlot <- function(name,params,df, compare = FALSE, name2, params2, df2){
   
   
   if(compare == TRUE){
-    plot(df2[,1], thisObsMean2, xlab = "T",ylab = name, col = 'red', xlim = c(0,50), ylim = c(0,1000))
+    plot(df2[,1], thisObsMean2, xlab = "",ylab = "", col = 'red', xlim = xlim, ylim = ylim, pch = 19, cex = 1, xaxt = 'n', yaxt = 'n')
     arrows(df2[,1], thisObsMean2-thisObsErr2, df2[,1], thisObsMean2+thisObsErr2, length=0.05, angle=90, code=3,col = 'red')
+    
     par(new = TRUE)  
   }
   
-  plot(df[,1], thisObsMean, xlab = "T",ylab = name, col = 'black', xlim = c(0,50), ylim = c(0,1000))
+  plot(df[,1], thisObsMean, xlab = "",ylab = "", col = 'black', xlim = xlim, ylim =ylim, pch = 19, cex = 1,xaxt = 'n', yaxt = 'n')
+  title(ylab = name, line = 1.7, cex.lab = 1.5)
+  title(xlab = "t", line = 1.7, cex.lab = 1.5)
+  axis(2, mgp=c(3, .5, 0))
+  axis(1, mgp=c(3, .5, 0))
   arrows(df[,1], thisObsMean-thisObsErr, df[,1], thisObsMean+thisObsErr, length=0.05, angle=90, code=3)
-  mtext(text = paste("sqrt(N):", params[1],"  nShort:", params[2], "  immunity:", params[3],"  recoveryTime:", params[4],"+-", params[5],"  suscDist:", params[6],"  suscFactor:", params[7], sep = " "),side = 3)
-  if(compare == TRUE){
-    mtext(text = paste("sqrt(N):", params2[1],"  nShort:", params2[2], "  immunity:", params2[3],"  recoveryTime:", params2[4],"+-", params2[5],"  suscDist:", params2[6],"  suscFactor:", params2[7], sep = " "),side = 3,col = 'red',line = 1)
-  }
+  mtext(text = paste( "D:", params2[7], sep = " "),side = 3, padj = 3.5, adj = 0.9, col = 'red', cex = 1.5)
+  mtext(text = paste( "D:", params[7], sep = " "),side = 3, padj = 2, adj = 0.9, cex = 1.5)
+  #mtext(text = paste("sqrt(N):", params[1],"  nShort:", params[2], "  immunity:", params[3],"  recoveryTime:", params[4],"+-", params[5],"  suscDist:", params[6],"  suscFactor:", params[7], sep = " "),side = 3)
+   if(compare == TRUE){
+     #mtext(text = paste("sqrt(N):", params2[1],"  nShort:", params2[2], "  immunity:", params2[3],"  recoveryTime:", params2[4],"+-", params2[5],"  suscDist:", params2[6],"  suscFactor:", params2[7], sep = " "),side = 3,col = 'red',line = 1)
+   }
 }
