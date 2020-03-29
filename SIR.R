@@ -13,19 +13,19 @@ set.seed(1)
 #-----------------------------run params 
 
 path <- "LukaPC/"
-
+figPath <- "figures/Vid"
 
 #observables
    #plotting
 plotIt <- FALSE
 plotEvery <- 10
-plotAccumulated <- F
+plotAccumulated <- TRUE
    #clusters
-checkCluster <- TRUE
+checkCluster <- F
 clusterEvery <- 5
 
 
-nStatRun <- 100 # how many times is the same thing done (statistical simulation check)
+nStatRun <- 1#100 # how many times is the same thing done (statistical simulation check)
 checkR0Here <- 10 # after how many recoveries is R0 evaluated 
 
 #-----------------------------lattice 
@@ -66,29 +66,30 @@ immunity <- c(#c(0)
               #c(0.08)
               #c(0.1)
               #c(0.12)
-              #c(0.14)
-              # bis hier Blackie running
-              #c(0.16)# Luka laptop
-              #c(0.18)# Luka laptop
-              #c(0.2)#  Luka laptop
-              #c(0.22)# Luka laptop
-              #c(0.24)#VM
-              #c(0.26)#VM
-              #c(0.28)#VM
-              #c(0.3)#VM
-              #weitere 8?
-              #c(0.32)#VM
-              #c(0.32)#VM  
-              #c(0.34)#VM
-              #c(0.36)#VM
-              #c(0.38)#VM
-              #c(0.4)#VM
-              #c(0.42)#VM
-              #c(0.44)#VM
-              c(0.46)
-              #weitergehee 8?
-              #c(0.48),#Luka PC
-              #c(0.5)#Luka PC
+              c(0.14)
+
+              #c(0.16)
+              #c(0.18)
+              #c(0.2)
+  #---
+              #c(0.22)
+
+              #c(0.24)
+              #c(0.26)
+              #c(0.28)
+              #c(0.3)
+              #c(0.32, 0.5)
+              #c(0.34)
+              #c(0.36)
+              #c(0.38)
+              #c(0.4)
+              #c(0.42)
+  #--------------------------------
+
+              #c(0.44)
+              #c(0.46)
+              #c(0.48)
+              #c(0.5)
               #------
               #seq(0,0.04,0.02)
               #seq(0.06,0.1,0.02)
@@ -115,25 +116,25 @@ sReal <- sChoice[4]
 
 sAgeDist1 <- c(0.7, 0.7, 0.7, 0.7, 0.7, 0.7)
 sAgeDist2 <- c(0.9, 0.6, 0.4, 0.6, 0.8, 0.9)
-sAgeDistArray <- rbind(sAgeDist1, sAgeDist2) #susceptibility depending on age
+sAgeDistArray <- rbind(sAgeDist1)#, sAgeDist2) #susceptibility depending on age
 #transmissibility
-sDistFactorVec <- seq(1,7,0.2) # social distancing factor
+sDistFactorVec <- c(4)#seq(1,7,0.2) # social distancing factor
 
 
 
 #----------------------------- start running
 #set globals
-R0OverInfectiousPeriod <- numeric(length=N)
-R0Mean <- numeric()
-R0Sd <- numeric()
-R0Mean2 <- numeric()
-R0Sd2 <- numeric()
-R0Mean3 <- numeric()
-R0Sd3 <- numeric()
-R0Mean4 <- numeric()
-R0Sd4 <- numeric()
-R0Mean7 <- numeric()
-R0Sd7 <- numeric()
+#R0OverInfectiousPeriod <- numeric(length=N)
+# R0Mean <- numeric()
+# R0Sd <- numeric()
+# R0Mean2 <- numeric()
+# R0Sd2 <- numeric()
+# R0Mean3 <- numeric()
+# R0Sd3 <- numeric()
+# R0Mean4 <- numeric()
+# R0Sd4 <- numeric()
+# R0Mean7 <- numeric()
+# R0Sd7 <- numeric()
 
 infected <- logical(length = N)
 infectionTime <- numeric(length=N)
@@ -196,21 +197,22 @@ for (parConf in c(1:nParConfigs)){
   
   R0calc <- (3+2*nShort/N)*weighted.mean(x = sAgeDist/sDistFactor, w = c(3, 15, 25, 28, 22, 7))*avgRecoveryTime
   evalArray <- array(NA, dim = c(10000,nStatRun,7), dimnames = list(c(),c(),obsNames))
-  evalR0 <- array(NA, dim = c(nStatRun,2), dimnames = list(c(), c("R0Mean", "R0MeanSd"))) 
-  evalR02 <- array(NA, dim = c(nStatRun,2), dimnames = list(c(), c("R0Mean", "R0MeanSd")))
-  evalR03 <- array(NA, dim = c(nStatRun,2), dimnames = list(c(), c("R0Mean", "R0MeanSd")))
-  evalR04 <- array(NA, dim = c(nStatRun,2), dimnames = list(c(), c("R0Mean", "R0MeanSd")))
-  evalR07 <- array(NA, dim = c(nStatRun,2), dimnames = list(c(), c("R0Mean", "R0MeanSd")))
+  #evalR0 <- array(NA, dim = c(nStatRun,2), dimnames = list(c(), c("R0Mean", "R0MeanSd"))) 
+  #evalR02 <- array(NA, dim = c(nStatRun,2), dimnames = list(c(), c("R0Mean", "R0MeanSd")))
+  #evalR03 <- array(NA, dim = c(nStatRun,2), dimnames = list(c(), c("R0Mean", "R0MeanSd")))
+  #evalR04 <- array(NA, dim = c(nStatRun,2), dimnames = list(c(), c("R0Mean", "R0MeanSd")))
+  #evalR07 <- array(NA, dim = c(nStatRun,2), dimnames = list(c(), c("R0Mean", "R0MeanSd")))
   for(statRun in c(1:nStatRun)){
     simulationRun(statRun)
     runTime <- runTime + 1
     print(paste(c(runTime,timeGauge), sep="", collapse = " / "))
   }
-  writeEval(evalArray, evalR0, params = params)
-  write.table(x = evalR02, file = paste(c(path, "R02Mean_", params, ".txt"),sep="", collapse=""), append = FALSE,sep = "\t",row.names = FALSE, col.names = FALSE)
-  write.table(x = evalR03, file = paste(c(path, "R03Mean_", params, ".txt"),sep="", collapse=""), append = FALSE,sep = "\t",row.names = FALSE, col.names = FALSE)
-  write.table(x = evalR04, file = paste(c(path, "R04Mean_", params, ".txt"),sep="", collapse=""), append = FALSE,sep = "\t",row.names = FALSE, col.names = FALSE)
-  write.table(x = evalR07, file = paste(c(path, "R07Mean_", params, ".txt"),sep="", collapse=""), append = FALSE,sep = "\t",row.names = FALSE, col.names = FALSE)
+  #writeEval(evalArray, params = params)#evalR0
+  
+  #write.table(x = evalR02, file = paste(c(path, "R02Mean_", params, ".txt"),sep="", collapse=""), append = FALSE,sep = "\t",row.names = FALSE, col.names = FALSE)
+  #write.table(x = evalR03, file = paste(c(path, "R03Mean_", params, ".txt"),sep="", collapse=""), append = FALSE,sep = "\t",row.names = FALSE, col.names = FALSE)
+  #write.table(x = evalR04, file = paste(c(path, "R04Mean_", params, ".txt"),sep="", collapse=""), append = FALSE,sep = "\t",row.names = FALSE, col.names = FALSE)
+  #write.table(x = evalR07, file = paste(c(path, "R07Mean_", params, ".txt"),sep="", collapse=""), append = FALSE,sep = "\t",row.names = FALSE, col.names = FALSE)
 }  
 
 #})
