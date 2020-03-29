@@ -19,16 +19,16 @@ figCount <- 1
 #observables
 #plotting
 plotIt <- TRUE
-plotEvery <- 10
+plotEvery <- 2
 plotAccumulated <- T
 #clusters
 checkCluster <- TRUE
 clusterEvery <- 1
 
 
-nStatRun <- 2 # how many times is the same thing done (statistical simulation check)
+nStatRun <- 100 # how many times is the same thing done (statistical simulation check)
 #checkR0Here <- 10 # after how many recoveries is R0 evaluated 
-
+timeOfInfection <- numeric(nStatRun)
 #-----------------------------lattice 
 
 #network
@@ -60,7 +60,7 @@ ageDistribution <- sample(c(3, 20,40,60,80, 100), replace=TRUE, size=N,prob = c(
 
 #vaccination #!!
 
-immunity <- c(c(0.14)
+immunity <- c(c(0)
   #c(0.02)
   #c(0.04)
   #c(0.06)
@@ -118,7 +118,7 @@ sAgeDist1 <- c(2, 2, 2, 2, 2, 2)
 sAgeDist2 <- c(0.9, 0.6, 0.4, 0.6, 0.8, 0.9)
 sAgeDistArray <- rbind(sAgeDist1)#, sAgeDist2) #susceptibility depending on age
 #transmissibility
-sDistFactorVec <- c(3)#seq(1,7,0.2) # social distancing factor
+sDistFactorVec <- c(1)#seq(1,7,0.2) # social distancing factor
 
 
 
@@ -203,7 +203,10 @@ for (parConf in c(1:nParConfigs)){
   #evalR04 <- array(NA, dim = c(nStatRun,2), dimnames = list(c(), c("R0Mean", "R0MeanSd")))
   #evalR07 <- array(NA, dim = c(nStatRun,2), dimnames = list(c(), c("R0Mean", "R0MeanSd")))
   for(statRun in c(1:nStatRun)){
+    randId <- sample(c(1:N),size = 1)
+    print(randId)
     simulationRun(statRun)
+    
     runTime <- runTime + 1
     print(paste(c(runTime,timeGauge), sep="", collapse = " / "))
   }
@@ -216,9 +219,8 @@ for (parConf in c(1:nParConfigs)){
 
 
 
-a <- read.table("SmallWorld/accInfections_400_1600_0_1_0_1_1_sReal.txt")
-smallProp <- nrow(a)-length(which(is.na(a)==TRUE))/100
-print(smallProp)
+
+print(mean(timeOfInfection))
 
 #})
 

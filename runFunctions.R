@@ -24,6 +24,10 @@ simulationRun <- function(statRun){
   x <<- 0
   count <- 0
   while (TRUE) {
+    infPeople <- which(infected==TRUE)
+    if(infected[randId]==TRUE){
+      timeOfInfection[statRun] <<- x
+    }
     noMoreInfected <- timesteps()
     # returns NA if no more infected
     if(noMoreInfected){ break}

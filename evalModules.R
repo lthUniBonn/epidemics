@@ -3,12 +3,19 @@ parNames <- c('sqrt(N)',  'number of shortcuts', 'immunisation quota', 'avgerage
 
 
 bootstrap <- function(vec, nSample=1000, FUN=mean){
+  popMean <- mean(vec, na.rm = T)
   means <- numeric(length=nSample)
   vec <- vec[which(is.na(vec)==FALSE)]
   for(i in c(1:nSample)){
     means[i] <- FUN(sample(vec, length(vec), replace=TRUE))
   }
   err <- sd(means) 
+  bias <- mean(means, na.rm = T)-popMean
+  print(bias)
+  qqnorm(y = means)
+  qqline(y = means, distribution = qnorm)
+  mtext(text = paste(c("sd: ", err, "  Bias: ", bias), sep = "", collapse = ""))
+  
   return(err)
 }
 
@@ -85,10 +92,9 @@ findObsvsParams <- function(obs='numberInfected', parIdx=3, params, checkSpecifi
 
 
 
-meanPlot <- function(name,params,df, compare = FALSE, name2, params2, df2){
+meanPlot <- function(name,params,df, compare = FALSE, name2="", params2=0, df2=0){
   thisObsMean <- rowMeans(df[,c(2:ncol(df))], na.rm = TRUE)
   thisObsErr <- apply(X = df[,c(2:ncol(df))],MARGIN = 1, FUN = bootstrap)
-  
   if(compare==TRUE){
     thisObsMean2 <- rowMeans(df2[,c(2:ncol(df2))], na.rm = TRUE)
     thisObsErr2 <- apply(X = df2[,c(2:ncol(df2))],MARGIN = 1, FUN = bootstrap)

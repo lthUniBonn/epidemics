@@ -17,7 +17,7 @@ ageDistIdx <- 1
 
 
 sDistFactor <- 1#3
-immunity <- 0
+immunity <- 0.4
 
 fixedParams <- c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, ageDistIdx, sDistFactor, sChoice)
 #params <- paste(c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, ageDistIdx, sDistFactor, sChoice), sep="", collapse="_") 
@@ -28,7 +28,7 @@ epidemicThreshold <- 0.02
 
 #plot means of obs vs t
 obs <- 'numberInfected' # 'accInfections'
-comp <- T
+comp <- F
 params <- fixedParams 
 df <- read.table(paste(c(path,"/",obs, '_',paste(params, sep="", collapse="_"), '.txt'), sep="", collapse="")) 
 if (comp){

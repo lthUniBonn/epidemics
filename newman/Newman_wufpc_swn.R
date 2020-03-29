@@ -24,11 +24,11 @@ source('evalModules.R')
 #startTime <- proc.time()
 #---------- Parameters to be set ----------------
 profile <- profvis({
-N = 100**2 # number of people
+N = 120**2 # number of people
 immunity <- 0
 nShort <- 0 # how many shortcuts are created
-pFrom <- 0.45 # which canonical Q(p) are created
-pTo <- 0.55
+pFrom <- 0.3 # which canonical Q(p) are created
+pTo <- 0.7
 nProb <- 50 # how many datapoints are calculated in the above range
 nTest <- 50 # how many times is the same thing done
 checkLargestCluster <- FALSE
@@ -155,20 +155,21 @@ addConnection <- function(from, to){ # does this work with shortcuts? I think ye
 
 
 isPercolating <- function(){ # this does not work for lattices with boundary conditions
-  leftRoots <- sapply(leftIndices, findRoot)
-  rightRoots <- sapply(rightIndices, findRoot)
   topRoots <- sapply(topIndices, findRoot)
   botRoots <- sapply(botIndices, findRoot)
-  percolatingLeftRight <- numeric()
   percolatingTopBot <- numeric()
-  percolatingLeftRight <-Reduce(intersect, list(leftRoots,rightRoots))
   percolatingTopBot <-Reduce(intersect, list(topRoots,botRoots))
-  if(length(percolatingLeftRight) != 0){
-    return(TRUE)
-  }
   if(length(percolatingTopBot) != 0){
     return(TRUE)
   }
+  leftRoots <- sapply(leftIndices, findRoot)
+  rightRoots <- sapply(rightIndices, findRoot)
+  percolatingLeftRight <- numeric()
+  percolatingLeftRight <-Reduce(intersect, list(leftRoots,rightRoots))
+   if(length(percolatingLeftRight) != 0){
+     return(TRUE)
+   }
+  
   return(FALSE)
 }
 
@@ -242,10 +243,10 @@ for (a in c(1:nTest)){
     #does not make sense to check for percolation if shprtcuts are introduced, od does it?
     #certainly not when closed boundary conditions are present
     # if boundary conditions are turned on this needs changing as well
-    if(isPercolating()){
-      percolTest[c(x:nCon),a] <- percolTest[c(x:nCon),a] + 1
-      break
-    }
+      if(isPercolating()){
+        percolTest[c(x:nCon),a] <- percolTest[c(x:nCon),a] + 1
+        break
+      }
     # if(checkLargestClusterwarnings()){ # this if is really just for comfort, can remove it if it takes too long
     #   largestWeight[x,a] <- weight[which.max(weight)] # this is sligthly faster than max(weight)
     # }
@@ -294,11 +295,21 @@ xdata <- seq(pFrom, pTo, (pTo-pFrom)/(nProb-1))
 percolProb <- data.frame( x=xdata , y=ydata)
 write.table(x = percolProb,file = 'newman/GnuplotTest/PercolData.txt',append = FALSE, row.names = FALSE, col.names = FALSE)
 ourFit <- nls(y ~ erf(x,a,b), data = percolProb, start=list(a=50, b=0.5))#, weights = yWeights)
-plot(percolProb)
+plot(percolProb, xlim = c(0,1))
 lines(y=erf(x,summary(ourFit)$coefficients[1], summary(ourFit)$coefficients[2]), x = x)
 #lines(y=erf(x,50, 0.5), x = x)
 
 summary(ourFit)
+xlim = c(0.49,0.51)
+ylim = c(0.6,0.9)
+x <- seq(-1,1,0.001)
+plot(x, erf(x, 62.41,0.4927), type = 'l', xlim = xlim, ylim= ylim)
+par(new=TRUE)
+plot(x, erf(x, 34.4,0.4887), type = 'l', xlim = xlim, ylim= ylim)
+par(new=TRUE)
+plot(x, erf(x, 17.87,0.4713), type = 'l', xlim = xlim, ylim= ylim)
+par(new=TRUE)
+plot(x, erf(x, 9.45,0.4583), type = 'l', xlim = xlim, ylim= ylim)
 #endTime <- proc.time()
 #runTime <- endTime-startTime
 #write(x = c(N, runTime[1]), file = "timesNewman.txt", append = TRUE,sep = "\t")
