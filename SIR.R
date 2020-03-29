@@ -92,7 +92,7 @@ sAgeDist1 <- c(0.7, 0.7, 0.7, 0.7, 0.7, 0.7)
 sAgeDist2 <- c(0.98, 0.7, 0.45, 0.7, 0.85, 1)
 sAgeDistArray <- rbind(sAgeDist1, sAgeDist2) #susceptibility depending on age
 #transmissibility
-sDistFactorVec <- c(4.7)#seq(1,7,0.2) # social distancing factor
+sDistFactorVec <- seq(1,7,0.2) # social distancing factor
 
 
 
