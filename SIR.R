@@ -12,20 +12,20 @@ set.seed(2)
 
 #-----------------------------run params 
 
-path <- "LukaPC/"
+path <- "forgottenData/"
 figPath <- "figures/Vid"
 
 #observables
    #plotting
 plotIt <- FALSE
 plotEvery <- 10
-plotAccumulated <- TRUE
+plotAccumulated <- FALSE
    #clusters
-checkCluster <- F
+checkCluster <- T
 clusterEvery <- 5
 
 
-nStatRun <- 1#100 # how many times is the same thing done (statistical simulation check)
+nStatRun <- 20#100 # how many times is the same thing done (statistical simulation check)
 checkR0Here <- 10 # after how many recoveries is R0 evaluated 
 
 #-----------------------------lattice 
@@ -59,47 +59,18 @@ ageDistribution <- sample(c(3, 20,40,60,80, 100), replace=TRUE, size=N,prob = c(
 
 #vaccination #!!
 
-immunity <- c(#c(0)
-              #c(0.02)
-              #c(0.04)
-              #c(0.06)
-              #c(0.08)
-              #c(0.1)
-              #c(0.12)
-              c(0.2)
-
-              #c(0.16)
-              #c(0.18)
-              #c(0.2)
-  #---
-              #c(0.22)
-
-              #c(0.24)
-              #c(0.26)
-              #c(0.28)
-              #c(0.3)
-              #c(0.32, 0.5)
-              #c(0.34)
-              #c(0.36)
-              #c(0.38)
-              #c(0.4)
-              #c(0.42)
-  #--------------------------------
-
-              #c(0.44)
-              #c(0.46)
-              #c(0.48)
-              #c(0.5)
-              #------
-              #seq(0,0.04,0.02)
-              #seq(0.06,0.1,0.02)
-              #seq(0.12,0.16,0.02)
-              #seq(0.18,0.24,0.02)
-              #seq(0.26,0.30,0.02)
-              #seq(0.32,0.36,0.02)
-              #seq(0.38,0.42,0.02)
-              #seq(0.44,0.5,0.02)
-
+immunity <- c(#c(0,0.5,0.26)
+              #c(0.02,0.48,0.24)
+              #c(0.04,0.46)
+              #c(0.06,0.44)
+              #c(0.08,0.42)
+              #c(0.10,0.40)
+              #c(0.12,0.38)
+              #c(0.14,0.36)
+              #c(0.16,0.34)
+              #c(0.18,0.32)
+              #c(0.20,0.30)
+              #c(0.22,0.28)
               ) #ratio of immune people 
 
 #recovery
@@ -115,7 +86,7 @@ sNot <- sChoice[3]
 sReal <- sChoice[4]
 
 sAgeDist1 <- c(0.7, 0.7, 0.7, 0.7, 0.7, 0.7)
-sAgeDist2 <- c(0.9, 0.6, 0.4, 0.6, 0.8, 0.9)
+sAgeDist2 <- c(0.98, 0.7, 0.45, 0.7, 0.85, 1)
 sAgeDistArray <- rbind(sAgeDist1)#, sAgeDist2) #susceptibility depending on age
 #transmissibility
 sDistFactorVec <- c(4.7)#seq(1,7,0.2) # social distancing factor
@@ -154,7 +125,8 @@ nPar <- 1
 nParConfigs <- timeGauge/nStatRun
 paramConfigs <- array(data=NA, dim=c(nParConfigs,5))
 for(imm in immunity){  
-  for(i in c(1:nrow(sAgeDistArray))){
+  #for(i in c(1:nrow(sAgeDistArray))){
+  i <- 2
     for(sdRecoveryTime in sdRecoveryTimeVec){
       for(avgRecoveryTime in avgRecoveryTimeVec){ 
         for(sDistFactor in sDistFactorVec){
@@ -163,7 +135,7 @@ for(imm in immunity){
           }
       }
     }
-  }
+  #}
 }
 for (parConf in c(1:nParConfigs)){
   i <- paramConfigs[parConf,1]
@@ -195,7 +167,7 @@ for (parConf in c(1:nParConfigs)){
   params <- paste(c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, i, sDistFactor, sChoiceNames[sChoice]), sep="", collapse="_") 
   print(params)
   
-  R0calc <- (3+2*nShort/N)*weighted.mean(x = sAgeDist/sDistFactor, w = c(3, 15, 25, 28, 22, 7))*avgRecoveryTime
+  #R0calc <- (3+2*nShort/N)*weighted.mean(x = sAgeDist/sDistFactor, w = c(3, 15, 25, 28, 22, 7))*avgRecoveryTime
   evalArray <- array(NA, dim = c(10000,nStatRun,7), dimnames = list(c(),c(),obsNames))
   #evalR0 <- array(NA, dim = c(nStatRun,2), dimnames = list(c(), c("R0Mean", "R0MeanSd"))) 
   #evalR02 <- array(NA, dim = c(nStatRun,2), dimnames = list(c(), c("R0Mean", "R0MeanSd")))
@@ -207,7 +179,7 @@ for (parConf in c(1:nParConfigs)){
     runTime <- runTime + 1
     print(paste(c(runTime,timeGauge), sep="", collapse = " / "))
   }
-  #writeEval(evalArray, params = params)#evalR0
+  writeEval(evalArray, params = params)#evalR0
   
   #write.table(x = evalR02, file = paste(c(path, "R02Mean_", params, ".txt"),sep="", collapse=""), append = FALSE,sep = "\t",row.names = FALSE, col.names = FALSE)
   #write.table(x = evalR03, file = paste(c(path, "R03Mean_", params, ".txt"),sep="", collapse=""), append = FALSE,sep = "\t",row.names = FALSE, col.names = FALSE)
