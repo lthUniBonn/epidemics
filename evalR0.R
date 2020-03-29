@@ -1,7 +1,7 @@
 source('evalModules.R')
 library("ggplot2")
 
-path <- "longRun"
+path <- "LaviBlackie"
 
 
 
@@ -19,7 +19,7 @@ sAgeDistArray <- rbind(sAgeDist1, sAgeDist2) #susceptibility depending on age
 sAgeDist <- sAgeDistArray[ageDistIdx,]
 
 sDistFactor <- 5
-immunity <- 0.5
+immunity <- 0.3
 
 fixedParams <- c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, ageDistIdx, sDistFactor, sChoice)
 params <- paste(c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, ageDistIdx, sDistFactor, sChoice), sep="", collapse="_") 
@@ -41,7 +41,7 @@ calcR0 <- function(nInf0, nInf1, dt=1){
 calcR0File <- function(params){
   #get file numberInfected
   nInfDf <- read.table(file = paste(c(path,"/","numberInfected","_", params, ".txt"),sep="", collapse=""))
-  nInfDf <- nInfDf[seq(1,nrow(nInfDf),2), ]
+  nInfDf <- nInfDf[seq(1,nrow(nInfDf),1), ]
   R0Df <- array(NA, dim=c(nrow(nInfDf)-1, ncol(nInfDf)-1))
 
   #get dt values (only take the first, is the same anyways)
@@ -82,7 +82,7 @@ calcR0File <- function(params){
 }
 
 R0MeanDf <- calcR0File(params = params)
-ylim = c(0,2)
+ylim = c(0,3)
 plot(R0MeanDf[,c(1,2)], ylim = ylim)
 arrows(R0MeanDf[,1], R0MeanDf[,2]-R0MeanDf[,3], R0MeanDf[,1], R0MeanDf[,2]+R0MeanDf[,3], length=0.05, angle=90, code=3)
 mtext(text = paste("sqrt(N):", fixedParams[1],"  nShort:", fixedParams[2], "  immunity:", fixedParams[3],"  recoveryTime:", fixedParams[4],"+-", fixedParams[5],"  suscDist:", fixedParams[6],"  suscFactor:", fixedParams[7], sep = " "),side = 3)

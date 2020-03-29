@@ -27,16 +27,16 @@ simulationRun <- function(statRun){
   count <- 0
   while (TRUE) {
     infPeople <- which(infected==TRUE)
-    if(infected[randId]==TRUE){
-      timeOfInfection[statRun] <<- x
-    }
+    # if(infected[randId]==TRUE){ # only needed to test small world property
+    #   timeOfInfection[statRun] <<- x
+    # }
     noMoreInfected <- timesteps()
     # returns NA if no more infected
     if(noMoreInfected){ break}
     # accumulated plot of infected | currently infected in red
     if((x %% plotEvery == 0) && (plotAccumulated == TRUE)){
       
-      png(paste(c(figPath, "/A_", figCount, ".png"), sep = "", collapse = ""), width = 500, height = 500)
+      png(paste(c(figPath, "/C_", figCount, ".png"), sep = "", collapse = ""), width = 500, height = 500)
       visibleLattice <- array(0, dim= c(sqrt(N),sqrt(N)))
       visibleLattice[which(sDistribution  != initialsDistribution)] <- 1
       plot(which(visibleLattice==1, arr.ind = TRUE)[,1], which(visibleLattice==1, arr.ind = TRUE)[,2],xlim = c(0,sqrt(N)), ylim = c(0,sqrt(N)),type ="p", pch = '.', pty = "s", xlab = paste(c("T:", x), sep = " ", collapse = ""), ylab ="")

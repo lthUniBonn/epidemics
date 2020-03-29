@@ -12,7 +12,7 @@ avgRecoveryTime <- 6
 sdRecoveryTime <- 2
 sChoice <- 'sReal'
 
-ageDistIdx <- 1
+ageDistIdx <- 2
 #sAgeDist1 <- c(0.7, 0.7, 0.7, 0.7, 0.7, 0.7)
 #sAgeDist2 <- c(0.9, 0.6, 0.4, 0.6, 0.8, 0.9)
 #sAgeDistArray <- rbind(sAgeDist1, sAgeDist2) #susceptibility depending on age
@@ -23,7 +23,7 @@ immunity <- 0
 
 fixedParams <- c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, ageDistIdx, sDistFactor, sChoice)
 #params <- paste(c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, ageDistIdx, sDistFactor, sChoice), sep="", collapse="_") 
-prob = F
+prob = T
 
 epidemicThreshold <- 0.02
 #-------------------------------------------------------------------------------
@@ -51,9 +51,9 @@ m <- ggplot(as.data.frame(p), aes(sDistFactors, immunities, fill= prob), ) +
   geom_tile() +
   scale_fill_gradient2(low = 'white', mid = 'green', high = 'black', midpoint = 0.5, limits=c(0,1)) +
   theme(panel.background = element_blank(), plot.background = element_blank()) +
-  labs(x='D',y= 'R') +
-  theme(axis.title.x = element_text(color = "black", size = 14, face = "bold"),
-        axis.title.y = element_text(color = "black", size = 14, face = "bold"),
+  labs(x='D',y= 'r') +
+  theme(axis.title.x = element_text(color = "black", size = 20, face = "bold"),
+        axis.title.y = element_text(color = "black", size = 20, face = "bold"),
         axis.text = element_text(size = 14),
         legend.position = c(0.7,0.6),
         legend.text =  element_text(size = 14),
@@ -62,7 +62,7 @@ m <- ggplot(as.data.frame(p), aes(sDistFactors, immunities, fill= prob), ) +
 if(prob == T){
   m <- m + labs(fill=expression('P'[ME]))
 } else {
-  m <- m + labs(fill=expression(I[tot]))
+  m <- m + labs(fill=expression(size))
 }
   
   #guides(fill=guide_legend(title="P(ME)"))

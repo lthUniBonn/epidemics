@@ -20,8 +20,8 @@ ageDistIdx <- 1
 
 sDistFactor <- 1
 immunity <- 0.2
-sDistFactor2 <- 4
-immunity2 <- 0
+sDistFactor2 <- 3
+immunity2 <- 0.0
 
 fixedParams <- c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, ageDistIdx, sDistFactor, sChoice)
 fixedParams2 <- c(sqrt(N), nShort, immunity2, avgRecoveryTime, sdRecoveryTime, ageDistIdx, sDistFactor2, sChoice)
@@ -42,11 +42,11 @@ evalObs <- function(dfList, obs){
     maxVal <- thisObs[[1]]
     maxErr <- thisObs[[2]]
   }
-  else if((obs == 'numberInfected') | (obs == 'numberCluster')){
+  else if((obs == 'numberInfected') | (obs == 'numberCluster') | (obs == 'maxWeight')){
     for (df in dfList){
       x <- x + 1
       thisObsMax <- apply(X = df[,c(2:ncol(df))],MARGIN = 2, FUN = max, na.rm =TRUE)
-      if(obs == 'numberInfected'){thisObsMax <- thisObsMax/N}#quota of pop
+      #if(obs == 'numberInfected'){thisObsMax <- thisObsMax/N}#quota of pop
       maxVal[x] <- mean(thisObsMax)
       maxErr[x] <- bootstrap(thisObsMax)
     }
@@ -83,10 +83,10 @@ parIdx <- 3
 if(parIdx == 7){
   xlab <- 'D'
   xlim <- c(1,7)
-  constant1 <- paste('R:', fixedParams[3], sep = "", collapse = "")
-  constant2 <- paste('R:', fixedParams2[3], sep = "", collapse = "")
+  constant1 <- paste('r:', fixedParams[3], sep = "", collapse = "")
+  constant2 <- paste('r:', fixedParams2[3], sep = "", collapse = "")
 } else if(parIdx == 3){
-  xlab <- 'R'
+  xlab <- 'r'
   xlim <- c(0,0.5)
   constant1 <- paste('D:', fixedParams[7], sep = "", collapse = "")
   constant2 <- paste('D:', fixedParams2[7], sep = "", collapse = "")
@@ -107,6 +107,9 @@ obs <- c('numberInfected', 'numberInfected')
 #ylab <- 'duration'
 #obs <- c('accInfections', 'duration')
 
+#ylab <- 'max maxWeight'
+#obs <- c('maxWeight', 'maxWeight')
+
 tmpList <- findObsvsParams(obs=obs[1],parIdx = parIdx, params = fixedParams)[]
 dfList <- tmpList[[2]]
 parList <- tmpList[[1]]
@@ -126,17 +129,17 @@ yVal2 <- y2[[1]]
 yErr2 <- y2[[2]]
 
 
-plot(x = parVal, y = yVal, xlab = "", ylab = "", xlim = xlim,ylim = c(0,0.4), pch = 19, cex = 1,xaxt = 'n', yaxt = 'n')
+plot(x = parVal, y = yVal, xlab = "", ylab = "", xlim = xlim,ylim = c(0,60000), pch = 19, cex = 1,xaxt = 'n', yaxt = 'n')
 arrows(parVal, yVal-yErr, parVal, yVal+yErr, length=0.05, angle=90, code=3)
 title(ylab = ylab, line = 1.7, cex.lab = 1.5)
 title(xlab = xlab, line = 1.7, cex.lab = 1.5)
 axis(2, mgp=c(3, .5, 0))
 axis(1, mgp=c(3, .5, 0))
 par(new=TRUE)
-plot(x = parVal2, y = yVal2, xlab = "", ylab = "", xlim = xlim, ylim = c(0,0.4), pch = 19, cex = 1,xaxt = 'n', yaxt = 'n', col = 'red')
+plot(x = parVal2, y = yVal2, xlab = "", ylab = "", xlim = xlim, ylim = c(0,60000), pch = 19, cex = 1,xaxt = 'n', yaxt = 'n', col = 'red')
 
-mtext(text = constant1, side = 3, padj = 3.5, adj = 0.9, col = 'red', cex = 1.5)
-mtext(text = constant2, side = 3, padj = 2, adj = 0.9, cex = 1.5)
+mtext(text = constant1, side = 3, padj = 3.5, adj = 0.9, cex = 1.5)
+mtext(text = constant2, side = 3, padj = 2, adj = 0.9, cex = 1.5, col = 'red')
 
 arrows(parVal2, yVal2-yErr2, parVal2, yVal2+yErr2, length=0.05, angle=90, code=3, col = 'red')
 

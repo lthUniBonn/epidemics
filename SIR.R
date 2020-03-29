@@ -5,7 +5,7 @@ source('runFunctions.R')
 
 #profile <- profvis({
 
-set.seed(1)
+set.seed(2)
 
 
 
@@ -66,7 +66,7 @@ immunity <- c(#c(0)
               #c(0.08)
               #c(0.1)
               #c(0.12)
-              c(0.14)
+              c(0.2)
 
               #c(0.16)
               #c(0.18)
@@ -118,7 +118,7 @@ sAgeDist1 <- c(0.7, 0.7, 0.7, 0.7, 0.7, 0.7)
 sAgeDist2 <- c(0.9, 0.6, 0.4, 0.6, 0.8, 0.9)
 sAgeDistArray <- rbind(sAgeDist1)#, sAgeDist2) #susceptibility depending on age
 #transmissibility
-sDistFactorVec <- c(4)#seq(1,7,0.2) # social distancing factor
+sDistFactorVec <- c(4.7)#seq(1,7,0.2) # social distancing factor
 
 
 

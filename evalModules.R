@@ -2,7 +2,7 @@ parNames <- c('sqrt(N)',  'number of shortcuts', 'immunisation quota', 'avgerage
 
 
 
-bootstrap <- function(vec, nSample=1000, FUN=mean){
+bootstrap <- function(vec, nSample=1000, FUN=mean, qq = FALSE){
   popMean <- mean(vec, na.rm = T)
   means <- numeric(length=nSample)
   vec <- vec[which(is.na(vec)==FALSE)]
@@ -10,12 +10,13 @@ bootstrap <- function(vec, nSample=1000, FUN=mean){
     means[i] <- FUN(sample(vec, length(vec), replace=TRUE))
   }
   err <- sd(means) 
-  bias <- mean(means, na.rm = T)-popMean
-  print(bias)
-  qqnorm(y = means)
-  qqline(y = means, distribution = qnorm)
-  mtext(text = paste(c("sd: ", err, "  Bias: ", bias), sep = "", collapse = ""))
-  
+  if(qq == TRUE) {
+    bias <- mean(means, na.rm = T)-popMean
+    print(bias)
+    qqnorm(y = means)
+    qqline(y = means, distribution = qnorm)
+    mtext(text = paste(c("sd: ", err, "  Bias: ", bias), sep = "", collapse = ""))
+  }
   return(err)
 }
 
@@ -120,8 +121,8 @@ meanPlot <- function(name,params,df, compare = FALSE, name2="", params2=0, df2=0
   axis(2, mgp=c(3, .5, 0))
   axis(1, mgp=c(3, .5, 0))
   arrows(df[,1], thisObsMean-thisObsErr, df[,1], thisObsMean+thisObsErr, length=0.05, angle=90, code=3)
-  mtext(text = paste( "D:", params2[7], sep = " "),side = 3, padj = 3.5, adj = 0.9, col = 'red', cex = 1.5)
-  mtext(text = paste( "D:", params[7], sep = " "),side = 3, padj = 2, adj = 0.9, cex = 1.5)
+  mtext(text = paste( "r:", params2[3], sep = " "),side = 3, padj = 3.5, adj = 0.9, col = 'red', cex = 1.5)
+  mtext(text = paste( "r:", params[3], sep = " "),side = 3, padj = 2, adj = 0.9, cex = 1.5)
   #mtext(text = paste("sqrt(N):", params[1],"  nShort:", params[2], "  immunity:", params[3],"  recoveryTime:", params[4],"+-", params[5],"  suscDist:", params[6],"  suscFactor:", params[7], sep = " "),side = 3)
    if(compare == TRUE){
      #mtext(text = paste("sqrt(N):", params2[1],"  nShort:", params2[2], "  immunity:", params2[3],"  recoveryTime:", params2[4],"+-", params2[5],"  suscDist:", params2[6],"  suscFactor:", params2[7], sep = " "),side = 3,col = 'red',line = 1)
