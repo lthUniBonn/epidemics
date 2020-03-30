@@ -2,7 +2,7 @@ source('evalModules.R')
 library("ggplot2")
 
 path <- "LaviBlackie"
-
+path <- "forgottenData"
 #define basic parameters of the evaluated simulation
 N <- 400**2
 nShort <- N/100
@@ -10,7 +10,7 @@ avgRecoveryTime <- 6
 sdRecoveryTime <- 2
 sChoice <- 'sReal'
 
-ageDistIdx <- 1
+ageDistIdx <- 2
 #sAgeDist1 <- c(0.7, 0.7, 0.7, 0.7, 0.7, 0.7)
 #sAgeDist2 <- c(0.9, 0.6, 0.4, 0.6, 0.8, 0.9)
 #sAgeDistArray <- rbind(sAgeDist1, sAgeDist2) #susceptibility depending on age

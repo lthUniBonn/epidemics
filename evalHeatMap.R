@@ -1,8 +1,8 @@
 source('evalModules.R')
 library("ggplot2")
 library("viridis")
-path <- "longRun"
-
+path <- "forgottenData"
+#path <- "longRun"
 
 
 #define basic parameters
@@ -23,7 +23,7 @@ immunity <- 0
 
 fixedParams <- c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, ageDistIdx, sDistFactor, sChoice)
 #params <- paste(c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, ageDistIdx, sDistFactor, sChoice), sep="", collapse="_") 
-prob = T
+prob = F
 
 epidemicThreshold <- 0.02
 #-------------------------------------------------------------------------------

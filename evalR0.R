@@ -18,8 +18,8 @@ sAgeDist2 <- c(0.9, 0.6, 0.4, 0.6, 0.8, 0.9)
 sAgeDistArray <- rbind(sAgeDist1, sAgeDist2) #susceptibility depending on age
 sAgeDist <- sAgeDistArray[ageDistIdx,]
 
-sDistFactor <- 3
-immunity <- 0.2
+sDistFactor <- 4
+immunity <- 0.4
 
 fixedParams <- c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, ageDistIdx, sDistFactor, sChoice)
 params <- paste(c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, ageDistIdx, sDistFactor, sChoice), sep="", collapse="_") 
