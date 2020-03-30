@@ -18,8 +18,8 @@ sAgeDist2 <- c(0.9, 0.6, 0.4, 0.6, 0.8, 0.9)
 sAgeDistArray <- rbind(sAgeDist1, sAgeDist2) #susceptibility depending on age
 sAgeDist <- sAgeDistArray[ageDistIdx,]
 
-sDistFactor <- 5
-immunity <- 0.3
+sDistFactor <- 3
+immunity <- 0.2
 
 fixedParams <- c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, ageDistIdx, sDistFactor, sChoice)
 params <- paste(c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, ageDistIdx, sDistFactor, sChoice), sep="", collapse="_") 
@@ -83,12 +83,22 @@ calcR0File <- function(params){
 
 R0MeanDf <- calcR0File(params = params)
 ylim = c(0,3)
-plot(R0MeanDf[,c(1,2)], ylim = ylim)
+par(mar = c(3,3,3,3))
+plot(R0MeanDf[,c(1,2)], ylim = ylim,, xlab = '', ylab = '', cex = 1, xaxt = 'n', yaxt = 'n')
 arrows(R0MeanDf[,1], R0MeanDf[,2]-R0MeanDf[,3], R0MeanDf[,1], R0MeanDf[,2]+R0MeanDf[,3], length=0.05, angle=90, code=3)
-mtext(text = paste("sqrt(N):", fixedParams[1],"  nShort:", fixedParams[2], "  immunity:", fixedParams[3],"  recoveryTime:", fixedParams[4],"+-", fixedParams[5],"  suscDist:", fixedParams[6],"  suscFactor:", fixedParams[7], sep = " "),side = 3)
-par(new = TRUE)
-plot(R0MeanDf[,c(1,4)], ylim = ylim, col='red')
+#mtext(text = paste("sqrt(N):", fixedParams[1],"  nShort:", fixedParams[2], "  immunity:", fixedParams[3],"  recoveryTime:", fixedParams[4],"+-", fixedParams[5],"  suscDist:", fixedParams[6],"  suscFactor:", fixedParams[7], sep = " "),side = 3)
+par(new = TRUE, mar = c(3,3,3,3))
+plot(R0MeanDf[,c(1,4)], ylim = ylim, col='red', xlab = '', ylab = '', cex = 1, xaxt = 'n', yaxt = 'n')
 
+title(ylab = 'R0*', line = 1.7, cex.lab = 1.5)
+title(xlab = "t", line = 1.7, cex.lab = 1.5)
+axis(2, mgp=c(3, .5, 0))
+axis(4, mgp=c(3, .5, 0))
+axis(1, mgp=c(3, .5, 0))
+mtext(side = 4, line = 1.7, 'portion of runs used', col = 'red', cex = 1.5)
+mtext(text = paste( "r:", fixedParams[3], sep = " "),side = 3, padj = 3.5, adj = 0.9, col = 'black', cex = 1.5)
+mtext(text = paste( "D:", fixedParams[7], sep = " "),side = 3, padj = 5, adj = 0.9, col = 'black', cex = 1.5)
+#mtext(text = paste( "%sim", sep = " "),side = 3, padj = 6.5, adj = 0.9, col = 'red', cex = 1.5)
 #----------------------------------------
 
 evalR0 <- function(R0Choice = "", params){

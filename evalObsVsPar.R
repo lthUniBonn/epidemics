@@ -38,7 +38,7 @@ evalObs <- function(dfList, obs){
   maxErr <- numeric(length(dfList))
   x <- 0
   if( obs == 'accInfections'){
-    thisObs <- outbreakMeasure(dfList, prob = F)
+    thisObs <- outbreakMeasure(dfList, prob = T)
     maxVal <- thisObs[[1]]
     maxErr <- thisObs[[2]]
   }
@@ -93,12 +93,12 @@ if(parIdx == 7){
 }
 
 #evaluate observable to plot -> y
-#ylab <- expression('I'['tot'])
-#obs <- c('accInfections','accInfections')
+ylab <- expression('P'[ME])
+obs <- c('accInfections','accInfections')
 
 
-ylab <- expression('I'['max'])
-obs <- c('numberInfected', 'numberInfected')
+#ylab <- expression('I'['max'])
+#obs <- c('numberInfected', 'numberInfected')
  
 #ylab <- 'number of separate clusters'
 #obs <- c('numberCluster','numberCluster')
@@ -129,14 +129,14 @@ yVal2 <- y2[[1]]
 yErr2 <- y2[[2]]
 
 
-plot(x = parVal, y = yVal, xlab = "", ylab = "", xlim = xlim,ylim = c(0,60000), pch = 19, cex = 1,xaxt = 'n', yaxt = 'n')
+plot(x = parVal, y = yVal, xlab = "", ylab = "", xlim = xlim,ylim = c(0,1), pch = 19, cex = 1,xaxt = 'n', yaxt = 'n')
 arrows(parVal, yVal-yErr, parVal, yVal+yErr, length=0.05, angle=90, code=3)
 title(ylab = ylab, line = 1.7, cex.lab = 1.5)
 title(xlab = xlab, line = 1.7, cex.lab = 1.5)
 axis(2, mgp=c(3, .5, 0))
 axis(1, mgp=c(3, .5, 0))
 par(new=TRUE)
-plot(x = parVal2, y = yVal2, xlab = "", ylab = "", xlim = xlim, ylim = c(0,60000), pch = 19, cex = 1,xaxt = 'n', yaxt = 'n', col = 'red')
+plot(x = parVal2, y = yVal2, xlab = "", ylab = "", xlim = xlim, ylim = c(0,1), pch = 19, cex = 1,xaxt = 'n', yaxt = 'n', col = 'red')
 
 mtext(text = constant1, side = 3, padj = 3.5, adj = 0.9, cex = 1.5)
 mtext(text = constant2, side = 3, padj = 2, adj = 0.9, cex = 1.5, col = 'red')
