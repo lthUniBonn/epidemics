@@ -1,8 +1,8 @@
 source('evalModules.R')
 library("ggplot2")
 
-path <- "longRun"
-
+#path <- "longRun"
+path <- "forgottenData"
 
 
 #define basic parameters
@@ -12,7 +12,7 @@ avgRecoveryTime <- 6
 sdRecoveryTime <- 2
 sChoice <- 'sReal'
 
-ageDistIdx <- 1
+ageDistIdx <- 2
 #sAgeDist1 <- c(0.7, 0.7, 0.7, 0.7, 0.7, 0.7)
 #sAgeDist2 <- c(0.9, 0.6, 0.4, 0.6, 0.8, 0.9)
 #sAgeDistArray <- rbind(sAgeDist1, sAgeDist2) #susceptibility depending on age
@@ -79,7 +79,7 @@ evalObs <- function(dfList, obs){
   return(list(maxVal, maxErr))
 }
 
-parIdx <- 3
+parIdx <- 7
 if(parIdx == 7){
   xlab <- 'D'
   xlim <- c(1,7)
