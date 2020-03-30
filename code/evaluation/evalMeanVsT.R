@@ -1,7 +1,7 @@
 source('evalModules.R')
 library("ggplot2")
 
-path <- "LaviBlackie"
+path <- "../data"
 
 #define basic parameters of the evaluated simulation
 N <- 400**2
@@ -11,16 +11,12 @@ sdRecoveryTime <- 2
 sChoice <- 'sReal'
 
 ageDistIdx <- 1
-#sAgeDist1 <- c(0.7, 0.7, 0.7, 0.7, 0.7, 0.7)
-#sAgeDist2 <- c(0.9, 0.6, 0.4, 0.6, 0.8, 0.9)
-#sAgeDistArray <- rbind(sAgeDist1, sAgeDist2) #susceptibility depending on age
 
 
-sDistFactor <- 1#3
+sDistFactor <- 1
 immunity <- 0
 
 fixedParams <- c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, ageDistIdx, sDistFactor, sChoice)
-#params <- paste(c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, ageDistIdx, sDistFactor, sChoice), sep="", collapse="_") 
 
 
 epidemicThreshold <- 0.02

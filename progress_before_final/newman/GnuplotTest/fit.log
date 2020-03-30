@@ -1,0 +1,600 @@
+
+
+*******************************************************************************
+Wed Mar 25 16:08:41 2020
+
+
+FIT:    data read from 'PercolData.txt'
+        format = z
+        #datapoints = 3
+        residuals are weighted equally (unit weight)
+
+function used for fitting: f(x)
+	f(x) = erf(x-b)*a
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   a             b            
+   0 1.1632796868e+00   0.00e+00  6.32e-01    1.000000e+00   5.000000e-01
+BREAK: Singular matrix in Invert_RtR
+
+*******************************************************************************
+Wed Mar 25 16:15:18 2020
+
+
+FIT:    data read from 'PercolData.txt'
+        format = z
+BREAK: bad data on line 1 of datafile
+
+*******************************************************************************
+Wed Mar 25 16:16:52 2020
+
+
+FIT:    data read from 'PercolData.txt'
+        format = z
+        #datapoints = 200
+        residuals are weighted equally (unit weight)
+
+function used for fitting: f(x)
+	f(x) = erf(x-b)*a
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   a             b            
+   0 6.4514836156e+01   0.00e+00  4.30e-01    1.000000e+00   5.000000e-01
+   4 1.0853926275e+01  -2.12e-01  4.30e-05    1.538177e+00   1.774175e-01
+
+After 4 iterations the fit converged.
+final sum of squares of residuals : 10.8539
+rel. change during last iteration : -2.11889e-06
+
+degrees of freedom    (FIT_NDF)                        : 198
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.234132
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.0548178
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+a               = 1.53818          +/- 0.04935      (3.208%)
+b               = 0.177418         +/- 0.01433      (8.078%)
+
+correlation matrix of the fit parameters:
+                a      b      
+a               1.000 
+b               0.632  1.000 
+
+
+*******************************************************************************
+Wed Mar 25 16:17:15 2020
+
+
+FIT:    data read from 'PercolData.txt'  using 1:2:3
+        format = x:z:s
+BREAK: No data to fit
+
+*******************************************************************************
+Wed Mar 25 16:18:43 2020
+
+
+FIT:    data read from 'PercolData.txt'  using 1:2:3
+        format = x:z:s
+
+Current data point
+=========================
+#               = 1 out of 200
+x               = 0              
+z               = 0              
+s               = 0              
+
+BREAK: Zero error value in data file
+
+*******************************************************************************
+Wed Mar 25 16:19:06 2020
+
+
+FIT:    data read from 'PercolData.txt'
+        format = z
+        #datapoints = 200
+        residuals are weighted equally (unit weight)
+
+function used for fitting: f(x)
+	f(x) = erf(x-b)*a
+BREAK: Need via and either parameter list or file
+
+*******************************************************************************
+Wed Mar 25 16:19:43 2020
+
+
+FIT:    data read from 'PercolData.txt' using 1:2:3 yerr
+        format = x:z:s
+
+Current data point
+=========================
+#               = 1 out of 200
+x               = 0              
+z               = 0              
+s               = 0              
+
+BREAK: Zero error value in data file
+
+*******************************************************************************
+Wed Mar 25 16:20:32 2020
+
+
+FIT:    data read from 'PercolData.txt' using 1:2:3 yerrors
+        format = x:z:s
+
+Current data point
+=========================
+#               = 1 out of 200
+x               = 0              
+z               = 0              
+s               = 0              
+
+BREAK: Zero error value in data file
+
+*******************************************************************************
+Wed Mar 25 16:21:23 2020
+
+
+FIT:    data read from "PercolData.txt" using 1:2:3 yerrors
+        format = x:z:s
+
+Current data point
+=========================
+#               = 1 out of 200
+x               = 0              
+z               = 0              
+s               = 0              
+
+BREAK: Zero error value in data file
+
+*******************************************************************************
+Wed Mar 25 16:43:26 2020
+
+
+FIT:    data read from "PercolData.txt" using 1:2:3 yerrors
+        format = x:z:s
+
+Current data point
+=========================
+#               = 1 out of 50
+x               = 0              
+z               = 0              
+s               = 0              
+
+BREAK: Zero error value in data file
+
+*******************************************************************************
+Wed Mar 25 16:44:10 2020
+
+
+FIT:    data read from "PercolData.txt" using 1:2:3 yerrors
+        format = x:z:s
+        #datapoints = 42
+function used for fitting: f(x)
+	f(x) = (erf((x-b)*a)+1)/2
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   a             b            
+   0 1.1592416431e+28   0.00e+00  1.88e+15    2.500000e+01   5.000000e-01
+  17 1.6973191169e+04   0.00e+00  1.88e+10    2.697893e+01   4.613919e-01
+
+After 17 iterations the fit converged.
+final sum of squares of residuals : 16973.2
+rel. change during last iteration : 0
+
+degrees of freedom    (FIT_NDF)                        : 40
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 20.5993
+variance of residuals (reduced chisquare) = WSSR/ndf   : 424.33
+p-value of the Chisq distribution (FIT_P)              : 0
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+a               = 26.9789          +/- 2.467        (9.144%)
+b               = 0.461392         +/- 0.0003226    (0.06991%)
+
+correlation matrix of the fit parameters:
+                a      b      
+a               1.000 
+b               0.007  1.000 
+
+
+*******************************************************************************
+Wed Mar 25 16:54:06 2020
+
+
+FIT:    data read from "PercolData.txt" using 1:2:3 yerrors
+        format = x:z:s
+        #datapoints = 50
+function used for fitting: f(x)
+	f(x) = (erf((x-b)*a)+1)/2
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   a             b            
+   0 9.7837866079e+248  0.00e+00  2.20e+125   2.500000e+01   5.000000e-01
+   1 1.3402275871e+248 -6.30e+05  2.20e+124   2.506659e+01   4.930860e-01
+
+The maximum lambda = 1.000000e+20 was exceeded. Fit stopped.
+final sum of squares of residuals : 1.34023e+248
+rel. change during last iteration : -6.30009
+
+degrees of freedom    (FIT_NDF)                        : 48
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 1.67097e+123
+variance of residuals (reduced chisquare) = WSSR/ndf   : 2.79214e+246
+p-value of the Chisq distribution (FIT_P)              : 0
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+a               = 25.0666          +/- 3.72e+12     (1.484e+13%)
+b               = 0.493086         +/- 1.524e+10    (3.09e+12%)
+
+correlation matrix of the fit parameters:
+                a      b      
+a               1.000 
+b               1.000  1.000 
+
+
+*******************************************************************************
+Wed Mar 25 16:54:32 2020
+
+
+FIT:    data read from "PercolData.txt" using 1:2:3 yerrors
+        format = x:z:s
+        #datapoints = 50
+function used for fitting: f(x)
+	f(x) = (erf((x-b)*a)+1)/2
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   a             b            
+   0 1.3964170073e+232  0.00e+00  3.47e+117   5.000000e+01   5.000000e-01
+   1 2.3858342563e+231 -4.85e+05  3.47e+116   5.002852e+01   4.983385e-01
+
+The maximum lambda = 1.000000e+20 was exceeded. Fit stopped.
+final sum of squares of residuals : 2.38583e+231
+rel. change during last iteration : -4.85295
+
+degrees of freedom    (FIT_NDF)                        : 48
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 7.05017e+114
+variance of residuals (reduced chisquare) = WSSR/ndf   : 4.97049e+229
+p-value of the Chisq distribution (FIT_P)              : 0
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+a               = 50.0285          +/- 5.317e+11    (1.063e+12%)
+b               = 0.498339         +/- 9.258e+08    (1.858e+11%)
+
+correlation matrix of the fit parameters:
+                a      b      
+a               1.000 
+b               1.000  1.000 
+
+
+*******************************************************************************
+Wed Mar 25 16:55:17 2020
+
+
+FIT:    data read from "PercolData.txt" using 1:2:3 yerrors
+        format = x:z:s
+        #datapoints = 37
+function used for fitting: f(x)
+	f(x) = (erf((x-b)*a)+1)/2
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   a             b            
+   0 1.6302434156e+100  0.00e+00  3.43e+51    5.000000e+01   5.000000e-01
+   1 1.7237815935e+99  -8.46e+05  3.43e+50    5.004602e+01   5.020875e-01
+
+The maximum lambda = 1.000000e+20 was exceeded. Fit stopped.
+final sum of squares of residuals : 1.72378e+99
+rel. change during last iteration : -8.45737
+
+degrees of freedom    (FIT_NDF)                        : 35
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 7.0179e+48
+variance of residuals (reduced chisquare) = WSSR/ndf   : 4.92509e+97
+p-value of the Chisq distribution (FIT_P)              : 0
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+a               = 50.046           +/- 6.507e+07    (1.3e+08%)
+b               = 0.502087         +/- 1.465e+05    (2.919e+07%)
+
+correlation matrix of the fit parameters:
+                a      b      
+a               1.000 
+b              -1.000  1.000 
+
+
+*******************************************************************************
+Wed Mar 25 16:55:56 2020
+
+
+FIT:    data read from "PercolData.txt" using 1:2:3 yerrors
+        format = x:z:s
+        #datapoints = 24
+function used for fitting: f(x)
+	f(x) = (erf((x-b)*a)+1)/2
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   a             b            
+   0 8.2064660552e+14   0.00e+00  4.25e+08    5.000000e+01   5.000000e-01
+  22 1.0561710083e+04  -2.95e-05  4.25e+05    9.831668e+01   4.935852e-01
+
+After 22 iterations the fit converged.
+final sum of squares of residuals : 10561.7
+rel. change during last iteration : -2.9506e-10
+
+degrees of freedom    (FIT_NDF)                        : 22
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 21.9107
+variance of residuals (reduced chisquare) = WSSR/ndf   : 480.078
+p-value of the Chisq distribution (FIT_P)              : 0
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+a               = 98.3167          +/- 3.893        (3.96%)
+b               = 0.493585         +/- 0.0009083    (0.184%)
+
+correlation matrix of the fit parameters:
+                a      b      
+a               1.000 
+b               0.671  1.000 
+
+
+*******************************************************************************
+Wed Mar 25 16:56:41 2020
+
+
+FIT:    data read from "PercolData.txt" using 1:2:3 yerrors
+        format = x:z:s
+        #datapoints = 24
+function used for fitting: f(x)
+	f(x) = (erf((x-b)*a)+1)/2
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   a             b            
+   0 1.9809998609e+17   0.00e+00  1.97e+09    2.500000e+01   5.000000e-01
+  24 1.0562130012e+04  -9.77e-02  1.97e+00    9.826547e+01   4.935796e-01
+
+After 24 iterations the fit converged.
+final sum of squares of residuals : 10562.1
+rel. change during last iteration : -9.76943e-07
+
+degrees of freedom    (FIT_NDF)                        : 22
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 21.9111
+variance of residuals (reduced chisquare) = WSSR/ndf   : 480.097
+p-value of the Chisq distribution (FIT_P)              : 0
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+a               = 98.2655          +/- 3.867        (3.936%)
+b               = 0.49358          +/- 0.0009084    (0.1841%)
+
+correlation matrix of the fit parameters:
+                a      b      
+a               1.000 
+b               0.675  1.000 
+
+
+*******************************************************************************
+Wed Mar 25 16:57:04 2020
+
+
+FIT:    data read from "PercolData.txt" using 1:2:3 yerrors
+        format = x:z:s
+        #datapoints = 21
+function used for fitting: f(x)
+	f(x) = (erf((x-b)*a)+1)/2
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   a             b            
+   0 3.2671353123e+09   0.00e+00  3.09e+05    2.500000e+01   5.000000e-01
+  15 5.3185551163e+03  -4.06e-01  3.09e-10    7.746390e+01   4.934595e-01
+
+After 15 iterations the fit converged.
+final sum of squares of residuals : 5318.56
+rel. change during last iteration : -4.06458e-06
+
+degrees of freedom    (FIT_NDF)                        : 19
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 16.7309
+variance of residuals (reduced chisquare) = WSSR/ndf   : 279.924
+p-value of the Chisq distribution (FIT_P)              : 0
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+a               = 77.4639          +/- 3.128        (4.038%)
+b               = 0.493459         +/- 0.000731     (0.1481%)
+
+correlation matrix of the fit parameters:
+                a      b      
+a               1.000 
+b               0.531  1.000 
+
+
+*******************************************************************************
+Wed Mar 25 16:57:22 2020
+
+
+FIT:    data read from "PercolData.txt" using 1:2:3 yerrors
+        format = x:z:s
+        #datapoints = 16
+function used for fitting: f(x)
+	f(x) = (erf((x-b)*a)+1)/2
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   a             b            
+   0 1.1427692842e+05   0.00e+00  2.01e+03    2.500000e+01   5.000000e-01
+   9 7.8878127454e+02  -2.71e-02  2.01e-06    5.749576e+01   4.939075e-01
+
+After 9 iterations the fit converged.
+final sum of squares of residuals : 788.781
+rel. change during last iteration : -2.71398e-07
+
+degrees of freedom    (FIT_NDF)                        : 14
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 7.5061
+variance of residuals (reduced chisquare) = WSSR/ndf   : 56.3415
+p-value of the Chisq distribution (FIT_P)              : 0
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+a               = 57.4958          +/- 1.725        (2.999%)
+b               = 0.493908         +/- 0.0003538    (0.07164%)
+
+correlation matrix of the fit parameters:
+                a      b      
+a               1.000 
+b               0.023  1.000 
+
+
+*******************************************************************************
+Wed Mar 25 16:57:46 2020
+
+
+FIT:    data read from "PercolData.txt" using 1:2:3 yerrors
+        format = x:z:s
+        #datapoints = 16
+function used for fitting: f(x)
+	f(x) = (erf((x-b)*a)+1)/2
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   b            
+   0 2.1411762536e+04   0.00e+00  2.78e+03    5.000000e-01
+   4 2.0529633940e+03   0.00e+00  2.78e+08    4.937741e-01
+
+After 4 iterations the fit converged.
+final sum of squares of residuals : 2052.96
+rel. change during last iteration : 0
+
+degrees of freedom    (FIT_NDF)                        : 15
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 11.6989
+variance of residuals (reduced chisquare) = WSSR/ndf   : 136.864
+p-value of the Chisq distribution (FIT_P)              : 0
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+b               = 0.493774         +/- 0.0005553    (0.1125%)
+
+
+*******************************************************************************
+Wed Mar 25 16:57:58 2020
+
+
+FIT:    data read from "PercolData.txt" using 1:2:3 yerrors
+        format = x:z:s
+        #datapoints = 16
+function used for fitting: f(x)
+	f(x) = (erf((x-b)*a)+1)/2
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   b            
+   0 2.0421655386e+04   0.00e+00  2.82e+03    5.000000e-01
+   4 1.4118553234e+03   0.00e+00  2.82e+09    4.937945e-01
+
+After 4 iterations the fit converged.
+final sum of squares of residuals : 1411.86
+rel. change during last iteration : 0
+
+degrees of freedom    (FIT_NDF)                        : 15
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 9.70174
+variance of residuals (reduced chisquare) = WSSR/ndf   : 94.1237
+p-value of the Chisq distribution (FIT_P)              : 0
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+b               = 0.493795         +/- 0.00046      (0.09317%)
+
+
+*******************************************************************************
+Wed Mar 25 16:58:07 2020
+
+
+FIT:    data read from "PercolData.txt" using 1:2:3 yerrors
+        format = x:z:s
+        #datapoints = 16
+function used for fitting: f(x)
+	f(x) = (erf((x-b)*a)+1)/2
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   b            
+   0 1.8654308443e+04   0.00e+00  2.90e+03    5.000000e-01
+   4 7.9290588791e+02   0.00e+00  2.90e+08    4.938953e-01
+
+After 4 iterations the fit converged.
+final sum of squares of residuals : 792.906
+rel. change during last iteration : 0
+
+degrees of freedom    (FIT_NDF)                        : 15
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 7.27052
+variance of residuals (reduced chisquare) = WSSR/ndf   : 52.8604
+p-value of the Chisq distribution (FIT_P)              : 0
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+b               = 0.493895         +/- 0.0003429    (0.06943%)
+
+
+*******************************************************************************
+Wed Mar 25 16:58:34 2020
+
+
+FIT:    data read from "PercolData.txt" using 1:2:3 yerrors
+        format = x:z:s
+        #datapoints = 16
+function used for fitting: f(x)
+	f(x) = (erf((x-b)*a)+1)/2
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   a             b            
+   0 1.8654308443e+04   0.00e+00  2.05e+03    5.700000e+01   5.000000e-01
+   5 7.8878128444e+02  -8.36e-03  2.05e-02    5.749594e+01   4.939075e-01
+
+After 5 iterations the fit converged.
+final sum of squares of residuals : 788.781
+rel. change during last iteration : -8.36392e-08
+
+degrees of freedom    (FIT_NDF)                        : 14
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 7.5061
+variance of residuals (reduced chisquare) = WSSR/ndf   : 56.3415
+p-value of the Chisq distribution (FIT_P)              : 0
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+a               = 57.4959          +/- 1.725        (2.999%)
+b               = 0.493908         +/- 0.0003538    (0.07164%)
+
+correlation matrix of the fit parameters:
+                a      b      
+a               1.000 
+b               0.023  1.000 
+
+
+*******************************************************************************
+Wed Mar 25 17:00:14 2020
+
+
+FIT:    data read from "PercolData.txt" using 1:2
+        format = x:z
+        #datapoints = 50
+        residuals are weighted equally (unit weight)
+
+function used for fitting: f(x)
+	f(x) = (erf((x-b)*a)+1)/2
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   a             b            
+   0 1.8837042956e-01   0.00e+00  3.73e+00    5.700000e+01   5.000000e-01
+   5 2.3373738815e-03  -8.06e-03  3.73e-05    5.874252e+01   4.942673e-01
+
+After 5 iterations the fit converged.
+final sum of squares of residuals : 0.00233737
+rel. change during last iteration : -8.06116e-08
+
+degrees of freedom    (FIT_NDF)                        : 48
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.0069782
+variance of residuals (reduced chisquare) = WSSR/ndf   : 4.86953e-05
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+a               = 58.7425          +/- 0.6361       (1.083%)
+b               = 0.494267         +/- 9.211e-05    (0.01863%)
+
+correlation matrix of the fit parameters:
+                a      b      
+a               1.000 
+b               0.015  1.000 

@@ -1,0 +1,8 @@
+set grid
+set autoscale
+set sample 10000
+a=57
+b=0.5
+f(x) = (erf((x-b)*a)+1)/2
+fit f(x) "PercolData.txt" using 1:2 via a, b
+plot f(x), 'PercolData.txt' using 1:2:3 with yerrorbars

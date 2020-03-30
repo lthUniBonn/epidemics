@@ -1,7 +1,4 @@
 library('plot.matrix')
-library('gmp')
-library('profvis')
-library('Brobdingnag')
 
 #----------- run functions (sim + write)
 figCount <- 0
@@ -27,15 +24,12 @@ simulationRun <- function(statRun){
     if(noMoreInfected){ break}
     # accumulated plot to png in figpath of infected | currently infected in red
     if((x %% plotEvery == 0) && (plotAccumulated == TRUE)){
-      
-      png(paste(c(figPath, "/C_", figCount, ".png"), sep = "", collapse = ""), width = 500, height = 500)
       visibleLattice <- array(0, dim= c(sqrt(N),sqrt(N)))
       visibleLattice[which(sDistribution  != initialsDistribution)] <- 1
       plot(which(visibleLattice==1, arr.ind = TRUE)[,1], which(visibleLattice==1, arr.ind = TRUE)[,2],xlim = c(0,sqrt(N)), ylim = c(0,sqrt(N)),type ="p", pch = '.', pty = "s", xlab = paste(c("T:", x), sep = " ", collapse = ""), ylab ="")
       par(new=TRUE)
       visibleLattice[which(infected == TRUE)] <- 2
       plot(which(visibleLattice==2, arr.ind = TRUE)[,1], which(visibleLattice==2, arr.ind = TRUE)[,2],xlim = c(0,sqrt(N)), ylim = c(0,sqrt(N)),type ="p", pch = '*',col = 'red', pty = "s", xlab = "", ylab = "")
-      dev.off()
       figCount <- figCount +1
       
     }
@@ -217,8 +211,6 @@ findConn <- function(){
         for (i in c(0:(nShort-1))){
           possConn[counter + i,1] <<- lattice[fromRow[i+1],fromCol[i+1]]
           possConn[counter + i,2] <<- lattice[toRow[i+1],toCol[i+1]]
-          
-          # not left < right with shortcuts
         }
         counter <- counter - 1
         if (!(TRUE %in% duplicated(possConn))){break}

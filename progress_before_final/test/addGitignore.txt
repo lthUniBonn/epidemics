@@ -1,0 +1,9 @@
+#im terminal: 
+git rm --cached .Rhistory
+#Rhistory nicht mehr mit git tracken
+
+#.gitignore mit editor erstellen und öffnen 
+#einfügen: 
+.Rhistory 
+
+#jetzt sollte es nicht mehr committet werden. 

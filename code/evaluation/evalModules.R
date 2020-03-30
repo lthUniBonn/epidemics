@@ -1,7 +1,7 @@
 parNames <- c('sqrt(N)',  'number of shortcuts', 'immunisation quota', 'avgerage recovery time', 'recovery time deviation', 'type of age distribution', 'social distancing factor', 'choice of susceptibility distribution')
 
 
-
+#bootstrap function for error determination
 bootstrap <- function(vec, nSample=1000, FUN=mean, qq = FALSE){
   popMean <- mean(vec, na.rm = T)
   means <- numeric(length=nSample)
@@ -20,11 +20,12 @@ bootstrap <- function(vec, nSample=1000, FUN=mean, qq = FALSE){
   return(err)
 }
 
+#evaluate P(ME) from a given size of epidemic
 outbreakProbability <- function(lastVal){
   return(length(which(lastVal>epidemicThreshold))/length(lastVal))
 }
 
-
+#combine all runs to evaluate size or P(ME) 
 outbreakMeasure <- function(dfList, prob=T){
   p <- numeric(length(dfList))
   pErr <- numeric(length(dfList))
@@ -44,7 +45,7 @@ outbreakMeasure <- function(dfList, prob=T){
   } else { return(list(lastValMean, lastValErr))}
 }
 
-
+#read files corresponding to one observable versus the parameter with parIdx (3 -> immunity, 7-> sDistFac)
 findObsvsParams <- function(obs='numberInfected', parIdx=3, params, checkSpecific=c()){
   #all files
   fileNames <- array(unlist(strsplit(list.files(path)[], "_")), dim=c(9,length(list.files(path))))
@@ -92,7 +93,7 @@ findObsvsParams <- function(obs='numberInfected', parIdx=3, params, checkSpecifi
 }
 
 
-
+#plot the mean of the specified vs t 
 meanPlot <- function(name,params,df, compare = FALSE, name2="", params2=0, df2=0){
   thisObsMean <- rowMeans(df[,c(2:ncol(df))], na.rm = TRUE)
   thisObsErr <- apply(X = df[,c(2:ncol(df))],MARGIN = 1, FUN = bootstrap)

@@ -1,29 +1,24 @@
-# https://www.healthknowledge.org.uk/public-health-textbook/research-methods/1a-epidemiology/epidemic-theory
 library('plot.matrix')
 source('modules.R')
-source('runFunctions.R')
 
 
-set.seed(2)
-#!! why 2???
+set.seed(1)
+
 
 #-----------------------------run params 
 
-path <- "data"
-figPath <- "figures/Vid"
+path <- "../data/"
 
 #observables
    #plotting
-plotIt <- FALSE
 plotEvery <- 10
-plotAccumulated <- FALSE
-   #clusters
+plotAccumulated <- F
+   #clusters and general eval
 checkCluster <- T
 clusterEvery <- 5
 
 
-nStatRun <- 100 # how many times is the same thing done (statistical simulation check)
-checkR0Here <- 10 # after how many recoveries is R0 evaluated 
+nStatRun <- 2 # how many times is the same thing done (statistical simulation check)
 
 #-----------------------------lattice 
 
@@ -40,7 +35,8 @@ if(periodicBoundaries){# these are the possible connections in 2D lattice
   possConn <- array(0,dim=c((2*N-2*sqrt(N)+nShort),2))
 }
 
-#find all possible connections and their bond probability
+#find all possible connections and their bond probability 
+#instead of using findConn any other list of bonds can be inserted into possConn
 findConn()
 nCon <- nrow(possConn)
 
@@ -64,7 +60,7 @@ sChoiceNames <- c("sBool", "sFixed", "sNot", "sReal")
 sBool <- sChoice[1] # if True the susceptibility is 1 or 0 
 sFixed <- sChoice[2] 
 sNot <- sChoice[3]
-sReal <- sChoice[4] #real: used for major simulattion, refers to age distribution
+sReal <- sChoice[4] #real: used for major simulation, refers to age distribution
 #age distribution susceptibility 
 sAgeDist1 <- c(0.7, 0.7, 0.7, 0.7, 0.7, 0.7)
 sAgeDist2 <- c(0.98, 0.7, 0.45, 0.7, 0.85, 1)
@@ -146,5 +142,3 @@ for (parConf in c(1:nParConfigs)){
 }  
 
 
-#-----------------------------------------------------------------------------------
-#observed that for large (>100) lattices the boundaries are basically irrelevant for the largest cluster size

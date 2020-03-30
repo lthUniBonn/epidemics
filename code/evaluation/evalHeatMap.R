@@ -1,7 +1,8 @@
 source('evalModules.R')
 library("ggplot2")
 library("viridis")
-path <- "longRun"
+
+path <- "../data"
 
 
 
@@ -13,23 +14,25 @@ sdRecoveryTime <- 2
 sChoice <- 'sReal'
 
 ageDistIdx <- 2
-#sAgeDist1 <- c(0.7, 0.7, 0.7, 0.7, 0.7, 0.7)
-#sAgeDist2 <- c(0.9, 0.6, 0.4, 0.6, 0.8, 0.9)
-#sAgeDistArray <- rbind(sAgeDist1, sAgeDist2) #susceptibility depending on age
+
 
 
 sDistFactor <- 3
 immunity <- 0
 
 fixedParams <- c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, ageDistIdx, sDistFactor, sChoice)
-#params <- paste(c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, ageDistIdx, sDistFactor, sChoice), sep="", collapse="_") 
+
 prob = T
 
 epidemicThreshold <- 0.02
 #-------------------------------------------------------------------------------
 #heatmap of immunity and sDistFactor | p(ME) or accInfections
+
+#specify a range of immunities, sDistFactors to be checked
 checkThisImmunity <-seq(0,0.5,0.02)
 checkThisSDistFac <-round(seq(1,7,0.2),1)#need to round to compare seq[8] == 2.4 to TRUE
+
+#data frame that contains all evaluated values for the heat map
 p <- expand.grid(immunities = checkThisImmunity, sDistFactors = checkThisSDistFac)
 p$prob <- NA
 counter <- 0
@@ -46,7 +49,7 @@ for(x in c(1:length(checkThisImmunity))){
   }
 }
 
-
+#plot heat map
 m <- ggplot(as.data.frame(p), aes(sDistFactors, immunities, fill= prob), ) + 
   geom_tile() +
   scale_fill_gradient2(low = 'white', mid = 'green', high = 'black', midpoint = 0.5, limits=c(0,1)) +
@@ -58,14 +61,13 @@ m <- ggplot(as.data.frame(p), aes(sDistFactors, immunities, fill= prob), ) +
         legend.position = c(0.7,0.6),
         legend.text =  element_text(size = 14),
         legend.title = element_text(face = 'bold', size = 20)) 
-  
+
+#pplot either probability for a major epidemic P(ME)  or size of the epidemic
 if(prob == T){
   m <- m + labs(fill=expression('P'[ME]))
 } else {
   m <- m + labs(fill=expression(size))
 }
-  
-  #guides(fill=guide_legend(title="P(ME)"))
 print(m)
 
 

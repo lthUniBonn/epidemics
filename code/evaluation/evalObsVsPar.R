@@ -1,7 +1,6 @@
 source('evalModules.R')
-library("ggplot2")
 
-path <- "longRun"
+path <- "../data"
 
 
 
@@ -13,9 +12,7 @@ sdRecoveryTime <- 2
 sChoice <- 'sReal'
 
 ageDistIdx <- 1
-#sAgeDist1 <- c(0.7, 0.7, 0.7, 0.7, 0.7, 0.7)
-#sAgeDist2 <- c(0.9, 0.6, 0.4, 0.6, 0.8, 0.9)
-#sAgeDistArray <- rbind(sAgeDist1, sAgeDist2) #susceptibility depending on age
+
 
 
 sDistFactor <- 1
@@ -25,14 +22,13 @@ immunity2 <- 0.0
 
 fixedParams <- c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, ageDistIdx, sDistFactor, sChoice)
 fixedParams2 <- c(sqrt(N), nShort, immunity2, avgRecoveryTime, sdRecoveryTime, ageDistIdx, sDistFactor2, sChoice)
-#params <- paste(c(sqrt(N), nShort, immunity, avgRecoveryTime, sdRecoveryTime, ageDistIdx, sDistFactor, sChoice), sep="", collapse="_") 
+
 
 epidemicThreshold <- 0.02
 #-------------------------------------------------------------------------------
 
 #t till epidemic dies out vs par (heatMap)
-
-
+#evaluate dataframe  differenly depending on observable (mean, max, ..)
 evalObs <- function(dfList, obs){
   maxVal <- numeric(length(dfList))
   maxErr <- numeric(length(dfList))
@@ -79,7 +75,10 @@ evalObs <- function(dfList, obs){
   return(list(maxVal, maxErr))
 }
 
+#specify parameter to plot against via parIdx (3 -> immunity, 7 -> sDistFac)
 parIdx <- 3
+
+#plotting cosmetics
 if(parIdx == 7){
   xlab <- 'D'
   xlim <- c(1,7)
@@ -92,7 +91,10 @@ if(parIdx == 7){
   constant2 <- paste('D:', fixedParams2[7], sep = "", collapse = "")
 }
 
+
 #evaluate observable to plot -> y
+#choose obs to plot incl. ylabel, comment out rest 
+
 ylab <- expression('P'[ME])
 obs <- c('accInfections','accInfections')
 
@@ -110,6 +112,7 @@ obs <- c('accInfections','accInfections')
 #ylab <- 'max maxWeight'
 #obs <- c('maxWeight', 'maxWeight')
 
+#read files
 tmpList <- findObsvsParams(obs=obs[1],parIdx = parIdx, params = fixedParams)[]
 dfList <- tmpList[[2]]
 parList <- tmpList[[1]]
@@ -119,6 +122,7 @@ parVal <- parList[parIdx,]
 yVal <- y[[1]]
 yErr <- y[[2]]
 
+# read second files for fixed params 2 -> compare in plot 
 tmpList2 <- findObsvsParams(obs=obs[1],parIdx = parIdx, params = fixedParams2)[]
 dfList2 <- tmpList2[[2]]
 parList2 <- tmpList2[[1]]
@@ -129,6 +133,7 @@ yVal2 <- y2[[1]]
 yErr2 <- y2[[2]]
 
 
+#plotting
 plot(x = parVal, y = yVal, xlab = "", ylab = "", xlim = xlim,ylim = c(0,1), pch = 19, cex = 1,xaxt = 'n', yaxt = 'n')
 arrows(parVal, yVal-yErr, parVal, yVal+yErr, length=0.05, angle=90, code=3)
 title(ylab = ylab, line = 1.7, cex.lab = 1.5)
@@ -142,8 +147,4 @@ mtext(text = constant1, side = 3, padj = 3.5, adj = 0.9, cex = 1.5)
 mtext(text = constant2, side = 3, padj = 2, adj = 0.9, cex = 1.5, col = 'red')
 
 arrows(parVal2, yVal2-yErr2, parVal2, yVal2+yErr2, length=0.05, angle=90, code=3, col = 'red')
-
-
-
-
 
